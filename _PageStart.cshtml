@@ -1,0 +1,34 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    //intialize variables 
+    var hostUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+    var currentUrl = Request.Url.GetComponents(UriComponents.AbsoluteUri, UriFormat.Unescaped);
+    int userCount = 0;
+    
+    //load xml
+    var load = new Comic();
+    var account = load.LoadComic("/App_Data/account.xml");
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+
+    //set layout
+    try{
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        Layout = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+    }
+    catch{
+        Layout = null;
+    }
+    //count the number of accounts for this webcomic
+    foreach(var user in account.Descendants("User")){
+        userCount++;
+    }
+    //if their are no accounts send user to setup page
+    if(userCount<=0){
+        var accountUrl = hostUrl + VirtualPathUtility.ToAbsolute("~/webcomicx/admin/account/setup");
+        if(currentUrl!=accountUrl){
+            Response.Redirect(accountUrl);
+        }
+    }    
+}

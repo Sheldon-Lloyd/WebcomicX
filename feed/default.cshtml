@@ -1,0 +1,6 @@
+﻿@{
+    var redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/feed/rss";
+    Response.Status = "301 Moved Permanently";
+    Response.AddHeader("Location",redirectUrl);
+   
+}

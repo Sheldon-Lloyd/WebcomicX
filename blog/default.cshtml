@@ -1,0 +1,49 @@
+﻿@{
+    Page.PreppendTitle = "Blog - ";
+    bool include = false;
+    var load = new Comic();
+    var blog = load.LoadComic("/content/xml/content/blog.xml");
+    var blogSettings = load.LoadComic("/App_Data/blog-settings.xml");
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+    include = settings.Descendants("Blog").ElementAt(0).Value.AsBool();
+
+    if(include){
+
+        var type = blogSettings.Descendants("Type").ElementAt(0).Value;
+            var blogPost = (from xml in blog.Descendants("Post")
+                where xml.Element("Status").Value=="publish"
+                orderby (string) xml.Element("Date") descending
+                    select xml);      
+
+
+        if(type!="webcomicx"){
+            var redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
+            Response.Status = "301 Moved Permanently";
+            Response.AddHeader("Location",redirectUrl);
+        }
+
+        @section article{
+                <h2>Blog</h2>
+                    @foreach(var post in blogPost){//display posts
+                        DateTime date = post.Element("Date").Value.AsDateTime();
+                        <h3><a href="/blog/post/@post.Element("Id").Value/@post.Element("PermaLink").Value">@post.Element("Title").Value</a></h3>
+                        <h6>@date.ToString("MMM dd yyyy") 
+                            @if(WebSecurity.IsAuthenticated){
+                                <text>|</text> <a href="/webcomicx/admin/blog/edit-post/@post.Element("Id").Value">Edit</a> 
+                            }
+                        </h6>
+                        <p>@post.Element("Description").Value</p>
+                    }
+        }
+    }
+    else{
+        Page.PreppendTitle = "404 - ";
+        Response.Status = "404 Not Found";
+        @section article{
+
+        <h2>Sorry, the page you were looking for does not exist.</h2>
+
+    }
+
+    }
+}

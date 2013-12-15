@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Settings>
+  <ComicName></ComicName>
+  <License></License>
+  <Author></Author>
+  <Genre></Genre>
+  <Style></Style>
+  <Description></Description>
+  <Blog>false</Blog>
+  <CharactersPage>true</CharactersPage>
+  <AboutPage>True</AboutPage>
+  <Theme></Theme>
+</Settings>

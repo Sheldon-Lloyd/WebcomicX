@@ -1,0 +1,41 @@
+﻿@using System.Xml.Linq
+
+@{
+    Page.PreppendTitle = "Characters - ";
+
+    //load xml files
+    var load = new Comic();
+    var characterXml = load.LoadComic("~/content/xml/content/characters.xml");
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    bool include = settings.Descendants("CharactersPage").ElementAt(0).Value.AsBool();
+
+    Layout = "../layouts/_main.cshtml";
+
+}
+@if(include || WebSecurity.IsAuthenticated){
+@section head{
+<meta name="description" content="Characters of the @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
+}
+@section article{
+    <h2>Character Profiles @if(WebSecurity.IsAuthenticated){<a id="edit" href="/webcomicx/admin/characters">Manage</a>}</h2>
+    <ul class="character item-list cf">
+    @foreach(var character in characterXml.Descendants("Profile")){//display characters
+    
+        <li id="character-@character.Element("Number").Value" class="cf">
+            <h4>@character.Element("Name").Value</h4>
+            <img width="auto" height="auto" src="/content/uploads/characters/@character.Element("Image").Value" alt="@character.Element("Name").Value">
+            <div>
+                <p>@Html.Raw(character.Element("Bio").Value.Replace("\n", "<br>"))</p>
+            </div>
+        </li>
+    }
+    </ul>
+}
+}
+else{
+@section article{
+
+    Response.Status = "404 Not Found";
+    <h2>Sorry, the page you were looking for does not exist.</h2>
+}
+}

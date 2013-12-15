@@ -1,0 +1,18 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    var load = new Comic();
+    Layout = null;
+    string filePath = "";
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    try{
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        filePath = "~/content/themes/" + theme + "/views/home.cshtml";
+        
+    }
+    catch{
+    }
+
+}
+@RenderPage(filePath)

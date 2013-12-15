@@ -1,0 +1,49 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+	// set the name of the file
+	string filename = "~/content/xml/content/webpages.xml";
+    var load = new Comic();
+    var webpageXml = load.LoadComic(filename);
+    var pageId = UrlData[0];
+    bool include = false;
+    var webpage = (from xml in webpageXml.Descendants("Page")
+            where xml.Element("Id").Value==pageId
+            select xml).FirstOrDefault();
+    try{
+        include = webpage.Element("Include").Value.AsBool();
+    }
+    catch{
+        include = false;
+    }
+}
+
+@if(include || WebSecurity.IsAuthenticated && webpage!=null){
+    if(webpage.Element("External").Value.AsBool()){
+        Response.Redirect(webpage.Element("PermaLink").Value);
+    }
+    else{
+    var redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/p/"+pageId+"/"+webpage.Element("PermaLink").Value;
+    if(UrlData[1]!=webpage.Element("PermaLink").Value){
+        Response.Status = "301 Moved Permanently";
+        Response.AddHeader("Location",redirectUrl);
+    }
+    Page.PreppendTitle = webpage.Element("Title").Value+" - ";
+    @section head{
+        <meta name="description" content="@webpage.Element("Description").Value">
+    }
+    @section article{
+        <h2>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a id="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h2>
+
+        @Html.Raw(webpage.Element("Content").Value)
+    }
+    }
+}
+else{
+    Page.PreppendTitle = "404";
+    Response.Status = "404 Not Found";
+    @section article{
+        <h2>Sorry, the page you were looking for does not exist.</h2>
+    }
+}

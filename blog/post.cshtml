@@ -1,0 +1,57 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    bool include = false;
+    var status = "";
+    var redirectUrl = "";
+	// set the name of the file
+    var load = new Comic();
+    var blog = load.LoadComic("/content/xml/content/blog.xml");
+    var blogSettings = load.LoadComic("/App_Data/blog-settings.xml");
+    var type = blogSettings.Descendants("Type").ElementAt(0).Value;
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+    include = settings.Descendants("Blog").ElementAt(0).Value.AsBool();
+
+
+    var postId = UrlData[0];
+    var post = (from xml in blog.Descendants("Post")
+            where xml.Element("Id").Value==postId
+            select xml).FirstOrDefault();
+    if(post!=null){
+        status = post.Element("Status").Value;
+    }
+    if(type!="webcomicx"){
+        redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
+        Response.Status = "301 Moved Permanently";
+        Response.AddHeader("Location",redirectUrl);
+    }
+
+
+}
+@if(status=="publish"&&include){
+        redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/blog/post/"+postId+"/"+post.Element("PermaLink").Value;
+    if(UrlData[1]!=post.Element("PermaLink").Value){
+        Response.Status = "301 Moved Permanently";
+        Response.AddHeader("Location",redirectUrl);
+    }
+    Page.PreppendTitle = post.Element("Title").Value+" - ";
+@section head{
+    <meta name="description" content="@post.Element("Description").Value">
+}
+@section article{
+    <h2>@post.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a id="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>}</h2>
+
+    @Html.Raw(post.Element("Content").Value)
+}
+@section comments{}
+}
+else{
+    Page.PreppendTitle = "404 - ";
+    Response.Status = "404 Not Found";
+    @section article{
+
+    <h2>Sorry, the page you were looking for does not exist.</h2>
+
+    }
+}

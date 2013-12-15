@@ -1,0 +1,13 @@
+use contenteditable
+
+set default image size to max-width of page
+
+add verizon # when updating webcomic
+
+fix rss feed
+
+404 pages
+
+turn scripts into plugin
+
+create xml files if they don exist
