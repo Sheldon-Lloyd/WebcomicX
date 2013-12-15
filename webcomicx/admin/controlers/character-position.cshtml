@@ -1,0 +1,32 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@using System.IO;
+@{
+    var filename = "/content/xml/content/characters.xml";
+    var load = new Comic();
+    var comic = load.LoadComic(filename);
+    var characters = load.LoadComic(filename);
+
+    if(IsPost){//swap characters
+        var oldPosition = Request["oldPosition"].AsInt();
+        var newPosition = Request["newPosition"].AsInt();
+
+        //character to be swaped
+        var character = characters.Descendants("Profile").ElementAt(oldPosition);
+
+        if(oldPosition>=newPosition){
+            //move character to higher position
+            character.Remove();
+            characters.Descendants("Profile").ElementAt(newPosition).AddBeforeSelf(character);
+        }
+        else{
+            //move character to lower position
+            characters.Descendants("Profile").ElementAt(newPosition).AddAfterSelf(character);
+            character.Remove();
+
+        }
+        //save file and redirect to character management hub
+        characters.Save(Server.MapPath(filename));
+        Response.Redirect("~/webcomicx/admin/characters");
+    }
+}

@@ -1,0 +1,15 @@
+﻿@{
+    var pageNumber = Request["pageNumber"];
+    var comicTitle = Request["title"];
+    var comicNumber= Request["comicNumber"];
+    int pageNode=Convert.ToInt32(pageNumber)-1;  
+    string comicfilename = "/content/xml/comics/comic-"+comicNumber+".xml";
+
+    var loadXml= new Comic();
+    var page= loadXml.LoadComic(comicfilename);
+
+    page.Descendants("Page").ElementAt(pageNode).Remove();
+    page.Save(Server.MapPath(comicfilename));
+    Response.Redirect("~/webcomicx/admin/edit-comic/"+comicNumber);
+
+}

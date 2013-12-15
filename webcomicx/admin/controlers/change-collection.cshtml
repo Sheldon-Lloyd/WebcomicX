@@ -1,0 +1,16 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    var comicfilename = "/content/xml/comics/comic-list.xml";
+    var load = new Comic();
+    var comic = load.LoadComic(comicfilename);
+
+    if(IsPost){
+        var collection = Request["collection"];
+        var comicNumber = Request["comicNo"];
+        var comicNode = Int32.Parse(comicNumber)-1;
+        comic.Descendants("Comic").Descendants("Collection").ElementAt(comicNode).Value=collection;
+        comic.Save(Server.MapPath(comicfilename));
+    }
+}

@@ -1,0 +1,133 @@
+﻿@using System.Xml.Linq
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}
+
+@{
+    Page.Title = "Set Up";
+
+    // Initialize general page variables
+    var userName = "";
+    var penName = "";
+    var email = "";
+    var password = "";
+    var confirmPassword = "";
+    string currentTheme = "";
+    int userCount = 0;
+    string accountfilename = "/App_Data/account.xml";
+    string settingsfilename = "/App_Data/WebcomicX.xml";
+
+    // Setup validation
+    Validation.RequireField("email", "You must specify an email address.");
+    Validation.RequireField("user", "You must specify a user name.");
+    Validation.RequireField("pen", "You must specify a pen name.");
+    Validation.RequireField("password", "Password cannot be blank.");
+    Validation.Add("confirmPassword",
+        Validator.EqualsTo("password", "Password and confirmation password do not match."));
+    Validation.Add("password",
+        Validator.StringLength(
+            maxLength: Int32.MaxValue,
+            minLength: 6,
+            errorMessage: "Password must be at least 6 characters"));
+
+    //load accounts xml
+    var load = new Comic();
+    var account = load.LoadComic(accountfilename);
+    var settings = load.LoadComic(settingsfilename);
+
+    //count the current number of users
+    foreach(var user in account.Descendants("User")){
+        userCount++;
+    }
+
+    if(userCount<=0){//if their are no accunts allow user to create account
+        if(IsPost){
+            userName = Request["user"];
+            penName = Request["pen"];
+            email = Request["email"];
+            password = Request["password"];
+
+            if (Validation.IsValid()) {
+                //get list of themes in directory
+                 string[] themes = Directory.GetDirectories(Server.MapPath("/content/themes"));
+                    foreach (string theme in themes){
+                        Uri themeName = new Uri(theme);
+                        currentTheme = themeName.Segments.Last();
+                    }
+                    try{
+                        settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value=currentTheme;
+                    }
+                    catch{
+                
+                    }
+
+                    var hashPassword = Crypto.HashPassword(password);
+                    var date = DateTime.UtcNow;
+                    var newElement =  new XElement(
+                        new XElement("User",new XAttribute("UserId",(userCount+1)),
+                            new XElement("UserName", userName),
+                            new XElement("PenName", penName),
+                            new XElement("Email", email),
+                            new XElement("SystemRole", "Admin"),
+                            new XElement("Password", hashPassword),
+                            new XElement("CreateDate", date),
+                            new XElement("NewUser", "true")
+                        )
+                    );
+
+                    account.Element("Settings").Add(newElement);
+
+
+                    account.Save(Server.MapPath(accountfilename));
+                    settings.Save(Server.MapPath(settingsfilename));
+
+                    var user = (from xml in account.Descendants("User")
+                           where xml.Element("UserName").Value.ToLower() == userName.ToLower()
+                           select xml).FirstOrDefault();
+
+                    if(user!=null){
+                        var storedPasswod = user.Element("Password").Value;
+                        var storedUserName = user.Element("UserName").Value;
+                        if(Crypto.VerifyHashedPassword(storedPasswod,password)){
+                            FormsAuthentication.SetAuthCookie(storedUserName,true);
+                            Response.Redirect("~/webcomicx/admin/webcomic-settings?next=next");
+
+
+                        }
+                    }
+                }
+
+            }
+                    
+        <h2>@Page.Title</h2>                       
+        <div>
+            <form method="post">
+            @Html.ValidationSummary("Account creation was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null)
+
+                <fieldset>
+                    <label>Pen Name <span class="sub-text">(The Name you'll go by when publishing your comics)</span></label>
+                    <input type="text" name="pen" value="@penName">
+                    @Html.ValidationMessage("pen")
+                    <label>User Name</label>
+                    <input type="text" name="user" value="@userName">
+                    @Html.ValidationMessage("user")
+                    <label>Email</label>
+                    <input type="email" name="email" value="@email">
+                    @Html.ValidationMessage("email")
+                    <label>Password</label>
+                    <input type="password" name="password" value="@password">
+                    @Html.ValidationMessage("password")
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirmPassword">
+                    @Html.ValidationMessage("confirmPassword")
+                    <br>
+                    <input type="submit" value="Next &#155;">
+                </fieldset>
+            </form>
+        </div>
+          }
+          else{
+              Response.Redirect("~/account/signin");
+          }
+}

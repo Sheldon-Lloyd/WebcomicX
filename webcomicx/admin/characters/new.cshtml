@@ -1,0 +1,30 @@
+﻿@{
+    Page.Title = "New Character";
+    var guide = Request["tutorial"].AsBool();
+    var actionUrl = "/webcomicx/admin/controlers/new-character";
+    if(guide){
+        actionUrl = actionUrl+"?tutorial=true";
+    }
+
+}
+
+<div class="content-wrapper">
+<form method="post" enctype="multipart/form-data" action="@actionUrl">
+    <fieldset>
+        <label>Name</label>
+        <input name="name" type="text" value="">
+        <div class="imageUpload">
+            <label for="image">Image</label>
+    		<input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
+		    <div class="image-list">
+            </div>
+        </div>
+        <label>Description</label>
+        <textarea name="bio"></textarea>
+        <div>
+            <a href="/webcomicx/admin/characters">Cancel</a>
+            <button name="number" type="submit" value="">Save</button>
+        </div>
+    </fieldset>
+</form>
+</div>

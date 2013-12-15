@@ -1,0 +1,83 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    Page.Title = "Manage Webpages";
+
+    //load xml file for webcomic settings
+    var load = new Comic();
+    var webpagesXml = load.LoadComic("~/content/xml/content/webpages.xml");
+
+}
+        <h2 class="content-wrapper">Webpages <a class="button float-right" href="/webcomicx/admin/new-webpage">Add new webpage</a><a class="button float-right" onclick="$('#link-submit').show()">Add website link</a> </h2>
+<div class="clear-fix"></div>
+<div  id="link-submit" class="pop-up is-hidden">
+                <section class="container"
+                    <form method="post" action="/webcomicx/admin/controlers/webpage-link">
+                        <h3>Add Link</h3>
+                        <hr>
+                        <fieldset>
+                            <label>Website Title</label>
+                            <input type="text" name="title">
+                            <label>Website URL</label>
+                            <input type="url" value="" name="url">
+                            <a onclick="$('#link-submit').hide();$(this).closest('form').trigger('reset')">Cancel</a> <button type="submit">Add Link</button>
+                        </fieldset>
+                    </form>
+                </section>
+            </div>
+        <div class="content-wrapper">            
+            <ul class="grid item-list">
+                <li>
+                    <h5><a href="/webcomicx/admin/about">About Comic</a></h5>  
+                    Give information about the website, story and the author of the comic
+                    <div class="options">
+                    <a href="/webcomicx/admin/about" class="float-left">Edit</a> <a class="float-right" href="/comic/about">View</a>
+                    </div>
+                </li>
+                <li>
+                    <h5><a href="/webcomicx/admin/characters">Character Profiles</a></h5>
+                    Let readers know more about major characters in the comic
+                    <div class="options">
+                    <a href="/webcomicx/admin/characters" class="float-left">Edit</a>  <a href="/characters" class="float-right">View</a>
+                    </div>
+                </li>
+            @foreach(var page in webpagesXml.Descendants("Page")){//display webpages        
+            var editLink =  "/webcomicx/admin/edit-webpage/"+page.Element("Id").Value;
+                <li class="item">
+    @if(page.Element("External").Value=="True"){
+        editLink = "javascript:;";
+<div  id="link-submit" class="pop-up is-hidden">
+                <div id="title">
+                    <h2>Add Link</h2>
+                    <a onclick="popup(this)" id="close">&times;</a>
+                    <div class="clear-fix"></div>
+                </div>
+                <div id="box">
+                    <form method="post" action="/webcomicx/admin/controlers/edit-link" >
+                        <fieldset>
+                            <label>Website Title</label>
+                            <input type="text" name="title" value="@page.Element("Title").Value">
+                            <label>Website URL</label>
+                            <input type="url" value="@page.Element("PermaLink").Value" name="url">
+                            <a onclick="popup(this);$(this).closest('form').trigger('reset')">Cancel</a> <button name="id" value="@page.Element("Id").Value" type="submit">Save</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        }
+                    <h5><a href="@editLink" onclick="popup(this)">@page.Element("Title").Value</a></h5>
+                    <div class="options">
+                    <a href="@editLink" onclick="popup(this)" class="float-left">Edit</a>  <a href="@load.WebpageUrl(page.Element("Id").Value)" class="float-right">View</a>
+                    | <a  onclick="deletePrompt(this)">Delete</a> |
+                    </div>
+                    <form class="delete" style="display: none" method="post" action="/webcomicx/admin/controlers/delete-webpage">
+                        <div>
+                            <h5>Delete this Page?</h5>
+                            <a onclick="deletePrompt(this)">Cancel</a>
+                            <button name="pageId" value="@page.Element("Id").Value">Delete</button>
+                        </div>
+                    </form>
+                </li>
+            }
+            </ul>
+        </div>

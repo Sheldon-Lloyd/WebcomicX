@@ -1,0 +1,31 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+	    string filename = "/content/xml/content/webpages.xml";
+        var load = new Comic();
+        var webpageXml = load.LoadComic(filename);
+        var pageId = Request["pageId"];
+        var webpage = (from xml in webpageXml.Descendants("Page")
+            where xml.Element("Id").Value==pageId
+            select xml).FirstOrDefault();
+        
+        webpage.Remove();
+        
+        webpageXml.Save(Server.MapPath(filename));
+
+        Response.Redirect("~/webcomicx/admin/manage-webpages/");
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        
+    </body>
+</html>

@@ -1,0 +1,19 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        //set variables
+        var settting = Request["setting"];
+        var filename = "/App_Data/blog-settings.xml";
+        
+        //load xml
+        var load= new Comic();
+        var blogSettings = load.LoadComic(filename);
+        
+        //change blog type and save the xml
+        blogSettings.Descendants("Type").ElementAt(0).Value=settting;
+        blogSettings.Save(Server.MapPath(filename));
+
+        Response.Redirect("~/webcomicx/admin/blog");
+    }
+}

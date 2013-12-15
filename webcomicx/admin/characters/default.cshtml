@@ -1,0 +1,75 @@
+﻿@{
+    Page.Title = "Manage Characters";
+
+    //load xml file for characters xml
+    var load = new Comic();
+    var characterXml = load.LoadComic("~/content/xml/content/characters.xml");
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+
+    //intialize variables
+    var guide = Request["tutorial"].AsBool();
+    int characterNo = 0;
+    bool include = settings.Descendants("CharactersPage").ElementAt(0).Value.AsBool();
+    var checkStyle = "is-checked";
+    var tutorial = "";
+    if(!include){
+        checkStyle = "is-unchecked";
+    }
+    if(guide){
+        tutorial = "?tutorial=true";
+    }
+
+}
+<h2 >Character Profiles   
+    <span class="float-right">
+        <a class="button" href="/webcomicx/admin/characters/new/@tutorial">Add character</a><a class="button" target="_blank" href="/comic/characters">View characters page</a><input onchange="includeCharacters()" type="checkbox" checked="@include" id="characters" name="characters" value="True" style="display: none"><label class="button-switch button @checkStyle" onclick="checkButton();" for="characters">Include Characters Page</label>
+    </span>
+ </h2>
+<div class="clear-fix"></div>
+@if(guide){
+    <aside class="message-guide">
+        <h3>Welcome to the character profile page manager</h3>
+        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+        <p>Here you can:</p>
+        <ol>
+            <li>Add new characters</li>
+            <li>Sort the characters in the order you wish for them to appear in the character profile page</li>
+            <li>Edit characters currently in your character page or delete characters you no longer want in your characters page</li>
+            <li>View how your characters page currently looks</li>
+            <li>When you are ready for the world to see your characters page checkmark the "Include Characters Page" button, it automatically be included</li>
+        </ol>
+        <p>When you're ready <a href="/webcomicx/admin/manage-comics?tutorial=true">post your first comic</a> or <a href="/webcomicx/admin/blog?tutorial=true">setup your blog</a></p>
+    </aside>
+}
+<div class="content-wrapper">
+<ul class="item-list" id="sortable">
+@foreach(var character in characterXml.Descendants("Profile")){//display characters
+    
+    <li id="@character.Element("Number").Value" class="ui-state-default">
+        <form class="sort" action="/webcomicx/admin/controlers/character-position" method="post">
+            <div>
+                <button type="submit" name="newPosition" value="0">&#9650;</button>
+                <input type="hidden" name="oldPosition" value="@characterNo">
+            </div>
+        </form>
+        <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial" class="image-box" style="margin-left:80px;background-image: url('/content/uploads/characters/@character.Element("Image").Value');background-size: contain;background-position: center;background-repeat: no-repeat;">
+        </a>
+        <div>
+            <h4><a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial">@character.Element("Name").Value</a></h4>
+            <div class="options">
+                <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial">Edit</a> | <a onclick="deletePrompt(this)">Delete</a>
+            </div>
+            
+        </div>
+                <form id="deleteCharacter" class="delete" method="post" action="/webcomicx/admin/controlers/delete-character/@tutorial">
+                    <div>
+                        <h5>Delete This Character?</h5>
+                        <a onclick="deletePrompt(this)">Cancel</a>
+                        <button type="submit" value="@characterNo" name="characterNode">Delete</button>
+                    </div>
+                </form>
+    </li>
+    characterNo++;
+}
+</ul>
+</div>

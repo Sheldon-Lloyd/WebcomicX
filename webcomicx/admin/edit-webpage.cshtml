@@ -1,0 +1,79 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    Page.Title = "Edit Webpage";
+
+	// set the name of the file
+	string filename = "/content/xml/content/webpages.xml";
+    var load = new Comic();
+    var webpageXml = load.LoadComic(filename);
+    var pageId = UrlData[0];
+    var updated = Request["updated"];
+
+    var webpage = (from xml in webpageXml.Descendants("Page")
+            where xml.Element("Id").Value==pageId
+            select xml).FirstOrDefault();
+    bool include = webpage.Element("Include").Value.AsBool();
+    var checkStyle = "is-checked";
+    if(!include){
+        checkStyle = "is-unchecked";
+    }
+
+    if(IsPost){
+        var title = Request["title"];
+        var content = Request.Unvalidated("content");
+        var description = Request.Unvalidated("description");
+        include = Request["include"].AsBool();
+
+
+        string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+        var url = System.Text.RegularExpressions.Regex.Replace(title.ToLower(),pattern, "-");
+
+        webpage.Element("PermaLink").Value = url;
+        webpage.Element("Content").Value=content;
+        webpage.Element("Description").Value=description;
+        webpage.Element("Include").Value=include.ToString();
+        webpage.Element("Title").Value=title;
+    webpageXml.Save(Server.MapPath(filename));
+
+    Response.Redirect("~/webcomicx/admin/edit-webpage/"+pageId+"?updated=updated");
+
+        }
+}
+@if(updated=="updated"){
+<h3 class="prompt">Changes have been saved <a onclick="closePrompt()">&times;</a></h3>
+}
+<form method="post" action="">
+
+<h2 class="float-left">Edit Webpage </h2>
+<section class="float-right">
+<a href="/webcomicx/admin/manage-webpages" class="button">&laquo; Back to webpage manager</a><a href="/p/@pageId/@webpage.Element("PermaLink").Value" target="_blank" class="button">View webpage</a><input type="checkbox" checked="@include" id="include" name="include" value="True" style="display: none"><label class="button-switch button @checkStyle" onclick="checkButton()" for="include" style="display: initial">Include Page</label>
+</section>
+    <div class="clear-fix"></div>
+    <fieldset>
+        <input style="max-width: initial" placeholder="Page Title" name="title" type="text" value="@webpage.Element("Title").Value">
+
+	<textarea class="content" name="content" style="height: 400px">@webpage.Element("Content").Value</textarea>
+        <label>Description</label>
+	<textarea name="description" style="min-height: 100px">@webpage.Element("Description").Value</textarea>
+	<br />
+    </fieldset>
+    <br><br>
+    <button type="submit">Update</button>
+</form>
+@section header{
+<script type="text/javascript" src="/webcomicx/admin/scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+    tinymce.init({
+        selector: "textarea.content",
+        plugins: [
+            "advlist autolink lists link image charmap anchor",
+            "searchreplace visualblocks code fullscreen",
+        ],
+        file_browser_callback: '',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+}

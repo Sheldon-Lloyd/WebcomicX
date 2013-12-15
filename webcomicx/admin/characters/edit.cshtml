@@ -1,0 +1,41 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    Page.Title = "Edit Character";
+
+    var characterNumber = UrlData[0].AsInt();
+    var updated = Request["updated"];
+
+    var load = new Comic();
+    var characterXml = load.LoadComic("~/content/xml/content/characters.xml");
+        var character = (from xml in characterXml.Descendants("Profile")
+               where xml.Element("Number").Value == characterNumber.ToString()
+               select xml).FirstOrDefault();
+}
+@if(updated=="updated"){
+<h3 class="prompt">Changes have been saved <a onclick="closePrompt()">&times;</a></h3>
+}
+<div class="content-wrapper">
+<form method="post" enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-character">
+    <fieldset>
+        <label>Name</label>
+        <input name="name" type="text" value="@character.Element("Name").Value">
+        <div class="imageUpload">
+            <label for="image">Image</label>
+    		<input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
+		    <div class="image-list">
+                @if(character.Element("Image").Value!=""){
+                <img src="/content/uploads/characters/@character.Element("Image").Value" alt="@character.Element("Name").Value" style="max-width: 700px">
+}
+            </div>
+        </div>
+        <label>Description</label>
+        <textarea name="bio">@character.Element("Bio").Value</textarea>
+        <div>
+            <a href="/webcomicx/admin/characters">Cancel</a>
+            <button name="number" type="submit" value="@characterNumber">Save</button>
+        </div>
+    </fieldset>
+</form>
+</div>

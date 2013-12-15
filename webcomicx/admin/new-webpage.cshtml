@@ -1,0 +1,87 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    Page.Title ="New Webpage";
+
+	// set the name of the file
+	string filename = "/content/xml/content/webpages.xml";
+    var load = new Comic();
+    var webpageXml = load.LoadComic(filename);
+    if(IsPost){
+        var date = DateTime.UtcNow;
+        int pageId = 1;
+        var include = true;
+        var title = Request["title"];
+        var content = Request.Unvalidated("content");
+        var description = Request.Unvalidated("description");
+        include = Request["include"].AsBool();
+
+        var webpages = (from xml in webpageXml.Descendants("Page")
+        orderby (string) xml.Element("Id") descending
+            select xml).FirstOrDefault();
+        
+        string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+        var url = System.Text.RegularExpressions.Regex.Replace(title.ToLower(),pattern, "-");
+
+        try{
+        pageId = webpages.Element("Id").Value.AsInt()+1;
+        }
+        catch{
+        
+        }
+              
+                    var newElement =  new XElement(
+                        new XElement("Page",
+                            new XElement("Title", title),
+                            new XElement("Description", description),
+                            new XElement("Content", content),
+                            new XElement("PermaLink", url),
+                            new XElement("Date", date),
+                            new XElement("Id", pageId),
+                            new XElement("External", "False"),
+                            new XElement("Include", include.ToString())
+                        )
+                    );
+
+                    webpageXml.Element("Webpages").Add(newElement);
+
+
+                    webpageXml.Save(Server.MapPath(filename));
+
+                    Response.Redirect("~/webcomicx/admin/edit-webpage/"+pageId+"?updated=updated");
+
+        }
+}
+<div></div>
+<h2 class="float-left">New Page</h2>
+<section class="float-right">
+<a href="/webcomicx/admin/manage-webpages" class="button">&laquo; Back to webpage manager</a><input type="checkbox" checked="checked" id="include" name="include" value="True" style="display: none"><label class="button-switch button is-checked" onclick="checkButton()" for="include" style="display: initial">Include Page</label>
+</section>
+<div class="clear-fix"></div>
+<form method="post" action="">
+    <fieldset>
+        <input style="max-width: initial" placeholder="Page Title" name="title" type="text" value="">
+
+	    <textarea class="content" name="content" style="height: 400px;"></textarea>
+        <label>Description</label>
+	<textarea name="description" style="min-height: 100px"></textarea>
+	<br />
+    </fieldset>
+    <br>
+    <button type="submit">Save</button>
+</form>
+@section header{
+<script type="text/javascript" src="/webcomicx/admin/scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+    tinymce.init({
+        selector: "textarea.content",
+        plugins: [
+            "advlist autolink lists link image charmap anchor",
+            "searchreplace visualblocks code fullscreen",
+        ],
+        file_browser_callback: '',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+}

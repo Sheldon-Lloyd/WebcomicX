@@ -1,0 +1,87 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    Page.Title = "Edit Blog Post";
+
+	// set the name of the file
+	string filename = "/content/xml/content/blog.xml";
+    var load = new Comic();
+    var blog = load.LoadComic(filename);
+    var postId = UrlData[0];
+    var updated = Request["updated"];
+    var guide = Request["tutorial"].AsBool();
+    var returnUrl="~/webcomicx/admin/blog/edit-post/"+postId+"?updated=updated";
+    var tutorial = "";
+    if(guide){
+        returnUrl = returnUrl+"&tutorial=true";
+        tutorial = "?tutorial=true";
+    }
+
+    var post = (from xml in blog.Descendants("Post")
+            where xml.Element("Id").Value==postId
+            select xml).FirstOrDefault();
+    var status = post.Element("Status").Value;
+
+    if(IsPost){
+        var title = Request["title"];
+        var content = Request.Unvalidated("content");
+        var description = Request.Unvalidated("description");
+        status = Request["include"];
+
+        string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+        var url = System.Text.RegularExpressions.Regex.Replace(title.ToLower(),pattern, "-");
+
+        post.Element("PermaLink").Value = url;
+        post.Element("Content").Value=content;
+        post.Element("Description").Value=description;
+        post.Element("Status").Value=status;
+        post.Element("Title").Value=title;
+        blog.Save(Server.MapPath(filename));
+
+        Response.Redirect(returnUrl);
+
+        }
+}
+@if(updated=="updated"){
+<div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+}
+<form method="post" action="">
+
+<h2>Edit Post 
+    <span class="float-right" style="margin: 4px 6px">
+    <input @if(status=="draft"){ <text>checked="checked"</text>} type="radio" id="draft" name="include" class="checkbox" value="draft" style="display: none">
+    <label  onclick="checkButton()"  id="status" for="draft" class="button check @if(status=="draft"){<text>is-checked</text>}else{<text>is-unchecked</text>}" style="display: initial">Draft</label><input type="radio" @if(status=="publish"){<text>checked="checked"</text>} id="publish" name="include" value="publish" style="display: none"><label  onclick="checkButton()"  id="status" for="publish"  class="check button @if(status=="publish"){<text>is-checked</text>}else{<text>is-unchecked</text>}" style="display: initial">Publish</label>
+    </span>
+
+    <a class="button float-right" href="/blog/post/@postId/@post.Element("PermaLink").Value" target="_blank">View Post</a><a class="button float-right" href="/webcomicx/admin/blog/@tutorial"> &laquo; Back to Blog Manager</a>
+</h2>
+<div class="clear-fix"></div>
+    <fieldset>
+        <input style="max-width: initial" placeholder="Page Title" name="title" type="text" value="@post.Element("Title").Value">
+
+	<textarea class="content" name="content" style="height: 400px">@post.Element("Content").Value</textarea>
+        <label>Description</label>
+	<textarea name="description" style="min-height: 100px">@post.Element("Description").Value</textarea>
+	<br />
+    </fieldset>
+    
+    <br><br>
+    <button type="submit">Update</button>
+</form>
+@section header{
+    <script type="text/javascript" src="/webcomicx/admin/scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+        document.onload=
+    tinymce.init({
+        selector: "textarea.content",
+        plugins: [
+            "advlist autolink lists link image charmap anchor",
+            "searchreplace visualblocks code fullscreen",
+        ],
+        file_browser_callback: '',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+}

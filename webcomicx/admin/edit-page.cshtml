@@ -1,0 +1,102 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    Page.Title = "Edit Page";
+
+    var comicNo= UrlData[0].AsInt();
+    var pageNo = UrlData[1];
+    int pageNode = Convert.ToInt32(pageNo)-1;
+    var guide = Request["tutorial"].AsBool();
+    var updated = Request["updated"];
+
+    var returnUrl = "/webcomicx/admin/edit-page/"+comicNo+"/"+pageNo+"?updated=updated";
+    var tutorial = "";
+    if(guide){
+        returnUrl = returnUrl+"&tutorial=true";
+        tutorial = "?tutorial=true";
+    }
+
+    string comicfilename = "/content/xml/comics/comic-"+comicNo+".xml";
+    var loadXml= new Comic();
+    var page= loadXml.LoadComic(comicfilename);
+    var comics= loadXml.LoadComic("/content/xml/comics/comic-list.xml");
+    var account = loadXml.LoadComic("/App_Data/account.xml");
+    var user = (from xml in account.Descendants("User")
+                where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
+                select xml).FirstOrDefault();
+
+
+    if(IsPost){
+        var author = user.Element("PenName").Value;
+        var description = Request.Unvalidated("description");
+        var content = Request.Unvalidated("content");
+        var imagePath = "";
+        var newFileName = "";
+        var imageThumbPath = "";
+        WebImage image = null;
+        int i = 0;
+        image = WebImage.GetImageFromRequest();
+        if (image != null){
+            newFileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var imagefilename = newFileName;
+            while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/pages/"+newFileName+extension))){
+                i++;
+            
+                newFileName = imagefilename+"-"+i;
+
+            }
+            newFileName=newFileName+extension;
+            imagePath = @"pages/"+newFileName;
+
+            //get height of the image
+            var imgageHeight = image.Height;
+            
+            image.Resize(width: 800, height:imgageHeight, preserveAspectRatio: true,preventEnlarge:true);
+            image.Save(@"~/content/uploads/" + imagePath);
+            imageThumbPath = @"pages/thumbnail/"+newFileName;
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+            image.Save(@"~/content/uploads/" + imageThumbPath);
+            page.Descendants("Page").Descendants("Image").ElementAt(pageNode).Value=newFileName;
+
+        }
+        //page.Descendants("Page").Descendants("Author").ElementAt(pageNode).Value=attribute;
+        page.Descendants("Page").Descendants("Description").ElementAt(pageNode).Value=description;
+        page.Descendants("Page").Descendants("Content").ElementAt(pageNode).Value=content;
+        page.Save(Server.MapPath(comicfilename));
+        Response.Redirect(returnUrl);
+    }
+}
+
+@if(updated=="updated"){
+<div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+}
+<div class="content-wrapper">
+        <h2>
+            Edit Page @pageNo For @comics.Descendants("Comic").Descendants("Title").ElementAt(comicNo-1).Value
+            <a class="button float-right" href="/comic/@comicNo/#!/page/@pageNo" target="_blank">View Page</a><a class="button float-right" href="/webcomicx/admin/edit-comic/@comicNo/@tutorial"> &laquo; Back to Comic #@comicNo</a>
+        </h2>
+        <form method="post" enctype="multipart/form-data">
+            <fieldset>
+		        <div class="imageUpload">
+                <label for="image">Image</label>
+    		            <input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
+		            <div class="image-list">
+                        @if(page.Descendants("Page").Descendants("Image").ElementAt(pageNode).Value!=""){
+                        <img src="/content/uploads/pages/@page.Descendants("Page").Descendants("Image").ElementAt(pageNode).Value" alt="Page @pageNo">
+                            }
+                    </div>
+    	        </div>
+                <label>Other Content</label>
+                <textarea name="content">@page.Descendants("Page").Descendants("Content").ElementAt(pageNode).Value</textarea>
+                <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters )</span></label>
+                <textarea name="description">@page.Descendants("Page").Descendants("Description").ElementAt(pageNode).Value</textarea>
+
+                <div>
+                    <a href="/webcomicx/admin/edit-comic/@comicNo">Cancel</a>                
+                    <button type="submit">Update</button>
+                </div>
+            </fieldset>
+        </form>
+</div>

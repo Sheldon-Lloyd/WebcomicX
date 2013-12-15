@@ -1,0 +1,71 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+	// set the name of the file
+	string filename = "/content/xml/content/characters.xml";
+    int imageCount = 0;
+    int characterNumber = 1;
+    var load = new Comic();
+    var characterXml = load.LoadComic(filename);
+    var characters = (from xml in characterXml.Descendants("Profile")
+    orderby (string) xml.Element("Number") descending
+        select xml).FirstOrDefault();
+    if(characters!=null){
+        characterNumber = characters.Element("Number").Value.AsInt()+1;
+    }
+    if(IsPost){
+        var name = Request["name"];
+        var bio = Request.Unvalidated("bio");
+        var guide = Request["tutorial"].AsBool();
+
+        var returnUrl = "~/webcomicx/admin/characters";
+
+        if(guide){
+            returnUrl = returnUrl+"?tutorial=true";
+        }
+
+        //description = description.Replace("\n", "<br>");
+        var imagePath = "";
+        var newFileName = "";
+        var imageThumbPath = "";
+        WebImage image = null;
+              
+        image = WebImage.GetImageFromRequest();
+        if (image != null){
+            int i = 0;
+            newFileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var imagefilename = newFileName;
+            while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/characters/"+newFileName+extension))){
+                i++;
+            
+                newFileName = imagefilename+"-"+i;
+
+            }
+            newFileName = newFileName+extension;
+            imagePath = @"characters/"+newFileName;
+            
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+            image.Save(@"~/content/uploads/" + imagePath);
+
+            }
+            
+                    var newElement =  new XElement(
+                        new XElement("Profile",
+                            new XElement("Name", name),
+                            new XElement("Bio", bio),
+                            new XElement("Image", newFileName),
+                            new XElement("Number", characterNumber)
+                        )
+                    );
+
+                    characterXml.Element("Characters").Add(newElement);
+
+
+                    characterXml.Save(Server.MapPath(filename));
+
+                    Response.Redirect(returnUrl);
+
+        }
+}

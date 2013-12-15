@@ -1,0 +1,46 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        var date = DateTime.UtcNow;
+        int pageId = 1;
+        var include = true;
+        var title = Request["title"];
+        var url = Request["url"];
+
+	// set the name of the file
+	string filename = "/content/xml/content/webpages.xml";
+    var load = new Comic();
+    var webpageXml = load.LoadComic(filename);
+
+
+        var webpages = (from xml in webpageXml.Descendants("Page")
+        orderby (string) xml.Element("Id") descending
+            select xml).FirstOrDefault();
+        
+        try{
+        pageId = webpages.Element("Id").Value.AsInt()+1;
+        }
+        catch{
+        
+        }
+              
+                    var newElement =  new XElement(
+                        new XElement("Page",
+                            new XElement("Title", title),
+                            new XElement("PermaLink", url),
+                            new XElement("Id", pageId),
+                            new XElement("External", "True"),
+                            new XElement("Include", "True")
+                        )
+                    );
+
+                    webpageXml.Element("Webpages").Add(newElement);
+
+
+                    webpageXml.Save(Server.MapPath(filename));
+
+                    Response.Redirect("~/webcomicx/admin/manage-webpages");
+
+        }
+}

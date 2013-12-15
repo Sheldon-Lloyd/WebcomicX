@@ -1,0 +1,70 @@
+﻿@{
+        Page.Title = "Sign in";
+
+    var userName = "";
+    var password = "";
+    var returnUrl = Request.QueryString["redirect"];
+    if (returnUrl.IsEmpty()) {
+        // Some external login providers always require a return URL value
+        returnUrl = Href("~/webcomicx/admin");
+    }
+
+    Validation.RequireField("user", "You must specify an email address.");
+    Validation.RequireField("password", "You must specify a password.");
+    Validation.Add("password",
+        Validator.StringLength(
+            maxLength: Int32.MaxValue,
+            minLength: 6,
+            errorMessage: "Password must be at least 6 characters"));
+
+
+
+        string accountfilename = "/App_Data/account.xml";
+        var load = new Comic();
+
+        var account = load.LoadComic(accountfilename);
+
+    if(IsPost){
+
+        userName = Request["user"].ToLower();
+        password = Request["password"];
+
+        if(Validation.IsValid()){
+            var user = (from xml2 in account.Descendants("User")
+                   where xml2.Element("UserName").Value.ToLower() == userName
+                   select xml2).FirstOrDefault();
+            if(user!=null){
+                var storedPasswod = user.Element("Password").Value;
+                var storedUserName = user.Element("UserName").Value;
+
+                if(Crypto.VerifyHashedPassword(storedPasswod,password)){
+                    FormsAuthentication.SetAuthCookie(storedUserName,true);
+                    Response.Redirect(returnUrl);
+
+
+                }
+                else {
+                    ModelState.AddFormError("The user name or password provided is incorrect.");
+                }
+            }
+            else {
+                    ModelState.AddFormError("The user name or password provided is inc orrect.");
+            }
+
+        }
+    }
+}
+<h2>@Page.Title</h2>
+<form method="post">
+@Html.ValidationSummary("Log in was unsuccessful. Please correct the errors and try again.", excludeFieldErrors: true, htmlAttributes: null)
+    <fieldset>
+        <label>User Name</label>
+        <input autofocus="true" type="text" name="user" value="@userName">
+        @Html.ValidationMessage("user")
+        <label>Password</label>
+        <input type="password" name="password">
+        @Html.ValidationMessage("password")
+        <br>
+        <input type="submit" value="Sign in">
+    </fieldset>
+</form>

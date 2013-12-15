@@ -1,0 +1,183 @@
+﻿@{    
+    Page.Title = "Customize";
+    var guide = Request["tutorial"].AsBool();
+    //load xml file for comics and collection
+    var load = new Comic();
+    var widgets = load.LoadComic("/App_Data/widgets.xml");
+
+    //get side widgets
+        var sideWigets = (from xml in widgets.Descendants("Container")
+            where xml.Element("Position").Value == "side"
+            orderby (string) xml.Element("Index") ascending
+            select xml);
+    //get bottom widgets
+        var bottomWigets = (from xml in widgets.Descendants("Container")
+            where xml.Element("Position").Value == "bottom"
+            orderby (string) xml.Element("Index") ascending
+            select xml);
+    //get top widgets
+        var topWigets = (from xml in widgets.Descendants("Container")
+            where xml.Element("Position").Value == "top"
+            orderby (string) xml.Element("Index") ascending
+            select xml);
+
+}
+<h4 class="prompt is-hidden"></h4>
+
+<div>
+    <h2 class="content-wrapper">Webcomic Widgets and Layout <button class="button float-right" onclick="saveLayout()">Save Layout Arrangement</button></h2>
+    
+    <div class="clear-fix"></div>
+    <h4>Go to <a href="/webcomicx/admin/customize/design">Template Designer</a></h4>
+</div>
+@if(guide){
+    <aside class="message-guide">
+        <h3>Welcome to the widgets and layout Customizer</h3>
+        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+        <p>Here you can:</p>
+        <ol>
+            <li>Manage and add a Comment Plugin if you wish to have comments for your site</li>
+            <li>Add your own Html and JavaScript for your site</li>
+            <li>Move and arrange them as you see fit</li>
+            <li>When you are happy with the arrangment don't forget to save it with the button above</li>
+        </ol>
+        <p>When you're done here don't forget to <a href="/webcomicx/admin/about?tutorial=true">add your About Page</a></p>
+
+    </aside>
+}
+<div class="float-left content-wrapper">
+    <section>
+        <div class="non-widget">Webcomic</div>
+    <ul class="widget" data-position="top">
+        <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
+        @foreach(var widget in topWigets){
+        <li class="item ui-state-default" id="@widget.Element("Id").Value" >
+            <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
+
+                <input type="hidden" name="position" value="@widget.Element("Position").Value">
+                <input type="hidden" name="index" value="@widget.Element("Index").Value 1">
+                <input type="hidden" name="id" value="@widget.Element("Id").Value">
+            </form>
+            <form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="@widget.Element("Id").Value" name="id">&times;</button></form>
+            <a id="editWidget" onclick="popup(this)">Edit @widget.Element("Name").Value widget</a>
+            <div class="pop-up is-hidden">
+                <div id="title">
+                    <h2>Edit Widget</h2>
+                    <a onclick="popup(this)" id="close">&times;</a>
+                    <div class="clear-fix"></div>
+                </div>
+                <div id ="box">                    
+                    <form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled">
+                        <label>Widget Name</label>
+                        <input type="text" name="name" value="@widget.Element("Name").Value">
+                        <label>Html/JavaScript</label>
+                        <textarea name="code">@widget.Element("Code").Value</textarea>
+                        <br>
+                        <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
+                        <button type="submit" onclick="saveWidget(this)" name="id" value="@widget.Element("Id").Value">Save</button>
+                    </form>
+                </div>
+            </div>
+
+        </li>
+              }
+    </ul>
+</section>
+    <section style="float: left;width: 60%">
+        <div class="non-widget">Content</div>
+        <div class="non-widget item">
+            Comments <a class="edit" onclick="popup(this)">Edit</a>
+            <div class="pop-up is-hidden">
+                <div id="title">
+                    <h2>Edit Comment Plugin</h2>
+                    <a onclick="popup(this)" id="close">&times;</a>
+                    <div class="clear-fix"></div>
+                </div>
+                <div id ="box">                    
+                    <form method="post" action="/webcomicx/admin/controlers/comment-plugin-selection">
+                        @RenderPage("/webcomicx/views/comment-plugins.cshtml")
+                        <br>
+                        <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
+                        <button onclick="saveComments(this)">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section style="float: right;width: 40%">
+        <ul class="widget" data-position="side">
+        <li class="ui-state-default  ui-state-disabled non-widget">Blog</li>
+        <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
+        @foreach(var widget in sideWigets){
+        <li class="item ui-state-default" id="@widget.Element("Id").Value">
+            <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
+                <input type="hidden" name="position" value="@widget.Element("Position").Value">
+                <input type="hidden" name="index" value="@widget.Element("Index").Value 4">
+                <input type="hidden" name="id" value="@widget.Element("Id").Value">
+            </form>
+            <form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="@widget.Element("Id").Value" name="id">&times;</button></form>
+            <a id="editWidget" onclick="popup(this)">Edit @widget.Element("Name").Value widget</a>
+            <div class="pop-up is-hidden">
+                <div id="title">
+                    <h2>Edit Widget</h2>
+                    <a onclick="popup(this)" id="close">&times;</a>
+                    <div class="clear-fix"></div>
+                </div>
+                <div id ="box">                    
+                    <form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled">
+                        <label>Widget Name</label>
+                        <input type="text" name="name" value="@widget.Element("Name").Value">
+                        <label>Html/JavaScript</label>
+                        <textarea name="code">@widget.Element("Code").Value</textarea>
+                        <br>
+                        <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
+                        <button onclick="saveWidget(this)" type="submit" name="id" value="@widget.Element("Id").Value">Save</button>
+                    </form>
+                </div>
+            </div>
+
+        </li>
+              }
+    </ul>
+    </section>
+    <section  style="clear: both">
+    <ul class="widget" data-position="bottom" >
+        <li class="widget-placeholder ui-state-default ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
+        @foreach(var widget in bottomWigets){
+        <li class="item ui-state-default" id="@widget.Element("Id").Value">
+            <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
+                <input type="hidden" name="position" value="@widget.Element("Position").Value">
+                <input type="hidden" name="index" value="@widget.Element("Index").Value 5">
+                <input type="hidden" name="id" value="@widget.Element("Id").Value">
+            </form>
+            <form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="@widget.Element("Id").Value" name="id">&times;</button></form>
+            <a id="editWidget" onclick="popup(this)">Edit @widget.Element("Name").Value widget</a>
+            <div class="pop-up is-hidden">
+                <div id="title">
+                    <h2>Edit Widget</h2>
+                    <a onclick="popup(this)" id="close">&times;</a>
+                    <div class="clear-fix"></div>
+                </div>
+                <div id ="box">                    
+                    <form action="/webcomicx/admin/controlers/save-widget" method="get" class="ui-state-disabled">
+                        <label>Widget Name</label>
+                        <input type="text" name="name" value="@widget.Element("Name").Value">
+                        <label>Html/JavaScript</label>
+                        <textarea name="code">@widget.Element("Code").Value</textarea>
+                        <br>
+                        <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
+                        <button onclick="saveWidget(this)" type="submit" name="id" value="@widget.Element("Id").Value">Save</button>
+                    </form>
+                </div>
+            </div>
+
+        </li>
+              }
+    </ul>
+        
+        <div class="non-widget">Footer</div>
+    </section>
+</div>
+@section scripts{
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}

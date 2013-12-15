@@ -1,0 +1,142 @@
+﻿@using System.Xml.Linq
+@{
+    // Set the layout page and page title
+    Layout = "~/webcomicx/admin/layouts/_AdminLayout.cshtml";
+    Page.Title = "Change Password";
+
+    bool isPasswordValid = true;
+    bool isSuccess = false;
+    var errorMessage = "";
+    var currentPasswordError = "";
+    var newPasswordError = "";
+    var confirmPasswordError = "";
+    var updated = Request["updated"];
+    
+    var accountfilename = "/App_Data/account.xml";
+    var load = new Comic();
+    var account = load.LoadComic(accountfilename);
+
+    var user = (from xml in account.Descendants("User")
+                where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
+                   select xml).FirstOrDefault();
+    
+    var penName = user.Element("PenName").Value;
+    var profilePage = user.Element("ProfilePage").Value;
+    var email = user.Element("Email").Value;
+
+    Validation.RequireField("email", "You must specify an email address.");
+    Validation.RequireField("pen", "You must specify a pen name.");
+    Validation.Add("profile",
+    Validator.Url("Proflie Url must start with http:// or https://")
+    );
+
+    if (IsPost) {
+        var currentPassword = Request["currentPassword"];
+        var newPassword = Request["newPassword"];
+        var confirmPassword = Request["confirmPassword"];
+        email = Request["email"];
+        penName = Request["pen"];
+        profilePage = Request["profile"];
+
+        <span>post up</span>
+        if (Validation.IsValid()) {
+            user.Element("PenName").Value = penName;
+            user.Element("ProfilePage").Value = profilePage;
+            user.Element("Email").Value = email;
+            isSuccess = true;
+        if (!currentPassword.IsEmpty() || !newPassword.IsEmpty()) {
+            <span>hello</span>
+            if (currentPassword.IsEmpty()) {
+                currentPasswordError = "Please enter your current password.";
+                isPasswordValid = false;
+            }
+            if (newPassword.IsEmpty()) {
+                newPasswordError = "Please enter a new password.";
+                isPasswordValid = false;
+            }
+            if (confirmPassword.IsEmpty()) {
+                confirmPasswordError = "Please confirm your new password.";
+                isPasswordValid = false;
+            }
+            if (confirmPassword != newPassword) {
+                confirmPasswordError = "The password confirmation does not match the new password.";
+                isPasswordValid = false;
+            }
+
+            if (isPasswordValid) {
+
+                    var hashPassword = Crypto.HashPassword(newPassword);
+                    var storedPasswod = user.Element("Password").Value;
+                    if(Crypto.VerifyHashedPassword(storedPasswod,currentPassword)){
+                        user.Element("Password").Value = hashPassword;
+                        isSuccess = true;
+                    }
+
+
+            }
+            else {
+                errorMessage = "Password change failed. Please correct the errors and try again.";
+                isSuccess = false;
+            }
+        }
+            account.Save(Server.MapPath("~/App_Data/account.xml"));
+            Response.Redirect("~/webcomicx/admin/account?updated=updated");
+        }
+    }
+}
+@if(updated=="updated"){
+<h3 class="prompt">Profile Updated <a onclick="closePrompt()"> &times;</a></h3>
+}
+<h2>Edit User Profile</h2>
+        <form method="post" action="">
+            <fieldset>
+                <p>
+                    Click <a href="@Href("~/Account/ForgotPassword")" title="Forgot password page">here</a> if you've forgotten your password.
+                </p>
+                @if (isSuccess) {
+                    <h4 class="prompt">
+                        Your password has been updated! <a onclick="closePrompt()">×</a>
+                    </h4>
+                }
+                @if (!errorMessage.IsEmpty()) {
+                    <p class="message error">
+                        @errorMessage
+                    </p>
+                }
+                    <label>Pen Name <span class="sub-text">(The name you go by when publishing your comics)</span></label>
+                    <input type="text" name="pen" value="@penName">
+                    @Html.ValidationMessage("pen")
+                    <label>Profile Page Url <span class="sub-text">(Optional: your social media profile page of choice)</span></label>
+                    <input type="url" name="profile" value="@profilePage">
+                    @Html.ValidationMessage("profile")
+                    <label>Email</label>
+                    <input type="email" name="email" value="@email">
+                    @Html.ValidationMessage("email")
+                <ol>
+                    <li class="current-password">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" title="Current password" @if(!currentPasswordError.IsEmpty()){<text>class="error-field"</text>} />
+                        @if (!currentPasswordError.IsEmpty()) {
+                            <label for="currentPassword" class="validation-error">@currentPasswordError</label>
+                        }
+                    </li>
+                    <li class="new-password">
+                        <label for="newPassword">New Password</label> 
+                        <input type="password" id="newPassword" name="newPassword" title="New password" @if(!newPasswordError.IsEmpty()){<text>class="error-field"</text>} />
+                        @if (!newPasswordError.IsEmpty()) {
+                            <label for="newPassword" class="validation-error">@newPasswordError</label>
+                        }
+                    </li>
+                    <li class="confirm-password">
+                        <label for="confirmPassword">Confirm Password</label> 
+                        <input type="password" id="confirmPassword" name="confirmPassword" title="Confirm new password" @if(!confirmPasswordError.IsEmpty()){<text>class="error-field"</text>} />
+                        @if (!confirmPasswordError.IsEmpty()) {
+                            <label for="confirmPassword" class="validation-error">@confirmPasswordError</label>
+                        }
+                    </li>
+                </ol>
+                <p class="form-actions">
+                    <button type="submit" value="Change Password" title="Change password">Save Changes</button>
+                </p>
+            </fieldset>
+        </form>

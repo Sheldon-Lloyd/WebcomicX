@@ -1,0 +1,38 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    var filename = "/content/xml/comics/collections.xml";
+    var load = new Comic();
+    var collections = load.LoadComic(filename);
+    int collectionCount = 0;
+    foreach(var collection in collections.Descendants("Collection")){
+        collectionCount++;
+    }
+    if(IsPost){
+        if (File.Exists(Server.MapPath(filename))){
+            var newElement =  new XElement(
+                new XElement("Collection",
+                    new XElement("Title", "Collection "+(collectionCount+1)),
+                    new XElement("CoverAttribution", ""),
+                    new XElement("Cover", ""),
+                    new XElement("Description", ""),
+                    new XElement("Date", DateTime.UtcNow)
+                )
+            );
+
+            collections.Element("Collections").Add(newElement);
+
+            collections.Save(Server.MapPath(filename));
+            collections = load.LoadComic(filename);
+            <form onsubmit="nameCollection()" id="nameCollection" method="post" action="/webcomicx/admin/controlers/change-collection-name">
+                <input id="collection" onblur="nameCollection()" type="text" value="@collections.Descendants("Collection").Descendants("Title").ElementAt(collectionCount).Value" name="collectionName">
+                <input value="@(collectionCount+1)" name="collectionNo" type="hidden">
+            </form>
+            }
+
+    }
+
+
+}
+

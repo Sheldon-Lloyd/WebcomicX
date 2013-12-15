@@ -1,0 +1,24 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        var pageId = Request["id"];
+        var title = Request["title"];
+        var url = Request["url"];
+
+	    // set the name of the file
+	    string filename = "/content/xml/content/webpages.xml";
+        var load = new Comic();
+        var webpageXml = load.LoadComic(filename);
+        var webpage = (from xml in webpageXml.Descendants("Page")
+                where xml.Element("Id").Value==pageId
+                select xml).FirstOrDefault();
+
+        webpage.Element("PermaLink").Value = url;
+        webpage.Element("Title").Value=title;
+    webpageXml.Save(Server.MapPath(filename));
+
+    Response.Redirect("~/webcomicx/admin/manage-webpages");
+
+        }
+}

@@ -1,0 +1,32 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        //set variables
+        var url = Request["url"];
+        var feed = Request["feed"];
+        var filename = "/App_Data/blog-settings.xml";
+        
+        //load xml
+        var load= new Comic();
+        var blogSettings = load.LoadComic(filename);
+        
+        //change blog type and save the xml
+        blogSettings.Descendants("Url").ElementAt(0).Value=url;
+        blogSettings.Descendants("Feed").ElementAt(0).Value=feed;
+        blogSettings.Save(Server.MapPath(filename));
+
+        Response.Redirect("~/webcomicx/admin/blog");
+
+        <fieldset>
+            <label>External Url</label>
+            <input name="url" type="url" value="@blogSettings.Descendants("Url").ElementAt(0).Value">
+            <label>Rss/Atom feed Url</label>
+            <input name="feed" type="url" value="@blogSettings.Descendants("Feed").ElementAt(0).Value">
+            <br>
+
+            <button>Save</button>
+        </fieldset>
+
+    }
+}

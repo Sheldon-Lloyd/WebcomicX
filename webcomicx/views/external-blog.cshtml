@@ -1,0 +1,90 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@using System.ServiceModel.Syndication
+@{
+    //load xml
+    var load= new Comic();
+    var blogSettings = load.LoadComic("/App_Data/blog-settings.xml");
+        
+    var url = blogSettings.Descendants("Url").ElementAt(0).Value;
+    var feedurl = blogSettings.Descendants("Feed").ElementAt(0).Value;
+    try{
+
+        XmlReader reader = XmlReader.Create(feedurl);
+        SyndicationFeed feed = SyndicationFeed.Load(reader);
+        if(PageData[0]!="General"){
+            if(WebSecurity.IsAuthenticated){
+            var guide = Request["tutorial"].AsBool();
+            var tutorial = "";
+            if(guide){
+                tutorial ="?tutorial=true";
+            }
+
+                <h2><a class="button" href="@url">View Blog</a></h2>
+                <div class="clear-fix"></div>
+                if(guide){
+
+                <aside>
+                    <section class="message-guide">
+                        <h3>Welcome to the blog manager</h3>
+                        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+                        <p>Here you can:</p>
+                        <ol>
+                            <li>Click on the settings and choose to use Webcomicx's built in blog or use the blog from your on site</li>
+                            <li>
+                                If you use the Webcomicx blog you can add new post:
+                                <ol style="list-style-type: lower-alpha">
+                                    <li>add new post</li>
+                                    <li>edit ecisting posts</li>
+                                    <li>delete post you no longer want</li>
+                                </ol>
+                            </li>
+                        </ol>
+                        <p>If you haven't already be sure to <a href="/webcomicx/admin/manage-comics?tutorial=true">post your first comic</a></p>
+
+                    </section>
+                </aside>
+                }
+                <div class="content-wrapper">
+                <ul class="float-left item-list grid">
+                @foreach (SyndicationItem item in feed.Items){
+                    try{
+                    <li style="cursor: initial">
+                        <h5><a href="@item.Links[0].Uri">@item.Title.Text</a></h5>
+                        <p>@item.PublishDate.ToString("MMM dd yyyy")</p>
+                    </li>
+                    }
+                    catch{
+                    <li style="cursor: initial">
+                        <h5>Error!</h5>
+                        <p>Blog's rss feed could not be loaded.</p>
+                    </li>
+                    }
+                }    
+                </ul>
+                </div>
+            }
+        }
+        else if(PageData[0]=="General"){
+            <dl>
+            @foreach (SyndicationItem item in feed.Items.Take(8)){
+                try{
+                <dt><a href="@item.Links[0].Uri">@item.Title.Text</a></dt>
+                <dd><a>@item.PublishDate.ToString("MMM dd yyyy")</a></dd>
+                }
+                catch{
+                <dt><a>Error!</a></dt>
+                <dd><a>Blog could not be loaded.</a></dd>
+                }
+            }    
+            </dl>
+        }
+    }
+    catch{
+        <div class="clear-fix"></div>
+<br>
+                <h1>Error, Blog could not be loaded!</h1>
+
+    }
+   
+}

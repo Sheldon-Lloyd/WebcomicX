@@ -1,0 +1,44 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    string filename = "/content/xml/comics/collections.xml";
+    var loadXml= new Comic();
+    var collections= loadXml.LoadComic(filename);
+
+    int collectionNode =UrlData[0].AsInt();
+    if(IsPost){
+    var imagePath = "";
+    var newFileName = "";
+    var imageThumbPath = "";
+    WebImage image = null;
+    int i =0;
+    image = WebImage.GetImageFromRequest();
+
+        if (image != null){
+            newFileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var imagefilename = newFileName;
+            while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/covers/"+newFileName+extension))){
+                i++;
+            
+                newFileName = imagefilename+"-"+i;
+
+            }
+            
+            var imgageHeight = image.Height;
+            imagePath = @"covers/"+newFileName+extension;
+
+            image.Resize(width: 800, height:imgageHeight, preserveAspectRatio: true,preventEnlarge:true);
+            image.Save(@"~/content/uploads/" + imagePath);
+            imageThumbPath = @"covers/thumbnail/"+newFileName+extension;
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+            collections.Descendants("Collection").Descendants("Cover").ElementAt(collectionNode).Value=newFileName+extension;
+            image.Save(@"~/content/uploads/" + imageThumbPath);
+            collections.Save(Server.MapPath(filename));
+            Response.Write(newFileName+extension);
+
+        }
+
+    }
+
+}

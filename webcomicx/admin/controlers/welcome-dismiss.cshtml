@@ -1,0 +1,15 @@
+﻿@{
+    if(IsPost){
+        var accountfilename = "/App_Data/account.xml";
+        var load = new Comic();
+        var account = load.LoadComic(accountfilename);
+        var user = (from xml in account.Descendants("User")
+                    where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
+                    select xml).FirstOrDefault();
+
+        if(user.Element("SystemRole").Value=="Admin"){
+            user.Element("NewUser").Value="false";
+            account.Save(Server.MapPath(accountfilename));
+        }
+    }
+}

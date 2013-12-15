@@ -1,0 +1,18 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    var load = new Comic();
+    var widgets = load.LoadComic("/App_Data/widgets.xml");
+    var currentPlugin = widgets.Descendants("CommentPlugins").Descendants("CommentPluginName").ElementAt(0).Value;
+
+    //get list of comment plugins in directory
+     string[] plugins = Directory.GetDirectories(Server.MapPath("/content/plugins/comments"));
+
+}
+<select style="width: 100%" name="name">
+    <option value="">None</option>
+    @foreach (string plugin in plugins){
+    Uri pluginName = new Uri(plugin);
+    <option @if(currentPlugin==pluginName.Segments.Last()){<text>selected="selected"</text>} value="@pluginName.Segments.Last()">@pluginName.Segments.Last()</option>
+    }
+</select>

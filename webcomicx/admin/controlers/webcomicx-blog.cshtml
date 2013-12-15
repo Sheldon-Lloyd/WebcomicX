@@ -1,0 +1,27 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        //set variables
+        var description = Request["description"];
+        var filename = "/App_Data/blog-settings.xml";
+        
+        //load xml
+        var load= new Comic();
+        var blogSettings = load.LoadComic(filename);
+        
+        //change blog description and save the xml
+        blogSettings.Descendants("Description").ElementAt(0).Value=description;
+        blogSettings.Save(Server.MapPath(filename));
+
+        Response.Redirect("~/webcomicx/admin/blog");
+        <fieldset>
+            <label>Description</label>
+            <textarea name="description" style="min-height: 100px">@blogSettings.Descendants("Description").ElementAt(0).Value</textarea>
+            <br>
+            <span>Recommended Maximum of 155 Characters</span>
+            <br>
+            <button>Save</button>
+        </fieldset>
+    }
+}

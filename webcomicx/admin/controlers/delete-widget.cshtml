@@ -1,0 +1,19 @@
+﻿@{
+    if(IsPost){
+        var id = Request["id"];
+        //load xml file
+        var widgetsXml = "/App_Data/widgets.xml";
+        var load = new Comic();
+        var widgets = load.LoadComic(widgetsXml);
+
+        //get widget
+        var widget = (from xml in widgets.Descendants("Container")
+            where xml.Element("Id").Value == id
+            select xml).FirstOrDefault();
+
+            widget.Remove();
+        widgets.Save(Server.MapPath(widgetsXml));
+        Response.Redirect("~/webcomicx/admin/customize");
+
+    }    
+}

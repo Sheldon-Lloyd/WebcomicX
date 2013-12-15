@@ -1,0 +1,76 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    Page.Title = "Edit About Page";
+
+    var updated = Request["updated"];
+    var guide = Request["tutorial"].AsBool();
+    var tutorial = "";
+
+    //load xml file for about page and webcomic settings
+    var load = new Comic();
+    var about = load.LoadComic("~/content/xml/content/about.xml");
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+
+    //get the boolean to check if the about page should be included
+    bool include = settings.Descendants("AboutPage").ElementAt(0).Value.AsBool();
+    var checkStyle = "is-checked";
+
+    if(!include){
+        checkStyle ="is-unchecked";
+    }
+    if(guide){
+        tutorial = "?tutorial=true";
+    }
+
+
+}
+@if(updated=="updated"){
+<h3 class="prompt">Changes have been saved <a onclick="closePrompt()">&times;</a></h3>
+}
+<form method="post" action="/webcomicx/admin/controlers/edit-about/@tutorial">
+<div>
+<h2 class="float-left">Edit About Page </h2>
+<section class="float-right">
+    <a class="button" href="/webcomicx/admin/manage-webpages/@tutorial">&laquo; Back to webpage manager</a><a class="button" href="/comic/about" target="_blank">View About Page</a><input type="checkbox" checked="@include" id="include" name="include" value="True" style="display: none"><label onclick="checkButton()" for="include" class="button @checkStyle">Include About Page</label>
+</section>
+<div class="clear-fix"></div>
+</div>
+@if(guide){
+    <aside class="message-guide">
+        <h3>Welcome to the About Page editor</h3>
+        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+        <p>Here you can:</p>
+        <ol>
+            <li>Edit the content of your About Page</li>
+            <li>Click the update button to save the changes made to your about page</li>
+            <li>View how your about page currently looks</li>
+            <li>When you are ready for the world to see your about page checkmark the "Include About Page" button then click the update button to save it</li>
+        </ol>
+        <p>When you're ready <a href="/webcomicx/admin/characters?tutorial=true">add your Character Profiles Page</a></p>
+
+    </aside>
+}
+
+    <fieldset @if(guide){<text>style="width:66%;"</text>} >
+	    <textarea name="content" style="height: 400px; ">@about.Descendants("About").Descendants("Content").ElementAt(0).Value</textarea>
+	    <br />
+    </fieldset>
+    <button type="submit">Update</button>
+</form>
+
+@section header{
+<script type="text/javascript" src="/webcomicx/admin/scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+    tinymce.init({
+        selector: "textarea",
+        plugins: [
+            "advlist autolink lists link image charmap anchor",
+            "searchreplace visualblocks code fullscreen",
+        ],
+        file_browser_callback: '',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+    });
+</script>
+}

@@ -1,0 +1,19 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+
+        var name = Request["name"];
+
+        //load xml file
+        var widgetsXml = "/App_Data/widgets.xml";
+        var load = new Comic();
+        var widgets = load.LoadComic(widgetsXml);
+
+        widgets.Descendants("CommentPlugins").Descendants("CommentPluginName").ElementAt(0).Value=name;
+
+        widgets.Save(Server.MapPath(widgetsXml));
+
+        Response.Redirect("/webcomicx/admin/customize");
+    }
+}

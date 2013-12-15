@@ -1,0 +1,93 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    if(IsPost){
+        
+        //set variables
+        string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+        var styleColor = "";
+        var pageWidth = Request["width"];
+        var pageLinks = Request["pageLinks"];
+        var fontSize = Request["fontSize"];
+        var pageBackground = Request["pageBackground"];
+        var reset = Request["reset"].AsBool();
+        var includeLogo = Request["includeLogo"].AsBool();
+        var filename = "/App_Data/styles.xml";
+        var customStylesFile = "/content/themes/base/styles/custom-styles.xml";
+        //load xml
+        var load= new Comic();
+        var styles = load.LoadComic(filename);
+        var customStyles = load.LoadComic(customStylesFile);
+
+        if(reset){
+        //edit general styles
+        styles.Descendants("Styles").Descendants("General").Descendants("Width").ElementAt(0).Value="";
+        styles.Descendants("Styles").Descendants("General").Descendants("Background").ElementAt(0).Value= "";
+        styles.Descendants("Styles").Descendants("General").Descendants("FontSize").ElementAt(0).Value= "";
+        styles.Descendants("Styles").Descendants("General").Descendants("LinkColor").ElementAt(0).Value= "";
+        styles.Descendants("Styles").Descendants("Header").Descendants("Logo").ElementAt(0).Value= "";
+        styles.Descendants("Styles").Descendants("Header").Descendants("IncludeLogo").ElementAt(0).Value= "False";
+
+        foreach(var style in customStyles.Descendants("Style")){
+            try{
+            style.Element("BackgroundColor").Value = "";
+            }catch{}
+            try{
+            style.Element("TextColor").Value = "";
+            }catch{}
+        }
+
+        }
+        else{
+        //edit general styles
+        styles.Descendants("Styles").Descendants("General").Descendants("Width").ElementAt(0).Value=pageWidth;
+        styles.Descendants("Styles").Descendants("General").Descendants("Background").ElementAt(0).Value= pageBackground;
+        styles.Descendants("Styles").Descendants("General").Descendants("FontSize").ElementAt(0).Value= fontSize;
+        styles.Descendants("Styles").Descendants("General").Descendants("LinkColor").ElementAt(0).Value= pageLinks;
+        styles.Descendants("Styles").Descendants("Header").Descendants("IncludeLogo").ElementAt(0).Value= includeLogo.ToString();
+
+        //custom styles
+        foreach(var style in customStyles.Descendants("Style")){
+            var styleName = System.Text.RegularExpressions.Regex.Replace(style.Element("Name").Value,pattern, "");
+            try{
+            styleColor = Request[styleName + "-background"];
+            style.Element("BackgroundColor").Value = styleColor;
+            }catch{}
+            try{
+            styleColor = Request[styleName + "-text"];
+            style.Element("TextColor").Value = styleColor;
+            }catch{}
+        }
+
+        var imagePath = "";
+        var newFileName = "";
+        var imageThumbPath = "";
+        WebImage image = null;
+        int i = 0;
+        image = WebImage.GetImageFromRequest();
+
+        if (image != null){
+            newFileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var imagefilename = newFileName;
+            while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/design/"+newFileName+extension))){
+                i++;
+            
+                newFileName = imagefilename+"-"+i;
+
+            }
+            
+            imagePath = @"design/"+newFileName+extension;
+            
+            image.Save(@"~/content/uploads/" + imagePath);
+            styles.Descendants("Styles").Descendants("Header").Descendants("Logo").ElementAt(0).Value = newFileName + extension;
+
+        }
+        }
+        styles.Save(Server.MapPath(filename));
+        customStyles.Save(Server.MapPath(customStylesFile));
+
+        Response.Redirect("~/webcomicx/admin/customize/design?updated=updated");
+
+    }
+}

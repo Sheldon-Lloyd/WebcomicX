@@ -1,0 +1,21 @@
+﻿@{
+    if(IsPost){
+    var index = Request["index"];
+    var position = Request["position"];
+    var id = Request["id"];
+    //load xml file
+    var widgetsXml = "/App_Data/widgets.xml";
+    var load = new Comic();
+    var widgets = load.LoadComic(widgetsXml);
+
+    //get widget
+    var widget = (from xml in widgets.Descendants("Container")
+        where xml.Element("Id").Value == id
+        select xml).FirstOrDefault();
+
+    widget.Element("Position").Value=position;
+    widget.Element("Index").Value=index;
+    
+    widgets.Save(Server.MapPath(widgetsXml));
+    }
+}

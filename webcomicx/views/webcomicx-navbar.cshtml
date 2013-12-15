@@ -1,0 +1,40 @@
+﻿@using System.Xml.Linq
+
+@{
+    if(WebSecurity.IsAuthenticated && Request["design"]=="true"){
+        <div style="position: fixed;height: 100%;width: 100%;z-index: 9999999"></div>
+    }
+    else{
+        var load = new Comic();
+
+        var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+
+        
+        <link rel="stylesheet" href="~/webcomicx/admin/styles/webcomicx-navbar.min.css">
+        
+        <div id="webcomicx-navbar">
+                    <section id="webcomicx-login">
+                            <span>
+                                <a id="webcomicx-username" href="~/webcomicx/admin/account" title="Manage Account">@WebSecurity.CurrentUserName</a>
+                            </span>
+                                <form id="webcomicxLogoutForm" action="~/webcomicx/admin/account/logout" method="post">
+                                    @AntiForgery.GetHtml()
+                                    <a href="javascript:document.getElementById('webcomicxLogoutForm').submit()">Log out</a>
+                                </form>
+                    </section>
+            <nav id="webcomicx-menu">
+                <h3 id="webcomicx-title">WebcomicX <span id="webcomicx-menu-arrow">&#9660;</span></h3>
+                    <ul id="webcomicx-menu">
+                        <li><a href="~/webcomicx/admin">Dashboard</a></li>
+                        <li><a href="/webcomicx/admin/manage-comics">Comics</a></li>
+                        <li><a href="/webcomicx/admin/manage-webpages">Webpages</a></li>
+                        @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
+                        <li><a href="/webcomicx/admin/blog">Blog</a></li>
+                        }
+                        <li><a href="/webcomicx/admin/customize">Customize</a></li>
+                        <li><a href="/webcomicx/admin/webcomic-settings">Settings</a></li>
+                        </ul>
+            </nav>
+        </div>
+    }
+}

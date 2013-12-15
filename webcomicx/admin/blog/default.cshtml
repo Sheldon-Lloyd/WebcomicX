@@ -1,0 +1,54 @@
+﻿@{
+    Page.Title = "Manage Blog";
+    var guide = Request["tutorial"].AsBool();
+
+    var load= new Comic();
+    var blogSettings = load.LoadComic("/App_Data/blog-settings.xml");
+    var type = blogSettings.Descendants("Type").ElementAt(0).Value;
+}
+<h2 class="float-left">Blog <a class="button" onclick="$('.pop-up').show()">Blog Settings</a></h2>
+
+<div class="pop-up is-hidden">
+    <section class="container">
+<h3>Blog Settings</h3>
+<hr>
+<div>
+        <select id="settings" onchange="blogSettings(this)">
+            <option @if(type=="webcomicx"){<text>selected="selected"</text>} value="webcomicx">Use WebcomicX Blog</option>
+            <option @if(type=="external"){<text>selected="selected"</text>} value="external">Use my blog from external site</option>
+        </select>
+
+
+</div>
+
+<div>
+    <form id="external" method="post" class="type @if(type!="external"){<text>is-hidden</text>}" action="/webcomicx/admin/controlers/external-blog">
+        <fieldset>
+            <label>External Url</label>
+            <input name="url" type="url" value="@blogSettings.Descendants("Url").ElementAt(0).Value">
+            <label>Rss feed Url</label>
+            <input name="feed" type="url" value="@blogSettings.Descendants("Feed").ElementAt(0).Value">
+            <br>
+            <a onclick="$('.pop-up').hide()">Close</a>
+            <button onclick="externalBlog()">Save</button>
+        </fieldset>
+    </form>
+    <form id="webcomicx" method="post" class="type @if(type!="webcomicx"){<text>is-hidden</text>}" action="/webcomicx/admin/controlers/webcomicx-blog">
+        <fieldset>
+            <label>Description</label>
+            <textarea name="description" style="min-height: 100px">@blogSettings.Descendants("Description").ElementAt(0).Value</textarea>
+            <span class="sub-text">Recommended Maximum of 155 Characters</span>
+            <br>
+            <br>
+            <a onclick="$('.pop-up').hide()">Close</a>
+            <button onclick="webcomicxBlog()">Save</button>
+        </fieldset>
+    </form>
+</div>
+    </section>
+</div>
+<div id="blogFeed">
+    @RenderPage("/webcomicx/views/"+type+"-blog.cshtml","Admin")
+</div>
+<script>
+</script>

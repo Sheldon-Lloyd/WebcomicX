@@ -1,0 +1,40 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+}
+@if(IsPost){
+    //intialize variables
+    var comicNumber = Request["node"];
+    var comicTitle = Request["title"];
+    //get node position of comic
+    int comicNode=Convert.ToInt32(comicNumber)-1;  
+    
+    string comicListFilename = "/content/xml/comics/comic-list.xml";
+    string comicfilename = "/content/xml/comics/comic-"+comicNumber+".xml";
+    var load = new Comic();
+
+    //open comic-list xml file
+    var comicList = load.LoadComic(comicListFilename);
+    var oldComic = load.LoadComic(comicfilename);
+    int comicCount = 0;
+
+
+    //remove comic
+    comicList.Descendants("Comic").ElementAt(comicNode).Remove();
+
+    foreach (var comic in comicList.Descendants("Comic")){
+        //assign each comic a new ComicValue
+        comicCount++;
+        comic.Element("ComicValue").Value=comicCount.ToString();
+    }
+
+    //delete comic xml
+    //oldComic.Dispose();
+    File.Delete(Server.MapPath(comicfilename));
+
+    //save comic-list.xml and send user back to comic managment page
+    comicList.Save(Server.MapPath(comicListFilename));
+    Response.Redirect("~/webcomicx/admin/manage-comics");
+}
+

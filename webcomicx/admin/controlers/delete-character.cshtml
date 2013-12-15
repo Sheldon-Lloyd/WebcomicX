@@ -1,0 +1,25 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    var filename = "/content/xml/content/characters.xml";
+    var load = new Comic();
+    var comic = load.LoadComic(filename);
+    var characters = load.LoadComic(filename);
+    
+    if(IsPost){
+        var characterNode = Request["characterNode"].AsInt();
+        var guide = Request["tutorial"].AsBool();
+
+        var returnUrl = "~/webcomicx/admin/characters";
+
+        if(guide){
+            returnUrl = returnUrl+"?tutorial=true";
+        }
+
+        characters.Descendants("Profile").ElementAt(characterNode).Remove();
+
+        characters.Save(Server.MapPath(filename));
+        Response.Redirect(returnUrl);
+    }
+}

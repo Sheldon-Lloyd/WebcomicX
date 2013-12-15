@@ -1,0 +1,84 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+        //load xml
+        var load= new Comic();
+        var blog = load.LoadComic("/content/xml/content/blog.xml");
+                      
+    if(PageData[0]!="General"){
+        if(WebSecurity.IsAuthenticated){
+            var blogPost = (from xml in blog.Descendants("Post")
+                    orderby (string) xml.Element("Date") descending
+                    select xml);      
+            var guide = Request["tutorial"].AsBool();
+            var tutorial = "";
+            if(guide){
+                tutorial ="?tutorial=true";
+            }
+
+        <h2 class="float-left"><a href="/webcomicx/admin/blog/new-post/@tutorial" class="button">New Post</a><a href="/blog" target="_blank" class="button">View Blog</a></h2>
+<div class="clear-fix"></div>
+if(guide){
+
+<aside>
+    <section class="message-guide">
+        <h3>Welcome to the blog manager</h3>
+        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+        <p>Here you can:</p>
+        <ol>
+            <li>Click on the settings and choose to use Webcomicx's built in blog or use the blog from your on site</li>
+            <li>
+                If you use the Webcomicx blog you can add new post:
+                <ol style="list-style-type: lower-alpha">
+                    <li>add new post</li>
+                    <li>edit ecisting posts</li>
+                    <li>delete post you no longer want</li>
+                </ol>
+            </li>
+        </ol>
+        <p>If you haven't already be sure to <a href="/webcomicx/admin/manage-comics?tutorial=true">post your first comic</a></p>
+
+    </section>
+</aside>
+}
+<div class="content-wrapper">
+        <ul class="float-left grid item-list">
+            @foreach(var post in blogPost){//display posts
+                DateTime date = post.Element("Date").Value.AsDateTime();
+                <li style="cursor: initial">
+                    <h5><a href="/webcomicx/admin/blog/edit-post/@post.Element("Id").Value/@tutorial">@post.Element("Title").Value</a></h5>
+                    <p>@date.ToString("MMM dd yyyy")</p>
+                    <div class="options">
+                    <a href="/webcomicx/admin/blog/edit-post/@post.Element("Id").Value/@tutorial" class="float-left">Edit</a>  <a href="/blog/post/@post.Element("Id").Value/@post.Element("PermaLink").Value" class="float-right">View</a>
+                    | <a  onclick="deletePrompt(this)">Delete</a> |
+                    </div>
+                    <form class="delete" style="display: none" method="post" action="/controlers/delete-post/@tutorial">
+                        <div>
+                            <h5>Delete this post?</h5>
+                            
+                            <a onclick="deletePrompt(this)">Cancel</a>
+                            <button name="postId" value="@post.Element("Id").Value">Delete</button>
+                        </div>
+                    </form>
+
+                </li>
+            }
+            </ul>
+</div>
+        }
+    }
+    else if(PageData[0]=="General"){
+        var blogPost = (from xml in blog.Descendants("Post")
+                where xml.Element("Status").Value=="publish"
+                orderby (string) xml.Element("Date") descending
+                    select xml);      
+
+        <dl>
+            @foreach(var post in blogPost.Take(8)){//display posts
+            DateTime date = post.Element("Date").Value.AsDateTime();
+            <dt><a href="/blog/post/@post.Element("Id").Value/@post.Element("PermaLink").Value">@post.Element("Title").Value</a></dt>
+            <dd><a>@date.ToString("MMM dd yyyy")</a></dd>
+            }
+        </dl>
+    }
+}

@@ -1,0 +1,28 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    var collectionfilename = "/content/xml/comics/collections.xml";
+    var load = new Comic();
+    var collections = load.LoadComic(collectionfilename);
+
+    if(IsPost){
+        var collectionNo = Request["collectionNo"];
+        var collectionName = Request["collectionName"];
+        int collectionNode = Convert.ToInt32(collectionNo) - 1;
+        collections.Descendants("Collection").Descendants("Title").ElementAt(collectionNode).Value=collectionName;
+        collections.Save(Server.MapPath(collectionfilename));
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        
+    </body>
+</html>
