@@ -1,0 +1,16 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    string comicfilename = Server.MapPath("/content/xml/comics/comic-list.xml");
+    var doc = XDocument.Load(comicfilename);
+    int comicCount =0;
+    foreach(var comic in doc.Descendants("Comic")){
+        comicCount++;
+    }
+
+    Random random = new Random();
+    //pick a random comic number and go to it
+    int randomComic = random.Next(1, comicCount+1);
+    Response.Redirect("~/comic/read/"+randomComic+"/");
+}
