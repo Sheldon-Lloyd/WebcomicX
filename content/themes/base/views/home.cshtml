@@ -62,7 +62,7 @@
     </div>
 </div>
 <div class="webcomic container">
-    <div class="comic-pagination">
+    <div class="comic-pagination cf">
         <nav>
             <div class="previous @if(comicNo<2 && pageCount<1){<text> is-hidden </text>}" >	
                 <a href="/comic/read/1/" rel="first"><b>&laquo;</b> <span>First </span></a>
@@ -72,12 +72,11 @@
 			    <a href="/comic/archives">Archives</a>
 			</span>
         </nav>
-        <div class="clear"></div>
     </div>
     <div>
     @load.WebComic(comicNo,true)
     </div>
-<div class="comic-pagination">
+<div class="comic-pagination cf">
     <nav>
         <div class="previous @if(comicNo<2 && pageCount<1){<text> is-hidden </text>}">
             <a href="/comic/read/1/" rel="first"><b>&laquo;</b> <span>First </span></a>
@@ -85,7 +84,6 @@
         </div>	
         <span class="comic-pagination-archive"><a href="/comic/archives">Archives</a></span>
     </nav>
-    <div class="clear"></div>
 </div>
 </div>
 }

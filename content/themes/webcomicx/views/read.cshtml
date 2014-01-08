@@ -28,7 +28,7 @@
 @section comic{
 
 <div class="archive-nav cf">
-    <div class="chapters container">
+    <div class="chapters container archive-nav-inner">
         <label><a href="/comic/archives">Comic</a></label>
         <form>
             <select id="chapters" onchange="go(this)">
@@ -48,16 +48,15 @@
             </select>
         </form>
     </div>
-    <div class="pages container">
+    <div class="pages container archive-nav-inner">
         <label>Random</label>
         <form method="post" action="@Href("random-comic")">
             <button title="Random Comic">Random</button>
         </form>
     </div>
 </div>
-<div class="clear"></div>
 <div class="webcomic container">
-    <div class="comic-pagination">
+    <div class="comic-pagination cf">
         <nav>
             <div class="previous @if(comicNo<2){<text> is-hidden </text>}" >	
                 <a href="/comic/read/1/" rel="first"><b>&laquo;</b> <span>First </span></a>
@@ -71,12 +70,11 @@
 	            <a href="/" rel="last"><span>Latest </span><b>&raquo;</b></a>
             </div>
         </nav>
-        <div class="clear"></div>
     </div>
     <div id="pageContent">
     @load.WebComic(comicNo)
     </div>
-<div class="comic-pagination">
+<div class="comic-pagination cf">
     <nav>
         <div class="previous @if(comicNo<2){<text> is-hidden </text>}">
             <a href="/comic/read/1/" rel="first"><b>&laquo;</b> <span>First </span></a>
@@ -88,7 +86,6 @@
 	        <a href="/" rel="last"><span>Latest </span><b>&raquo;</b></a>
         </div>
     </nav>
-    <div class="clear"></div>
 </div>
 </div>
 }
