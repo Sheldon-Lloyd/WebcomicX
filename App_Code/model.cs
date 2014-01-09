@@ -118,7 +118,7 @@ public class Comic{
     }
     public HtmlString comicTitle(int currentComic){//get title of comic
         //intialize variables
-        var comicTitle = "";
+        var comicTitle = "My Webcomic";
         int pageCount = 0;
 
         //load comic-list xml
@@ -126,21 +126,28 @@ public class Comic{
         var doc = load.LoadComic("/content/xml/comics/comic-list.xml");
 
         //set title of comic
+        try{
         comicTitle = doc.Descendants("Comic").Descendants("Title").ElementAt(currentComic-1).Value;
+        }
+        catch{
+            
+        }
         
         return new HtmlString(comicTitle);
 
     }
     public HtmlString ComicCopy(int currentComic){//display content of comic
         //intialize variable
-        var comicContent = "";
+        var comicContent = @"You have not published your fisrt this is just a place holder until then";
 
         //load comic-list xml
         var load = new Comic();
         var doc = load.LoadComic("/content/xml/comics/comic-"+currentComic+".xml");
 
         //get content of comic and replace /n new lines with <br> new lines
+        try{
         comicContent = doc.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value.Replace("\n", "<br>");
+        }catch{}
         return new HtmlString(comicContent);
 
     }
@@ -279,10 +286,12 @@ public class Comic{
         pageCount = pagesDoc.Descendants("Page").Count();        
         if(HttpContext.Current.User.Identity.IsAuthenticated){
             //if user is authenticated display edit page link
-                    edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' id='edit'>Edit</a>";
-        }            
+                    edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' class='edit'>Edit</a>";
+        }
+        try{
         publishDate = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("Date").ElementAt(comicNo-1).Value);
-
+        }
+        catch{}
                 
         //set publishHeading variable with date and author
         if(load.comicAuthor(comicNo)!=""){

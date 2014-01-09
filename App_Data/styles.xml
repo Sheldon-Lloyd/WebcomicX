@@ -7,6 +7,10 @@
       <FontSize></FontSize>
       <LinkColor></LinkColor>
     </General>
+    <Header>
+      <Logo></Logo>
+      <IncludeLogo>False</IncludeLogo>
+    </Header>
   </Styles>
   <CustomStyleSheet></CustomStyleSheet>
 </Content>
