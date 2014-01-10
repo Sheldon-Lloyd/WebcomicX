@@ -9,7 +9,7 @@
      string[] plugins = Directory.GetDirectories(Server.MapPath("/content/plugins/comments"));
 
 }
-<select style="width: 100%" name="name">
+<select style="width: 100%" name="name" onchange="saveComments(this)">
     <option value="">None</option>
     @foreach (string plugin in plugins){
     Uri pluginName = new Uri(plugin);

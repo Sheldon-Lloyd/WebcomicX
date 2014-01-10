@@ -1,0 +1,19 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+
+@{
+    Layout = null;
+    var load = new Comic();
+    var settings = load.LoadComic("~/content/plugins/comments/custom/settings/settings.xml");
+    string code = settings.Descendants("Code").ElementAt(0).Value; 
+    if(IsPost){
+        code = Request.Unvalidated("customCommentCode");
+        settings.Descendants("Code").ElementAt(0).Value = code;
+        settings.Save(Server.MapPath("~/content/plugins/comments/custom/settings/settings.xml"));
+    }
+}
+<form method="post">
+<label>Html/JavaScript</label>
+<textarea name="customCommentCode">@Html.Raw(code)</textarea>
+<button type="submit">Save</button>
+</form>

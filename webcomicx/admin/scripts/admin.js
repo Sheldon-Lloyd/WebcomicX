@@ -450,7 +450,15 @@ $("#newCollection").submit(function (event) {
         var form = $(e).closest('form'),
           name = form.find('select[name="name"]').val();
         var posting = $.ajax({ type: "POST", async: false, url: "/webcomicx/admin/controlers/comment-plugin-selection", data: { "name": name} });
-        popup(e);
+        $("#commentPluginSettings").html("Loading...")
+        posting.done(function (data) {
+            $("#commentPluginSettings").load("/content/plugins/comments/" + name + "/settings/settings.cshtml", function (response, status, xhr) {
+                if (status == "error") {
+                    $("#commentPluginSettings").html("");
+                }
+            });
+            $("#commentPluginName").html("(" + name + ")");
+        });
     }
 
 
