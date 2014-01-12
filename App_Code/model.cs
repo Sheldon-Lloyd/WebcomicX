@@ -295,7 +295,7 @@ public class Comic{
                 
         //set publishHeading variable with date and author
         if(load.comicAuthor(comicNo)!=""){
-            publishHeading = "<h5><span>By "+load.comicAuthor(comicNo)+" </span> <span id='pubDate' itemprop='datePublished'>"+publishDate.ToString("MMMM, d yyyy")+"</span>on </h5>";
+            publishHeading = "<h5><span>By "+load.comicAuthor(comicNo)+" </span> on  <span id='pubDate' itemprop='datePublished'>"+publishDate.ToString("MMMM, d yyyy")+"</span></h5>";
         }
         else{
             publishHeading = "<h5><span>"+load.comicAuthor(comicNo)+"</span> <span id='pubDate' itemprop='datePublished'> "+publishDate.ToString("MMMM, d yyyy")+"</span></h5>";
