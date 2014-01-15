@@ -158,7 +158,6 @@
             return { hashNo: hashNo, i: i }
         } ();
         $(window).on("hashchange", function () {
-            alert(page.i());
             displayPage()
             loadComic.pagination()
 
