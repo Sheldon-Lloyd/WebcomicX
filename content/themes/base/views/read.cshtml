@@ -25,9 +25,11 @@
 <meta name="description" content="@load.ComicShortDescription(comicNo)">
 @if(comicNo<doc.Descendants("Comic").Count()){
 <link rel="prefetch" href="@host/comic/read/@(comicNo+1)">
+
 }
 }
 @section bodyjs{onload="displayPage();"}
+<div class="webcomicXreader">
 @section comic{
 
 <div class="archive-nav cf">
@@ -101,7 +103,7 @@
 </div>
 }
 @section article{
-    <section>
+    <section id="comicHeading">
         @load.comicHeading(comicNo)
     </section>
     <section id="authorComments">
@@ -109,3 +111,13 @@
     </section>
 }
 @section comments{}
+</div>
+@section scripts{
+<script src="@Href("../scripts/comic.js?v=1")" ></script>
+<script>
+    $(document).ready(function () {
+        $(".webcomicXreader").webcomicXreader({comicNo:@comicNo});
+    });
+</script>
+
+}

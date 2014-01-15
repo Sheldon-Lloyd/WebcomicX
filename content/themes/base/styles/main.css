@@ -48,7 +48,10 @@ h4 span{
 p{
 	margin-top:0
 }
-
+figure{
+    display: block;
+    margin: 0
+}
 /*Layout*/
 .padding{
     padding: 10px;
@@ -258,7 +261,7 @@ li.menu{
 	text-align:center;
 	border-radius:3px;
     margin:10px 0;
-
+    overflow: hidden;
 }
 .webcomic img{
 	max-width:100%;
@@ -267,6 +270,24 @@ li.menu{
     display: block;
     margin: auto
 }
+.webcomic figure{
+    position: relative
+}
+.webcomic figcaption {
+    position: absolute;
+    background: #efefef;
+    background: rgba(239, 239, 239, 0.8);
+    width: 100%;
+    text-align: left;
+    padding: 20px;
+    bottom: 0%;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
 .comic-placeholder{
     min-height: 400px;
 	border-bottom: 1px #ccc solid;
@@ -709,7 +730,11 @@ h4.accordion span{
     display: none;
     animation: fade 2s reverse;
 }
+.is-collapsed{
+bottom: -100%!important;
+transition: all 1.5s ease-in!important;
 
+}
 /*Resposive Web Design Styles*/
 @media screen and (max-width:768px){
 	.main{

@@ -34,8 +34,8 @@
         @RenderSection("prependHead",false)
         <title>@Page.PreppendTitle @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value @Page.Title @load.PrimaryAuthor()</title>
         <link rel="stylesheet" href="@Href("../styles/main.min.css?v=1")">
-        <script src="@Href("../scripts/jquery-1.10.2.min.js?v=1")"></script>
-        <script src="@Href("../scripts/modernizr-2.7.1.min.js?v=1")" async></script>
+        <script src="@Href("../scripts/jquery-1.10.2.min.js")"></script>
+        <script src="@Href("../scripts/modernizr-2.7.1.min.js")" async></script>
         @load.customStyles()
         @RenderSection("head",false)
     </head>
@@ -159,8 +159,7 @@
                 </div>
             </footer>
         </div>
-        <script src="@Href("../scripts/script.min.js?v=1")" async></script>
-
+        <!--script src="@Href("../scripts/script.min.js?v=1")" async></script-->
          @RenderSection("scripts",false)
 
     </body>

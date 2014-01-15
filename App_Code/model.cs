@@ -136,7 +136,7 @@ public class Comic{
         return new HtmlString(comicTitle);
 
     }
-    public HtmlString ComicCopy(int currentComic){//display content of comic
+    public HtmlString ComicCopy(int currentComic,int page = 0){//display content of comic
         //intialize variable
         var comicContent = @"You have not published your fisrt this is just a place holder until then";
 
@@ -148,6 +148,12 @@ public class Comic{
         try{
         comicContent = doc.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value.Replace("\n", "<br>");
         }catch{}
+
+        if(page !=0){
+        try{
+        comicContent = doc.Descendants("Page").Descendants("Content").ElementAt(page-1).Value.Replace("\n", "<br>");
+        }catch{}
+        }
         return new HtmlString(comicContent);
 
     }
@@ -164,7 +170,7 @@ public class Comic{
         return new HtmlString(comicDescription);
 
     }
-    public HtmlString WebComic(int currentComic, bool homePage = false){//render webcomic
+    public HtmlString WebComic(int currentComic){//render webcomic
         //initialize variable
         var webComic = "";
         var pageNo = 0;
@@ -174,31 +180,25 @@ public class Comic{
         var settings = load.LoadComic("/App_Data/WebcomicX.xml");
         var pages = load.LoadComic("/content/xml/comics/comic-"+(currentComic)+".xml");
 
-        if(!homePage){//the webcomic is not on the home page
-
-                foreach(var page in pages.Descendants("Page")){
+            foreach(var page in pages.Descendants("Page")){
                         pageNo ++;
                 if(load.comicImg(currentComic,pageNo)!=""){
                     //if the image of  the comic is not empty
+
+                    //webcomic page caption
+                    string caption = "";
+                    if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
+                        caption = "<figcaption>"+load.ComicCopy(currentComic,pageNo)+"</figcaption>";
+                    }
+
+
                     //create the image element and set its src
-                    webComic = webComic+"<img id='page-"+pageNo+"' height='auto' width='auto' alt='Webcomic page' src='/content/uploads/pages/"+load.comicImg(currentComic,pageNo)+"'>";
+                    webComic = webComic+"<figure><img id='page-"+pageNo+"' height='auto' width='auto' alt='"+load.comicTitle(currentComic)+" "+pageNo+"' src='/content/uploads/pages/"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
                     }
                 else{//use a title instead of a image
                     webComic = webComic +"<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" Page "+pageNo+"</h3> </div></div>";
                 }
-                }
-        }
-        else{//if its on the homepage
-            if(load.comicImg(currentComic)!=""){
-                
-                //if the image of  the comic is not empty
-                //create the image element and set its src
-                webComic ="<img id='pageImage' height='auto' width='auto' alt='Webcomic page' src='/content/uploads/pages/"+load.comicImg(currentComic)+"'>";
             }
-            else{//use a title instead of a image
-                webComic = "<div class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+"</h3> </div></div>";
-            }
-        }
         return new HtmlString(webComic);
     }
     public HtmlString Widgets(string position){//create widgets
