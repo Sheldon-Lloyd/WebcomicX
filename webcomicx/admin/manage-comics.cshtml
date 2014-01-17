@@ -119,7 +119,7 @@
                       <li draggable="true" id="@comic.Element("ComicValue").Value" ondragstart="dragComic(this, event)" ondragend="$('.collection-item').removeClass('border-highlight')">
                         <h4 title="@comic.Element("Title").Value"><a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial">@comic.Element("Title").Value</a></h4>
                           <div class="options">
-                          <a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial" style="float: left">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a href="/comic/@comic.Element("ComicValue").Value/" style="float: right">View</a>
+                          <a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial" style="float: left">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a href="/comic/read/@comic.Element("ComicValue").Value/" style="float: right">View</a>
                           </div>
                           <form class="delete" style="display: none" method="post" action="/webcomicx/admin/controlers/delete-comic/@tutorial">
                               <div>
