@@ -138,7 +138,7 @@ public class Comic{
     }
     public HtmlString ComicCopy(int currentComic,int page = 0){//display content of comic
         //intialize variable
-        var comicContent = @"You have not published your fisrt this is just a place holder until then";
+        var comicContent = @"You have not published a comic yet this is just a place holder until your fisrt comic is published";
 
         //load comic-list xml
         var load = new Comic();
@@ -196,8 +196,18 @@ public class Comic{
                     webComic = webComic+"<figure><img id='page-"+pageNo+"' height='auto' width='auto' alt='"+load.comicTitle(currentComic)+" "+pageNo+"' src='/content/uploads/pages/"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
                     }
                 else{//use a title instead of a image
-                    webComic = webComic +"<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" Page "+pageNo+"</h3> </div></div>";
+                if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
+                    webComic = webComic + "<article class='comic-placeholder'><h3>Page "+pageNo+"</h3>"+load.ComicCopy(currentComic,pageNo)+"</article>";
                 }
+                else{
+                    webComic = webComic +"<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" Page "+pageNo+"</h3> </div></div>";                    
+                    
+                }
+                }
+            }
+            if(pageNo<=0){
+                webComic = "<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" </h3> </div></div>";                    
+                    
             }
         return new HtmlString(webComic);
     }
