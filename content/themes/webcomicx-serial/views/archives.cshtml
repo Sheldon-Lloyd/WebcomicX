@@ -1,0 +1,177 @@
+﻿@using System.Xml.Linq
+@{
+
+    //load xml
+    var load = new Comic();
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    var comics = load.LoadComic("/content/xml/comics/comic-list.xml");
+    var collections = load.LoadComic("/content/xml/comics/collections.xml");
+
+    //intialize variables
+    int collectionNo = 0;
+    Page.PreppendTitle = "Archives - ";
+    Page.Style = "archives";
+
+    Layout = "../layouts/_main.cshtml";
+}
+@section head{
+<meta name="description" content="Archives For the entire @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .collection-cover-inner .front h3{
+       filter: none;
+    }
+  </style>
+<![endif]-->
+<!--[if lt IE 9]>
+  <style>
+    h3.ie{
+        height:auto!important;
+        padding-bottom:0px
+    }
+    .back{
+        background:none;
+    }
+  </style>
+<![endif]-->
+}
+@section comic{
+        <div class="container">   
+            <h2 class="padding">Comic Archives</h2>
+            @foreach(var collection in collections.Descendants("Collection")){
+                collectionNo++;
+                    int comicCount = 0;
+
+            var comicList = (from xml in comics.Descendants("Comic")
+                   where xml.Element("Collection").Value == collectionNo.ToString()
+                   select xml);
+            <div class="collection cf">
+
+                 @if(collection.Element("Cover").Value=="" && collection.Element("Description").Value==""){
+                    <h3 class="ie" style="padding:10px ">@collection.Element("Title").Value</h3>
+   
+                 }
+                 else if(collection.Element("Cover").Value!="" || collection.Element("Description").Value!=""){
+                <div class="collection-cover">
+                    <div @if(collection.Element("Cover").Value!="" && collection.Element("Description").Value!=""){<text>class="collection-cover-inner"</text>}>
+
+                        @if(collection.Element("Cover").Value!=""){
+                            WebImage cover = new WebImage("~/content/uploads/covers/"+collection.Element("Cover").Value);
+                            <figure @if(collection.Element("Description").Value!=""){<text>class="front"</text>}>
+                                <div>
+                                <h3 class="ie collection-cover-header">@collection.Element("Title").Value</h3>
+
+                            <img width="auto" height="auto" src="@Href(cover.FileName)" alt="@collection.Element("Cover").Value">
+                                </div>
+                            </figure>
+                        }
+                        @if(collection.Element("Description").Value!=""){
+                            <figure @if(collection.Element("Cover").Value!=""){<text>class="back"</text>}>
+                                <div>
+                    <h3 class="ie">@collection.Element("Title").Value</h3>
+
+                                <p>@collection.Element("Description").Value</p>
+                    </div>
+                            </figure>
+                        }
+                    </div>
+                </div>
+                }
+                  <ul class="collection-comics-pages"  @if(collection.Element("Cover").Value=="" && collection.Element("Description").Value==""){<text>style="width:100%;"</text>}>
+              @foreach(var comic in comicList){
+                  comicCount++;
+                  string pagesfilename = "/content/xml/comics/comic-"+comic.Element("ComicValue").Value+".xml";
+                  var pages = load.LoadComic(pagesfilename);
+                  int pageCount = 0;
+                      <li class="accordion" >
+                        <h4 class="accordion" onclick="accordion(this);toggleScrollBtn(this);">
+                            <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
+                            <span>+</span>
+                        </h4>
+                          <div class=" is-hidden" style="position: relative">
+                             <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
+                              <a class="previous" onclick="horizontalBack(this)" rel="prev"><b>‹</b></a>
+                          <div class="comic-collection" onscroll="toggleScrollBtn(this)">
+                            <ul >
+
+                              @foreach(var page in pages.Descendants("Page")){
+                                    pageCount++;
+                                    <li>
+                                        <a href="/comic/read/@comic.Element("ComicValue").Value/#!/page/@pageCount">
+                                            @if(page.Element("Image").Value!=""){
+                                            <img width="auto" height="auto" src="/content/uploads/pages/thumbnail/@page.Element("Image").Value" alt="Comic #@comic.Element("ComicValue").Value - @comic.Element("Title").Value Page @pageCount">
+                                                                                                                                                                                                        }
+                                            <span>Page @pageCount</span>
+                                        </a>
+                                        
+                                    </li>
+                                }
+                                @if(pageCount==0){
+                                <li>
+                                    <p style="white-space: normal">This comic doesn't have any pages yet</p>
+                                </li>
+                                }
+                          </ul>
+                          </div>
+                              </div>
+                      </li>
+              }
+                                @if(comicCount==0){
+                                    <li>
+                                        <p>There are no comics in the collection yet</p>
+                                    </li>
+                                }
+                  </ul> 
+            </div>    
+
+            }
+            <div class="collection cf">
+            <ul class="collection-comics-pages" style="width: 100%">
+            @foreach(var comic in comics.Descendants("Comic")){
+                if(comic.Element("Collection").Value==""){
+                  string pagesfilename = "/content/xml/comics/comic-"+comic.Element("ComicValue").Value+".xml";
+                  var pages = load.LoadComic(pagesfilename);
+                  int pageCount = 0;
+                      <li class="accordion" >
+                        <h4 class="accordion" onclick="accordion(this);toggleScrollBtn(this);" class="comic-collection ">
+                            <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
+                            <span>+</span>
+                        </h4>
+                          <div class=" is-hidden">
+                             <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
+                              <a class="previous" onclick="horizontalBack(this)" rel="prev"><b>‹</b></a>
+                          <div class="comic-collection">
+                            <ul >
+
+                              @foreach(var page in pages.Descendants("Page")){
+                                    pageCount++;
+                                    <li>
+                                        <a href="/comic/@comic.Element("ComicValue").Value/#!/page/@pageCount">
+                                            @if(page.Element("Image").Value!=""){
+                                            <img width="auto" height="auto" src="/content/uploads/pages/thumbnail/@page.Element("Image").Value" alt="Comic #@comic.Element("ComicValue").Value - @comic.Element("Title").Value Page @pageCount">
+                                            }
+                                            <span>Page @pageCount</span>
+                                        </a>
+                                        
+                                    </li>
+                                }
+                                @if(pageCount==0){
+                                <li>
+                                    <p>This comic doesn't have pages yet</p>
+                                </li>
+                                }
+                          </ul>
+                          </div>
+
+                              </div>
+                      </li>
+                }
+            }
+                </ul>
+                </div>
+        </div>
+}
+@section scripts{
+<script src="@Href("../scripts/script.min.js?v=1")" async></script>
+
+}
