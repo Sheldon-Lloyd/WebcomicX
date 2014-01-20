@@ -67,7 +67,7 @@
         }
         else if(PageData[0]=="General"){
             <dl>
-            @foreach (SyndicationItem item in feed.Items.Take(8)){
+            @foreach (SyndicationItem item in feed.Items.Take(5)){
                 try{
                 <dt><a href="@item.Links[0].Uri">@item.Title.Text</a></dt>
                 <dd><a>@item.PublishDate.ToString("MMM dd yyyy")</a></dd>
