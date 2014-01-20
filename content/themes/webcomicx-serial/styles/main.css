@@ -370,6 +370,7 @@ li.menu{
 	background:#efefef;
 	padding:10px 3px;
     font-size: 18px;
+    min-height: 40px;
 }
 .comic-pagination span {
     vertical-align: middle;

@@ -13,7 +13,13 @@
         var loadComic = function () {
             //load contents of xml file for comic
             var comicXml = loadXml(currentComic),
-            x = comicXml.getElementsByTagName("Page");
+            x;
+            try {
+                x = comicXml.getElementsByTagName("Page");
+            }
+            catch (Error) {
+                x = "";
+            }
             var image = function () {
                 //get image for comic
 
@@ -117,7 +123,7 @@
                     }
 
                 }
-                else if (pageNo < 2 && settings.comicNo !== 1) {
+                else if (pageNo < 2 && settings.comicNo > 1) {
                     var preComicXml = loadXml(preComic),
                     preComicPage = preComicXml.getElementsByTagName("Page"),
                     prePageNo = preComicPage.length > 0 ? preComicPage.length : 1;
