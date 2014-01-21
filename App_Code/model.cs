@@ -380,7 +380,7 @@ public class Comic{
     public IHtmlString webcomicxVersion(){
         //version nuber for webcomicx
         //make sure this is always at the bottom of model.cs
-        var verion = new HtmlString("<a href='http://webcomicx.azurewebsites.net'>WebcomicX 0.1</a>");
+        var verion = new HtmlString("<a href='http://webcomicx.com'>WebcomicX 0.1</a>");
         return verion;
     }
 }
