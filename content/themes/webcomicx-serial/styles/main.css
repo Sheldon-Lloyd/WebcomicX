@@ -54,7 +54,8 @@ article{
     background: #fbfbfb;
     text-align: left;
 }
-figure{
+header, footer, hgroup,
+nav, section, figure{
     display: block;
     margin: 0
 }

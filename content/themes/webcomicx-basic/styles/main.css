@@ -48,7 +48,8 @@ h4 span{
 p{
 	margin-top:0
 }
-figure{
+header, footer, hgroup,
+nav, section, figure{
     display: block;
     margin: 0
 }
