@@ -564,7 +564,7 @@ aside section{
         margin-bottom: 0
     }
 
-        aside ul li a{
+        aside li {
             padding: 10px 0;
             display: block;
             border-top: 1px solid #F4F4F4;
@@ -1142,6 +1142,9 @@ max-width: 500px;
 border-radius: 4px;
 padding: 40px;
 
+}
+.webcomicx-blog-item a{
+    display: block;
 }
 
 /********************

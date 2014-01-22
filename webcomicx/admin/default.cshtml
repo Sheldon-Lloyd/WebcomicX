@@ -1,6 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
-
+@using System.ServiceModel.Syndication
 @{
     int comicCount = 0;
     int pageCount = 0;
@@ -82,7 +82,7 @@
     <section>
         <h3><a>WebcomicX Guide</a></h3>
         <ul>
-            <li><a>Contribute to WebcomcX</a></li>
+            <li><a href="https://github.com/Sheldon-Lloyd/webcomicx">Contribute to WebcomcX</a></li>
             <li><a>Plugins</a></li>
             <li><a>Documentaion</a></li>
             <li><a>Guide Book</a></li>
@@ -90,9 +90,32 @@
         </ul>
     </section>
     <section>
-    <h3>WebcomicX News</h3>
-    <ul>
-    </ul>
+    <h3><a href="http://blog.webcomicx.com">WebcomicX News</a></h3>
+    @{
+    var url = "http://blog.webcomicx.com";
+    var feedurl = "http://blog.webcomicx.com/feeds/posts/default?alt=rss";
+    try{
+
+        XmlReader reader = XmlReader.Create(feedurl);
+        SyndicationFeed feed = SyndicationFeed.Load(reader);
+        <ul>
+            @foreach (SyndicationItem item in feed.Items.Take(5)){
+                try{
+                <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri">@item.Title.Text</a>
+                <span class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</span>
+                </li>
+                }
+                catch{
+                <li><a>Error! Blog could not be loaded.</a></li>
+                }
+            }    
+        </ul>
+    }
+    catch{
+        <h3>Error, Blog could not be loaded!</h3>
+
+    }
+}
     </section>
     <section>
         <h3>Recomended Comics From the Web</h3>
