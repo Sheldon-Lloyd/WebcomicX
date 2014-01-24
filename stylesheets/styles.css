@@ -21,6 +21,7 @@ h1 {
     border-radius: 5px;
     border: 3px #C7C7C7 solid;
     color: #333;
+    font-weight:600;
     text-decoration: none;
     background: #fbfbfb;
     display: inline-block;
