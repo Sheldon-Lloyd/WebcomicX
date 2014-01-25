@@ -164,7 +164,7 @@ a:hover {
         float: none;
         width: auto;
     }
-    guide article.float-right {
+    .guide article.float-right {
         width: auto;
         margin: 0;
         padding: 0;
