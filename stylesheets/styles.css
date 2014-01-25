@@ -1,9 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
-.wrapper {
-    max-width: 800px;
-    margin: auto;
-}
+
 body {
     font:20px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #555;
@@ -15,6 +12,13 @@ p {
 h1 {
     font-family: serif;
     font-size: 2.2em;
+    margin-bottom:0;
+}
+a {
+    color: #365b87;
+}
+a:hover {
+    text-decoration: none;
 }
 .button,button,[role="button"] {
     padding: 15px 20px;
@@ -25,6 +29,14 @@ h1 {
     text-decoration: none;
     background: #fbfbfb;
     display: inline-block;
+}
+[role="button"]:hover,.button:hover,button:hover {
+    background: #ccc;
+    border-color: #fbfbfb;
+}
+.wrapper {
+    max-width: 800px;
+    margin: auto;
 }
 .nav {
     padding: 10px 0;
@@ -51,6 +63,9 @@ h1 {
     margin-bottom: 40px;
     line-height: 1.5;
 }
+.container a {
+    color: #D1D1D1;
+}
 .nav a {
     padding: 15px;
     color: #555;
@@ -59,13 +74,8 @@ h1 {
 .float-right {
     float: right;
 }
-a {
-    color: #365b87;
-}
-a:hover {
-    text-decoration: none;
-}
-article div {
+
+.content {
     padding: 0 40px;
     background: #fbfbfb;
     margin: auto;
@@ -73,7 +83,7 @@ article div {
     max-width: 700px;
     margin-bottom: 60px;
 }
-h3 {
+.heading {
     border-bottom: 3px solid #ccc;
     text-align: center;
     padding: 10px;
