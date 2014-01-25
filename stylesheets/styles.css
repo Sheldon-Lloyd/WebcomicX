@@ -59,6 +59,10 @@ a:hover {
     padding: 0;
     margin-right:20px;
 }
+.nav .button {
+    box-sizing: border-box;
+    text-align: right;
+}
 .container {
     background: #555;
     color: #fbfbfb;
@@ -110,7 +114,7 @@ a:hover {
     box-sizing: border-box;
 }
 .button{
-    padding: 15px 20px;
+    padding: 15px 20px!important;
     border-radius: 5px;
     border: 3px #C7C7C7 solid;
     color: #333;
