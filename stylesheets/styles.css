@@ -48,10 +48,15 @@ a:hover {
     border: 1px #ccc solid;
     border-radius: 2px;
 }
+.nav ul {
+    padding: 0;
+    margin:0;
+}
 .nav li {
     display: inline-block;
     list-style: none;
     padding: 0;
+    margin-right:20px;
 }
 .container {
     background: #555;
@@ -69,6 +74,7 @@ a:hover {
 }
 .container-anchor {
     color: #D1D1D1;
+    display:inline-block;
 }
 .aside-heading{
     padding: 10px 0;
@@ -96,6 +102,11 @@ a:hover {
     padding: 0;
 }
 
+.nav a {
+    padding: 15px;
+    color: #555;
+    display: inline-block;
+}
 .button{
     padding: 15px 20px;
     border-radius: 5px;
@@ -110,19 +121,13 @@ a:hover {
     background: #ccc;
     border-color: #fbfbfb;
 }
-.nav a {
-    padding: 15px;
-    color: #555;
-    display: inline-block;
-}
+
 .float-right {
     float: right;
 }
 
 .content {
     padding: 0 40px;
-    background: #fbfbfb;
-    margin: auto;
     border-radius: 2px;
     max-width: 700px;
     margin-bottom: 60px;
