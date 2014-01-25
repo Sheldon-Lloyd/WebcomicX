@@ -38,11 +38,12 @@ a:hover {
     padding: 0;
 }
 .container {
-    padding: 50px 40px;
-    background: #E7E7E7;
     background: #555;
     color: #fbfbfb;
     border: 1px solid #ccc;
+}
+.container-inner {
+    padding: 50px 40px;
 }
 .container h2 {
     font-weight: 600;
