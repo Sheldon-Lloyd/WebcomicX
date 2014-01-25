@@ -24,7 +24,16 @@ a {
 a:hover {
     text-decoration: none;
 }
-
+.cf:after {
+    clear: both;
+}
+.cf:before, .cf:after {
+    content: "";
+    display: table;
+}
+.cf {
+    zoom: 1;
+}
 .wrapper {
     max-width: 800px;
     margin: auto;
