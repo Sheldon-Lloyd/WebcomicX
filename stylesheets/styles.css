@@ -9,6 +9,10 @@ body {
 p {
     margin-top: 0;
 }
+aside{
+    float:left;
+    width:250px;
+}
 h1 {
     font-family: serif;
     font-size: 2.2em;
@@ -53,6 +57,28 @@ a:hover {
 }
 .container-anchor {
     color: #D1D1D1;
+}
+.aside-heading{
+    padding: 10px 0;
+    margin: 13px 0 0 0;
+    border-bottom: 3px #555 solid;
+}
+.guide-container{
+    position: relative;
+    z-index: 2;
+}
+.guide article {
+    max-width: 600px;
+    width: 100%;
+    margin-left: -250px;
+    padding-left: 250px;
+}
+.guide-list{
+    list-style: none;
+    padding: 0;
+}
+.guide-list li{
+    
 }
 .button{
     padding: 15px 20px;
