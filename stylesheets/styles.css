@@ -81,6 +81,9 @@ a:hover {
     color: #D1D1D1;
     display:inline-block;
 }
+.container .button{
+    margin-top:10px;
+}
 .aside-heading{
     padding: 10px 0;
     margin: 13px 0 0 0;
@@ -122,6 +125,7 @@ a:hover {
     text-decoration: none;
     background: #fbfbfb;
     display: inline-block;
+    text-align:center;
 }
 .button:hover{
     background: #ccc;
@@ -154,4 +158,9 @@ a:hover {
     .nav ul{
         float:none;
     }
+}
+@media screen and (max-width:480px){
+    .container .button{
+        width:100%;
+    }    
 }
