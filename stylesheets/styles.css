@@ -71,7 +71,6 @@ a:hover {
     z-index: 2;
 }
 .guide article {
-    max-width: 600px;
     width: 100%;
     margin-left: -250px;
     padding-left: 250px;
