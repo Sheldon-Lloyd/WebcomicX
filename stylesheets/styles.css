@@ -20,20 +20,7 @@ a {
 a:hover {
     text-decoration: none;
 }
-.button,button,[role="button"] {
-    padding: 15px 20px;
-    border-radius: 5px;
-    border: 3px #C7C7C7 solid;
-    color: #333;
-    font-weight:600;
-    text-decoration: none;
-    background: #fbfbfb;
-    display: inline-block;
-}
-[role="button"]:hover,.button:hover,button:hover {
-    background: #ccc;
-    border-color: #fbfbfb;
-}
+
 .wrapper {
     max-width: 800px;
     margin: auto;
@@ -65,6 +52,20 @@ a:hover {
 }
 .container a {
     color: #D1D1D1;
+}
+.button{
+    padding: 15px 20px;
+    border-radius: 5px;
+    border: 3px #C7C7C7 solid;
+    color: #333;
+    font-weight:600;
+    text-decoration: none;
+    background: #fbfbfb;
+    display: inline-block;
+}
+.button:hover{
+    background: #ccc;
+    border-color: #fbfbfb;
 }
 .nav a {
     padding: 15px;
