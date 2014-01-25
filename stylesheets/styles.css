@@ -60,9 +60,7 @@ a:hover {
     padding: 0;
     margin-right:20px;
 }
-.nav .button {
-    box-sizing: border-box;
-}
+
 .container {
     background: #555;
     color: #fbfbfb;
@@ -126,6 +124,10 @@ a:hover {
     background: #fbfbfb;
     display: inline-block;
     text-align:center;
+    -o-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .button:hover{
     background: #ccc;
