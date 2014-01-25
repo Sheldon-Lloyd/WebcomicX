@@ -61,7 +61,6 @@ a:hover {
 }
 .nav .button {
     box-sizing: border-box;
-    text-align: right;
 }
 .container {
     background: #555;
@@ -142,4 +141,16 @@ a:hover {
     border-bottom: 3px solid #ccc;
     text-align: center;
     padding: 10px;
+}
+/*Resposive Web Design Styles*/
+@media screen and (max-width:768px){
+    .nav .button{
+        width:90%;
+    }    
+    .nav .button.float-right {
+        float:none;
+    }
+    .nav{
+        float:none;
+    }
 }
