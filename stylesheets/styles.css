@@ -51,6 +51,7 @@ a:hover {
 .nav ul {
     padding: 0;
     margin:0;
+    float:left;
 }
 .nav li {
     display: inline-block;
@@ -103,9 +104,10 @@ a:hover {
 }
 
 .nav a {
-    padding: 15px;
+    padding: 15px 0;
     color: #555;
     display: inline-block;
+    box-sizing: border-box;
 }
 .button{
     padding: 15px 20px;
