@@ -160,9 +160,22 @@ a:hover {
     .nav ul{
         float:none;
     }
+    aside {
+        float: none;
+        width: auto;
+    }
+    guide article.float-right {
+        width: auto;
+        margin: 0;
+        padding: 0;
+        float:none;
+    }
 }
 @media screen and (max-width:480px){
     .container .button{
         width:100%;
     }    
+    body{
+        font-size:15px;
+    }
 }
