@@ -85,13 +85,11 @@ a:hover {
     padding-left: 250px;
     box-sizing: border-box;
 }
-.guide-list{
+.item-list{
     list-style: none;
     padding: 0;
 }
-.guide-list li{
-    
-}
+
 .button{
     padding: 15px 20px;
     border-radius: 5px;
