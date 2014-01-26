@@ -80,13 +80,12 @@
 </div>
 <aside>
     <section>
-        <h3><a>WebcomicX Guide</a></h3>
+        <h3><a href="http://www.webcomicx.com/guide" target="_blank">WebcomicX Guide</a></h3>
         <ul>
-            <li><a href="https://github.com/Sheldon-Lloyd/webcomicx">Contribute to WebcomcX</a></li>
-            <li><a>Plugins</a></li>
-            <li><a>Documentaion</a></li>
-            <li><a>Guide Book</a></li>
-            <li><a>Password Recovery</a></li>
+            <li><a href="http://www.webcomicx.com/guide#contribute" target="_blank">Contribute to WebcomcX</a></li>
+            <li><a href="http://www.webcomicx.com/guide#publish" target="_blank">Publish Comic</a></li>
+            <li><a href="http://www.webcomicx.com/guide#password" target="_blank">Password Recovery</a></li>
+            <li><a href="http://www.webcomicx.com/guide#plugins" target="_blank">Plugins</a></li>
         </ul>
     </section>
     <section>
@@ -101,7 +100,7 @@
         <ul>
             @foreach (SyndicationItem item in feed.Items.Take(5)){
                 try{
-                <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri">@item.Title.Text</a>
+                <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri" target="_blank">@item.Title.Text</a>
                 <span class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</span>
                 </li>
                 }
