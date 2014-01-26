@@ -187,4 +187,7 @@ a:hover {
     .content,aside .item-list {
         padding: 0 20px;
     }
+    .aside-heading {
+        padding: 10px 40px;
+    }
 }
