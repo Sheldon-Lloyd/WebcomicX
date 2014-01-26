@@ -184,4 +184,7 @@ a:hover {
     body{
         font-size:15px;
     }
+    .content,aside .item-list {
+        padding: 0 20px;
+    }
 }
