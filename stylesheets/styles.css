@@ -170,6 +170,12 @@ a:hover {
         padding: 0;
         float:none;
     }
+    .aside-heading {
+        padding: 10px 40px;
+    }
+    aside .item-list {
+        padding: 0 40px;
+    }
 }
 @media screen and (max-width:480px){
     .container .button{
