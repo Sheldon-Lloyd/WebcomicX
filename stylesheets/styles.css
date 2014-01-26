@@ -21,6 +21,10 @@ h1 {
     font-size: 2.2em;
     margin-bottom:0;
 }
+dt{
+    margin-left:40px;
+    font-weight:600;
+}
 a {
     color: #365b87;
 }
