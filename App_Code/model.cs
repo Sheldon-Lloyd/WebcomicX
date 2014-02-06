@@ -77,8 +77,8 @@ public class Comic{
     public string comicImg(int currentComic, int pageNo = -1){
         //intialize variables
         var comicImg = "";
-
-        //load xml for settings, comic list, and comics pages
+        var siteUrl = HttpContext.Current.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+            //load xml for settings, comic list, and comics pages
         var load = new Comic();
         var doc = load.LoadComic("/content/xml/comics/comic-list.xml");
         var settings = load.LoadComic("/App_Data/WebcomicX.xml");
@@ -88,7 +88,7 @@ public class Comic{
                     pageNo = pages.Descendants("Page").Count();
                 }
                 try{//set the comic image to the image stored in the comic pages xml
-                    comicImg = pages.Descendants("Page").Descendants("Image").ElementAt(pageNo-1).Value;
+                    comicImg = siteUrl+"/content/uploads/pages/"+pages.Descendants("Page").Descendants("Image").ElementAt(pageNo-1).Value;
                 }
                 catch{//set the comic image to the image for this comics title page
                     comicImg = "";
@@ -193,7 +193,7 @@ public class Comic{
 
 
                     //create the image element and set its src
-                    webComic = webComic+"<figure><img id='page-"+pageNo+"' height='auto' width='auto' alt='"+load.comicTitle(currentComic)+" "+pageNo+"' src='/content/uploads/pages/"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
+                    webComic = webComic+"<figure><img id='page-"+pageNo+"' height='auto' width='auto' alt='"+load.comicTitle(currentComic)+" "+pageNo+"' src='"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
                     }
                 else{//use a title instead of a image
                 if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
@@ -380,7 +380,7 @@ public class Comic{
     public IHtmlString webcomicxVersion(){
         //version nuber for webcomicx
         //make sure this is always at the bottom of model.cs
-        var verion = new HtmlString("<a href='http://webcomicx.com' target='_blank'>WebcomicX 0.1</a>");
+        var verion = new HtmlString("<a href='http://webcomicx.com' target='_blank'>WebcomicX 0.2</a>");
         return verion;
     }
 }

@@ -5,19 +5,18 @@
     var load = new Comic();
     var comics = load.LoadComic("/content/xml/comics/comic-list.xml");
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
-
+    string siteUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
     var comicList = (from xml in comics.Descendants("Comic")
                     orderby (string) xml.Element("Date") descending
                    select xml);
 
     var comicType = "Long Form";
-//Response.Write("<rss xmlns:content='http://purl.org/rss/1.0/modules/content/' xmlns:wfw='http://wellformedweb.org/CommentAPI/' xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:atom='http://www.w3.org/2005/Atom' xmlns:sy='http://purl.org/rss/1.0/modules/syndication/' xmlns:slash='http://purl.org/rss/1.0/modules/slash/' version='2.0'>");
-
 }
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">
     <channel>
         <title>@settings.Descendants("ComicName").ElementAt(0).Value</title>
-        <link>@Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)</link>
+        <atom:link href="@siteUrl/feed/rss" rel="self" type="application/rss+xml"/>
+        <link>@siteUrl</link>
         <description>@settings.Descendants("Description").ElementAt(0).Value</description>
         <language>en-US</language>
         <dc:rights>
@@ -33,33 +32,21 @@
 
         @foreach(var comic in comicList){
                   string pagesfilename = "/content/xml/comics/comic-"+comic.Element("ComicValue").Value+".xml";
+                  int comicNo = comic.Element("ComicValue").Value.AsInt();
                   var pageXml = load.LoadComic(pagesfilename);
-            if(comicType=="Long Form"){
-                  var pages = (from xml in pageXml.Descendants("Page")
-                  orderby (string) xml.Element("Date") descending   
-                   select xml);
-                   int pageCount = 0;
-                   foreach(var page in pages){
-                       pageCount++;
-                        @Html.Raw("<item>")
-                        @Html.Raw("<title>"+comic.Element("Title").Value+" Page "+pageCount+"</title>")
-                        @Html.Raw("<link>"+Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/comic/"+comic.Element("ComicValue").Value+"/#!/page/"+pageCount+"</link>")
-                        @Html.Raw("<description><![CDATA["+page.Element("Description").Value+"]]></description>")
-                        @Html.Raw("<pubDate>"+page.Element("Date").Value+"</pubDate>")
-                        @Html.Raw("<dc:creator>"+page.Element("Author").Value+"</dc:creator>")
-                        @Html.Raw("<image>"+Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/images/pages/"+page.Element("Image").Value+"</image>")
-                        @Html.Raw("</item>")
-                                }
-    
-
-            }
             @Html.Raw("<item>")
-            @Html.Raw("<title>"+comic.Element("Title").Value+"</title>")
-            @Html.Raw("<link>"+Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/comic/"+comic.Element("ComicValue").Value+"</link>")
+            @Html.Raw("<title>"+WebUtility.HtmlDecode(comic.Element("Title").Value)+"</title>")
+            @Html.Raw("<link>"+siteUrl+"/comic/"+comic.Element("ComicValue").Value+"</link>")
             @Html.Raw("<description><![CDATA["+pageXml.Descendants("ComicCopy").Descendants("Description").ElementAt(0).Value+"]]></description>")
-            @Html.Raw("<pubDate>"+comic.Element("Date").Value+"</pubDate>")
+            @Html.Raw("<pubDate>"+Convert.ToDateTime(comic.Element("Date").Value).ToString("ddd, dd MMM yyyy HH:mm:ss +0000")+"</pubDate>")
             @Html.Raw("<dc:creator>"+pageXml.Descendants("ComicCopy").Descendants("Author").ElementAt(0).Value+"</dc:creator>")
-            @*Html.Raw("<image>"+Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/images/pages/"+comic.Element("Image").Value+"</image>")*@
+            @Html.Raw("<guid isPermaLink='false'>"+siteUrl+"/"+comic.Element("ComicValue").Value+"</guid>")
+            if(load.comicImg(comicNo,1)!=""){
+            @Html.Raw(
+                 "<media:content url='"+load.comicImg(comicNo,1)+"' medium='image'>"+
+                    "<media:title type='html'>"+WebUtility.HtmlDecode(comic.Element("Title").Value)+"</media:title>"+
+                 "</media:content>")
+                                                                     }
             @Html.Raw("</item>")
          }
     </channel>
