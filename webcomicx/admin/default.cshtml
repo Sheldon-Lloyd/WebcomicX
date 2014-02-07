@@ -101,7 +101,7 @@
             @foreach (SyndicationItem item in feed.Items.Take(5)){
                 try{
                 <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri" target="_blank">@item.Title.Text</a>
-                <span class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</span>
+                <div class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</div>
                 </li>
                 }
                 catch{
@@ -117,8 +117,32 @@
 }
     </section>
     <section>
-        <h3>Recomended Comics From the Web</h3>
-        <ul></ul>
+    <h3>Recomended Comics from the Web</h3>
+    @{
+    url = "http://www.comicharacters.com";
+    feedurl = "http://www.comicharacters.com/feed/rss";
+    try{
+
+        XmlReader ccReader = XmlReader.Create(feedurl);
+        SyndicationFeed ccFeed = SyndicationFeed.Load(ccReader);
+        <ul>
+            @foreach (SyndicationItem item in ccFeed.Items.Take(5)){
+                try{
+                <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri" target="_blank">@item.Title.Text</a>
+                    <div>@Html.Raw(WebUtility.HtmlDecode(item.Summary.Text))</div>
+                </li>
+                }
+                catch{
+                <li><a>Error! webcomics could not be loaded.</a></li>
+                }
+            }    
+        </ul>
+    }
+    catch{
+        <h3>Error, webcomics could not be loaded!</h3>
+
+    }
+}
     </section>
 
 </aside>
