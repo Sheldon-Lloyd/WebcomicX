@@ -697,7 +697,6 @@ h4.comic-collection span {
     margin: 0;
     padding:0px;
     list-style: none;
-    overflow-y: auto;
     color: #fff;
     float: right;
     width: 65%;
