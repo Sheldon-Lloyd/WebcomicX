@@ -1,3 +1,4 @@
+
 /*---------------------Accordion--------------------*/
     function horizontalNext(e) {
         e = $(e).parent();
@@ -48,99 +49,21 @@
 
     function accordion(e) {
         e = $(e).parent();
-        $("h4.accordion span").html("+");
+        $(".accordion-toggle").html("+");
+        $(".accordion-toggle").attr("title","Show pages");
+
         $('div.is-hidden').slideUp(222);
         if (!$(".is-hidden", e).is(":visible")) {
             $('div.is-hidden', e).slideToggle(222);
-            if ($("h4.accordion span", e).text() == "+") {
-                $("h4.accordion span", e).html("&times;");
+            if ($(".accordion-toggle", e).text() == "+") {
+                $(".accordion-toggle", e).html("&times;");
+                $(".accordion-toggle", e).attr("title","Hide pages");
             }
             else {
-                $("h4.accordion h4 span", e).html("+");
+                $(".accordion-button", e).html("+");
+                $(".accordion-toggle", e).attr("title","Show pages");
+
             }
 
         }
     }
-
-
-$(document).ready(function () {
-var navLink = "";
-var url = window.location.pathname;
-url = url.split("/");
-currentComic = parseInt(url[3]);
-
-if(isNaN(currentComic)){
-    try{
-    currentComic = newest;
-        
-    }
-    catch(Error){
-        
-    }
-}
-var preComic = currentComic - 1;
-var xmlDoc2;
-var x2;
-var filename = "/content/xml/comics/comic-" + currentComic + ".xml";
-
-if (window.XMLHttpRequest)
-  {// code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
-  }
-else
-  {// code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-xmlhttp.open("GET",filename,false);
-xmlhttp.send();
-xmlDoc=xmlhttp.responseXML;
-
-    xmlhttp.open("GET", "/content/xml/comics/comic-list.xml", false);
-    xmlhttp.send();
-    comicListXml = xmlhttp.responseXML;
-    comicList = comicListXml.getElementsByTagName("Comic");
-
-if (preComic > 0) {
-    xmlhttp.open("GET", "/content/xml/comics/comic-" + preComic + ".xml", false);
-    xmlhttp.send();
-    xmlDoc2 = xmlhttp.responseXML;
-    x2 = xmlDoc2.getElementsByTagName("Page");
-}
-x=xmlDoc.getElementsByTagName("Page");
-i=0;
-function displayPage(){}
-function editLink(){}
-function editNav(){}
-
-    function go(elementID) {
-        var myElement = elementID.id;
-        var e = document.getElementById(myElement);
-        var gotoUrl = "/comic/read/"+ e.options[e.selectedIndex].value;
-        window.location = gotoUrl;
-    }
-function checkKey(e) {
-    e = e || window.event;
-    if(e.keyCode==37){
-    previous();
-    }
-    if(e.keyCode==39){
-    next();
-    }
-}
-
-document.onkeydown = checkKey;
-
-
-function next() {
-    if (comicList.length > currentComic) {
-        window.location = "/comic/read/" + (currentComic + 1);
-    }
-}
-
-function previous() {
-    if (x2 != undefined) {
-        window.location = "/comic/read/" + preComic;
-    }
-}
-
-});
