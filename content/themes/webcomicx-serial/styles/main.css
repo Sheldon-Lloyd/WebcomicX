@@ -20,6 +20,23 @@ input[type=submit]{
 	border:1px #ccc solid;
 	padding:3px;
 }
+button{
+	padding: 3px;
+	font-size: 18px;
+	border: 1px #ccc solid;
+    border-radius: 3px;
+    margin: 0;
+	background-image: -webkit-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
+	background-image: -o-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
+	background-image: -ms-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
+	background-image: -moz-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
+	background-image: linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
+}
+button:hover{
+	background: #fbfbfb!important;
+    color: #888!important;
+}
+
 h1,h2,h3,h4,h5,h6{
 	margin:0;
 }
@@ -208,7 +225,7 @@ li.menu{
     padding-top: 10px;
     padding-bottom: 10px;
 }
-.menu:hover dl{
+.menu:hover dl, .menu:focus dl{
 	display:block
 }
 .menu dl{
@@ -745,12 +762,12 @@ li.accordion{
 }
 
 h4.accordion {
-    padding: 5px 0 5px 10px
+    padding: 5px 5px 5px 10px
 }
-h4.accordion span{
+.accordion-toggle{
     float: right;
     cursor: pointer;
-    padding: 0 10px;
+    padding: 0px 5px
 }
 .comic-collection a span {
 	position:absolute;

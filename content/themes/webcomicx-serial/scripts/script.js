@@ -49,16 +49,30 @@
 
     function accordion(e) {
         e = $(e).parent();
-        $("h4.accordion span").html("+");
+        $(".accordion-toggle").html("+");
+        $(".accordion-toggle").attr("title","Show pages");
+
         $('div.is-hidden').slideUp(222);
         if (!$(".is-hidden", e).is(":visible")) {
             $('div.is-hidden', e).slideToggle(222);
-            if ($("h4.accordion span", e).text() == "+") {
-                $("h4.accordion span", e).html("&times;");
+            if ($(".accordion-toggle", e).text() == "+") {
+                $(".accordion-toggle", e).html("&times;");
+                $(".accordion-toggle", e).attr("title","Hide pages");
             }
             else {
-                $("h4.accordion h4 span", e).html("+");
+                $(".accordion-button", e).html("+");
+                $(".accordion-toggle", e).attr("title","Show pages");
+
             }
 
         }
     }
+    $(document).ready(function () {
+        $(".menu dl a").focus(function () {
+            $(this).closest(".menu dl").css("display", "block");
+        })
+        $(".menu dl a").focusout(function () {
+            $(this).closest(".menu dl").css("display", "");
+        })
+
+    });

@@ -68,11 +68,11 @@
                             }
                         </li>
                             @if(webpages.Count() > 0){
-                        <li class="menu">	
+                        <li class="menu" tabindex="0">	
                             <a>More &darr;</a>
                             <dl>
                                 @foreach(var webpage in webpages){
-                                <dd><a href="@load.WebpageUrl(webpage.Element("Id").Value)">@webpage.Element("Title").Value</a></dd>
+                                <dd><a href="@load.WebpageUrl(webpage.Element("Id").Value)" tabindex="0">@webpage.Element("Title").Value</a></dd>
                                 }
                             </dl>
                         </li>
@@ -159,6 +159,7 @@
                 </div>
             </footer>
         </div>
+        <script src="@Href("../scripts/script.min.js?v=1")" async></script>
          @RenderSection("scripts",false)
 
     </body>
