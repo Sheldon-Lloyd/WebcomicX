@@ -105,6 +105,11 @@ select{
     -o-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    text-indent: 0.01px;
+    text-overflow: "";
+}
+select::-ms-expand{
+    display: none;
 }
 
 label {

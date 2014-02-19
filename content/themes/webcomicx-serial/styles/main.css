@@ -475,18 +475,22 @@ float:left
 	font-size: 1em;
 	background-position: right center;
 	background-repeat: no-repeat;
-	-webkit-appearance: button;
-	-moz-appearance: button;
-	-webkit-appearance: button;
-	-ms-appearance: button;
-	-o-appearance: button;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	-ms-appearance: none;
+	-o-appearance: none;
+	appearance: none;
     border: 0;
     color: inherit;
 	-webkit-padding-end: 20px;
-	-background-image: url('../images/select-arrow.png');
 	background-color: transparent;
     margin: 0;
-    z-index: 2
+    z-index: 2;
+    text-indent: 0.01px;
+    text-overflow: "";
+}
+.archive-nav  select::-ms-expand{
+    display: none;
 }
 /*the important is so that when person 
     using theme the hover still works*/
