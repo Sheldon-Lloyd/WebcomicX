@@ -84,9 +84,9 @@
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
                       <li class="accordion" >
-                        <h4 class="accordion" onclick="accordion(this);toggleScrollBtn(this);">
+                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <span>+</span>
+                            <button class="accordion-toggle" title="Show pages">+</button>
                         </h4>
                           <div class=" is-hidden" style="position: relative">
                              <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
@@ -133,14 +133,14 @@
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
                       <li class="accordion" >
-                        <h4 class="accordion" onclick="accordion(this);toggleScrollBtn(this);" class="comic-collection ">
+                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);" class="comic-collection ">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <span>+</span>
+                            <button class="accordion-toggle" title="Show pages">+</button>
                         </h4>
                           <div class=" is-hidden">
                              <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
                               <a class="previous" onclick="horizontalBack(this)" rel="prev"><b>‹</b></a>
-                          <div class="comic-collection">
+                          <div class="comic-collection" onscroll="toggleScrollBtn(this)">
                             <ul >
 
                               @foreach(var page in pages.Descendants("Page")){
@@ -170,8 +170,4 @@
                 </ul>
                 </div>
         </div>
-}
-@section scripts{
-<script src="@Href("../scripts/script.min.js?v=1")" async></script>
-
 }
