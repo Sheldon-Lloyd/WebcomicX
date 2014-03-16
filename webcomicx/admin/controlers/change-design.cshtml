@@ -13,12 +13,14 @@
         var reset = Request["reset"].AsBool();
         var includeLogo = Request["includeLogo"].AsBool();
         var filename = "/App_Data/styles.xml";
-        var customStylesFile = "/content/themes/base/styles/custom-styles.xml";
         //load xml
         var load= new Comic();
         var styles = load.LoadComic(filename);
+        var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;        
+        var customStylesFile = "/content/themes/"+theme+"/styles/custom-styles.xml";
         var customStyles = load.LoadComic(customStylesFile);
-
+        
         if(reset){
         //edit general styles
         styles.Descendants("Styles").Descendants("General").Descendants("Width").ElementAt(0).Value="";
@@ -85,7 +87,9 @@
         }
         }
         styles.Save(Server.MapPath(filename));
-        customStyles.Save(Server.MapPath(customStylesFile));
+        try{            
+            customStyles.Save(Server.MapPath(customStylesFile));
+        }catch{}
 
         Response.Redirect("~/webcomicx/admin/customize/design?updated=updated");
 

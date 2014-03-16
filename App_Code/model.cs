@@ -19,6 +19,7 @@ using System.Web.Mvc;
 using System.Linq;
 using  System.Web.Helpers;
 using WebMatrix;
+using System.Text;
 /// <summary>
 /// Summary description for ClassName
 /// </summary>
@@ -88,7 +89,9 @@ public class Comic{
                     pageNo = pages.Descendants("Page").Count();
                 }
                 try{//set the comic image to the image stored in the comic pages xml
-                    comicImg = siteUrl+"/content/uploads/pages/"+pages.Descendants("Page").Descendants("Image").ElementAt(pageNo-1).Value;
+                    if(pages.Descendants("Page").Descendants("Image").ElementAt(pageNo-1).Value!=""){
+                        comicImg = siteUrl+"/content/uploads/pages/"+pages.Descendants("Page").Descendants("Image").ElementAt(pageNo-1).Value;
+                    }
                 }
                 catch{//set the comic image to the image for this comics title page
                     comicImg = "";
@@ -170,11 +173,13 @@ public class Comic{
         return new HtmlString(comicDescription);
 
     }
-    public HtmlString WebComic(int currentComic){//render webcomic
+    public HtmlString WebComic(int currentComic,string attr="",Func<dynamic,object> htmlBefore =null,Func<dynamic,object> htmlAfter =null){//render webcomic
         //initialize variable
         var webComic = "";
+        var webComicHtml = "";
         var pageNo = 0;
-
+        if(htmlBefore==null) htmlBefore =item => new HtmlString(String.Format(""));
+        if(htmlAfter==null) htmlAfter =item => new HtmlString(String.Format(""));
         //load settings and comic pages xml
         var load = new Comic();
         var settings = load.LoadComic("/App_Data/WebcomicX.xml");
@@ -187,29 +192,37 @@ public class Comic{
 
                     //webcomic page caption
                     string caption = "";
+                    string alt = "";
                     if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
                         caption = "<figcaption>"+load.ComicCopy(currentComic,pageNo)+"</figcaption>";
                     }
-
+                    if(page.Element("Description").Value!=""){
+                        alt = page.Element("Description").Value;
+                    }
+                    else{
+                        alt = load.comicTitle(currentComic).ToString()+" page "+pageNo;
+                    }
 
                     //create the image element and set its src
-                    webComic = webComic+"<figure><img id='page-"+pageNo+"' height='auto' width='auto' alt='"+load.comicTitle(currentComic)+" "+pageNo+"' src='"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
+                    webComic = "<figure><img  height='auto' width='auto' alt='"+ alt +"' src='"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
                     }
                 else{//use a title instead of a image
                 if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
-                    webComic = webComic + "<article class='comic-placeholder'><h3>Page "+pageNo+"</h3>"+load.ComicCopy(currentComic,pageNo)+"</article>";
+                    webComic = "<article><h3>Page "+pageNo+"</h3>"+load.ComicCopy(currentComic,pageNo)+"</article>";
                 }
                 else{
-                    webComic = webComic +"<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" Page "+pageNo+"</h3> </div></div>";                    
+                    webComic ="<div class='comic-placeholder'> <h3>"+load.comicTitle(currentComic)+" Page "+pageNo+"</h3> </div>";                    
                     
                 }
                 }
+
+                webComicHtml += "<div id='page-"+pageNo+"' "+attr+">"+htmlBefore(htmlBefore)+webComic+htmlAfter(htmlAfter)+"</div>";
             }
             if(pageNo<=0){
-                webComic = "<div id='page-"+pageNo+"' class='comic-placeholder'> <div class='inner-placeholder'> <h3 class='comic-placeholder-title'>"+load.comicTitle(currentComic)+" </h3> </div></div>";                    
+                webComicHtml = "<div id='page-"+pageNo+"' "+attr+"> <div class='comic-placeholder'> <h3>"+load.comicTitle(currentComic)+" </h3> </div></div>";                    
                     
             }
-        return new HtmlString(webComic);
+        return new HtmlString(webComicHtml);
     }
     public HtmlString Widgets(string position){//create widgets
         //intialize variable
@@ -317,9 +330,9 @@ public class Comic{
     }
     public IHtmlString customStyles(){
         var load = new Comic();
-
+        var settings = load.LoadComic("/App_Data/WebcomicX.xml");
         var styles = load.LoadComic("/App_Data/styles.xml");
-        var customStyles = load.LoadComic("/content/themes/base/styles/custom-styles.xml");
+        var customStyles = load.LoadComic("/content/themes/"+settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value+"/styles/custom-styles.xml");
         var style = "";
 
         //general styles

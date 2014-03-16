@@ -6,7 +6,8 @@
     var guide = Request["tutorial"].AsBool();
     var load= new Comic();
     var styles = load.LoadComic("/App_Data/styles.xml");
-    var customStyles = load.LoadComic("/content/themes/base/styles/custom-styles.xml");
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    var customStyles = load.LoadComic("/content/themes/"+settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value+"/styles/custom-styles.xml");
     string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
     var tutorial = "";
     if(guide){
