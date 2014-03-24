@@ -146,7 +146,7 @@
                               @foreach(var page in pages.Descendants("Page")){
                                     pageCount++;
                                     <li>
-                                        <a href="/comic/@comic.Element("ComicValue").Value/#!/page/@pageCount">
+                                        <a href="/comic/read/@comic.Element("ComicValue").Value/#!/page/@pageCount">
                                             @if(page.Element("Image").Value!=""){
                                             <img width="auto" height="auto" src="/content/uploads/pages/thumbnail/@page.Element("Image").Value" alt="Comic #@comic.Element("ComicValue").Value - @comic.Element("Title").Value Page @pageCount">
                                             }

@@ -504,7 +504,15 @@ float:left
 
 /*Styles for archive page*/
 .archives .side{
-    width: 100%
+    width: 100%;
+    background: #fbfbfb;
+}
+.archives .side{
+    width: 100%;
+    background: #fbfbfb;
+}
+.archives .container{
+    background: #fbfbfb;
 }
 .comic-pagination-archive{
 	position:absolute;
