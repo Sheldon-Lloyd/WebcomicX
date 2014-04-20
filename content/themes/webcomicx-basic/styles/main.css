@@ -340,6 +340,7 @@ li.menu{
 .comic-pagination span {
     vertical-align: middle;
     display: inline-block;
+    font-size: 18px
 }
 .comic-pagination a{
 	text-decoration:none;
@@ -362,24 +363,17 @@ li.menu{
 }
 .previous a{
 	float:left;
-    display: block;
+    font-size: 54px;
+    line-height: 18px;
 }
 .next a{
 	float:left;
     display: block;
+    font-size: 54px;
+    line-height: 18px;
 }
 .comic-pagination b{
-	font-size:3em;
-	font-weight:900;
-	line-height:0.33em;	
 	margin:0 8px;
-}
-.comic-pagination b{
-float:left
-	
-}
-.next b,.next span{
-	float:left
 }
 
 /*Quick Archive Naviigation*/
@@ -479,11 +473,14 @@ float:left
 	position:absolute;
 	left:0;
 	right:0;
-	float:left;
 	z-index:0;
-	margin-top:-10px;
+	margin-top:-9px;
     padding:10px 3px;	
 }
+.comic-pagination-archive a{
+    vertical-align: middle;
+}
+
 .comic-collection {
     overflow-y:hidden;
 }
@@ -806,13 +803,13 @@ h4.accordion {
         text-align: center;
     }
     .header h1{
-        float: initial;
+        float: none;
     }
 }
 
 @media screen and (max-width:620px){
     .nav {
-        float: initial;
+        float: none;
         margin: auto;
         text-align: center;
         width: 100%;
@@ -829,15 +826,13 @@ h4.accordion {
     }
     .collection-cover {
         width: 100%;
-        float: initial;
+        float: none;
     }
     .collection-comics-pages {
     width: 100%;
-    float: initial;
+    float: none;
     }
 .comic-pagination b{
-	font-size:3em;
-	font-weight:900;
 	line-height:0;	
 	margin:8px 15px;
 }
