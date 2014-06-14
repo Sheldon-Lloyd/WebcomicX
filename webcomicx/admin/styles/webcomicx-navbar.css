@@ -45,7 +45,7 @@ ul#webcomicx-menu li a{
     display: block;
     float: right;
 }
-#webcomicx-login span{
+#webcomicx-login a{
     margin: 0 10px;
     display: inline-block;
     overflow: hidden;
