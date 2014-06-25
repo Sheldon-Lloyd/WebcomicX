@@ -12,7 +12,7 @@
 
         XmlReader reader = XmlReader.Create(feedurl);
         SyndicationFeed feed = SyndicationFeed.Load(reader);
-        if(PageData[0]=="Admin"){
+        if(PageData[0]=="Admin"||Request["t"]=="Admin"&&WebSecurity.IsAuthenticated){
             if(WebSecurity.IsAuthenticated){
             var guide = Request["tutorial"].AsBool();
             var tutorial = "";
