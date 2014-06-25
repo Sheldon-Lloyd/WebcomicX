@@ -480,7 +480,7 @@ $("#newCollection").submit(function (event) {
                 var posting2 = $.ajax({ type: "POST", async: false, url: "/webcomicx/admin/controlers/external-blog", data: { "url": url,"feed":feed} });
                 var posting = $.ajax({ type: "POST", async: false, url: "/webcomicx/admin/controlers/blog-settings", data: { "setting": "external"} });
                 posting.done(function (data) {
-                    $("#blogFeed").load("/webcomicx/views/external-blog")
+                    $("#blogFeed").load("/webcomicx/views/external-blog?t=Admin")
                 });
 
             });
@@ -497,7 +497,7 @@ $("#newCollection").submit(function (event) {
                 var posting2 = $.ajax({ type: "POST", async: true, url: "/webcomicx/admin/controlers/webcomicx-blog", data: { "description": description} });
                 var posting = $.ajax({ type: "POST", async: true, url: "/webcomicx/admin/controlers/blog-settings", data: { "setting": "webcomicx"} });
                 posting.done(function (data) {
-                    $("#blogFeed").load("/webcomicx/views/webcomicx-blog")
+                    $("#blogFeed").load("/webcomicx/views/webcomicx-blog?t=Admin")
                 });
 
             });
