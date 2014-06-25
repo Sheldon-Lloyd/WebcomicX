@@ -1,4 +1,4 @@
-﻿@using System.Xml.Linq
+@using System.Xml.Linq
 @using System.Xml
 @using System.ServiceModel.Syndication
 @{
@@ -12,7 +12,7 @@
 
         XmlReader reader = XmlReader.Create(feedurl);
         SyndicationFeed feed = SyndicationFeed.Load(reader);
-        if(PageData[0]!="General"){
+        if(PageData[0]=="Admin"){
             if(WebSecurity.IsAuthenticated){
             var guide = Request["tutorial"].AsBool();
             var tutorial = "";
@@ -65,7 +65,7 @@
                 </div>
             }
         }
-        else if(PageData[0]=="General"){
+        else {
             <dl>
             @foreach (SyndicationItem item in feed.Items.Take(5)){
                 try{
