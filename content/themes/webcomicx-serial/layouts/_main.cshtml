@@ -41,9 +41,6 @@
     </head>
     
     <body class="body" @RenderSection("bodyjs",false)>
-    @if(WebSecurity.IsAuthenticated){
-        @RenderPage("~/webcomicx/views/webcomicx-navbar.cshtml")
-    }
         <div class="header cf">
             <header>
                 <h1>
