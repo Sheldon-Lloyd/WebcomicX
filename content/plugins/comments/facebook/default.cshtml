@@ -13,9 +13,6 @@
 </style>
 <div class="fb-comments" data-href="@url" data-width="100%" data-num-posts="5">Loading...</div>
 <script async>
-    $(window).on('hashchange', function () {
-        $(".fb-comments").attr('data-href', window.location);
-
     (function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
@@ -24,6 +21,4 @@
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
         FB.XFBML.parse();
-    });
-    $(window).trigger('hashchange');
 </script>
