@@ -5,6 +5,7 @@
     bool include = false;
     var status = "";
     var redirectUrl = "";
+    string filePath = "";
 	// set the name of the file
     var load = new Comic();
     var blog = load.LoadComic("/content/xml/content/blog.xml");
@@ -26,7 +27,19 @@
         Response.Status = "301 Moved Permanently";
         Response.AddHeader("Location",redirectUrl);
     }
+    try{
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
+            theme = Request["theme"];
+        }
 
+        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+        
+    }
+    catch{
+    }
+
+    Layout = filePath;
 
 }
 @if(status=="publish"&&include){
@@ -40,7 +53,7 @@
     <meta name="description" content="@post.Element("Description").Value">
 }
 @section article{
-    <h2>@post.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a id="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>}</h2>
+    <h2 itemprop="headline">@post.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>}</h2>
 
     @Html.Raw(post.Element("Content").Value)
 }

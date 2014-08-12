@@ -1,5 +1,8 @@
-﻿@{
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
     Page.PreppendTitle = "Blog - ";
+    string filePath = "";
     bool include = false;
     var load = new Comic();
     var blog = load.LoadComic("/content/xml/content/blog.xml");
@@ -21,7 +24,19 @@
             Response.Status = "301 Moved Permanently";
             Response.AddHeader("Location",redirectUrl);
         }
+    try{
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
+            theme = Request["theme"];
+        }
 
+        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+        
+    }
+    catch{
+    }
+
+    Layout = filePath;
         @section article{
                 <h2>Blog</h2>
                     @foreach(var post in blogPost){//display posts
