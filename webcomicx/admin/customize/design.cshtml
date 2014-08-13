@@ -46,13 +46,21 @@
         <script src="@Href("~/webcomicx/admin/scripts/admin.min.js")"></script>
         <meta name="viewport" content="width=device-width" />
     </head>
-    <body>
+    <body style="display: table;margin: 0;width: 100%;overflow: hidden">
 
 <div class="designer">
     <div class="designer-inner">
-    <h2 class="float-left">Customize Design</h2>
     <form method="post" action="/webcomicx/admin/controlers/change-design" enctype="multipart/form-data">
-    <button name="reset" value="True" class="float-right button">Reset Design</button><button class="button float-right">Save Design</button><a class="button float-right" href="/webcomicx/admin/customize/@tutorial"> &laquo; Back to Layout</a>  
+        <button name="reset" value="True" class="float-right button">Reset Design</button><button class="button float-right">Save Design</button><a style="font-size: 1.1em" class="button float-right" href="/webcomicx/admin/customize/@tutorial"> &laquo; Back to Layout</a> 
+        <div class="theme-selection" >
+            <div >
+        <label for="theme" class="float-left">Theme</label>
+        <div style="overflow: hidden">
+            @RenderPage("~/webcomicx/views/theme-list.cshtml")
+        </div>
+        </div>
+        </div>
+        <h2>Customize Design</h2>
         <select onchange="designOptions(this)">
             <option value="general">General Design</option>
     @foreach(var style in customStyles.Descendants("Style")){
@@ -78,25 +86,19 @@
             <a class="button defaultBackground" id="defaultColor" role="button"><div class="sp-preview"><div class="sp-preview-inner" style="background-color: rgb(0, 0, 0);"></div></div>Use Default</a>
             </div>
         </div>
-        <div class="float-left margin-right colorpicker-container">
-            <label>Link Color <span class="desiner-style-display"></span></label>
-            <div class="gradient-container">
-            <input name="pageLinks"  class="colorpicker editText" data-element=".body a" value="@linkColor" onchange="textColor(this,'.body a')">
-            <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
-            </div>
-        </div>
         <div class="float-left margin-right">
             <label>Font Size</label>
             <div class="gradient-container">
             <select name="fontSize" onchange="pageFont(this)">
-                <option>10</option>
-                <option>12</option>
-                <option>14</option>
-                <option>16</option>
-                <option>18</option>
-                <option>20</option>
-                <option>22</option>
-                <option>24</option>
+                <option value="">Default</option>
+                <option value="10">10</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+                <option value="24">24</option>
             </select>
             </div>
         </div>
@@ -107,6 +109,13 @@
             </div>
         <input id="logo" name="logo" onchange="showUploadedLogo(this)" type="file" style="@if(!include){<text>display: none;</text>} vertical-align:middle" data-img="@logo">
             </div>
+        <div class="float-left margin-right colorpicker-container">
+            <label>Link Color <span class="desiner-style-display"></span></label>
+            <div class="gradient-container">
+            <input name="pageLinks"  class="colorpicker editText" data-element=".body a" value="@linkColor" onchange="textColor(this,'.body a')">
+            <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
+            </div>
+        </div>
         </div>
     @foreach(var style in customStyles.Descendants("Style")){
         try{
@@ -131,17 +140,24 @@
     }
     </form>
     </div>
+</div>
     <div class="min-max-designer">
     <a onclick="toogleDesigner()">Minimize Designer</a>
     </div>
-</div>
 <div class="site-preview">
 <iframe id="sitePreview" src="/?design=true">
 </iframe>
 </div>
     <script>
 
-        $('iframe').load(function () {
+        $('#sitePreview').load(function () {
+            $(this).contents().find('a').click(function (event) {
+                var theme = $('#theme').val()
+                linkHref = $(this).attr('href');
+                $('#sitePreview').attr('src', linkHref + '?design=true&theme=' + theme);
+
+                event.preventDefault();
+            });
             var font = 0;
             var appendedFont;
             $(".colorpicker").spectrum({
@@ -150,17 +166,18 @@
                 preferredFormat: "hex"
 
             });
-            var fontsize = $('iframe').contents().find("body").css("font-size").replace("px", "");
+            var fontsize = $('iframe').contents().find(".body").css("font-size").replace("px", "");
             $("[name='fontSize'] option").each(function () {
                 if (fontsize == $(this).val()) {
                     font = fontsize
                 }
                 if ($(this).val() < fontsize) {
-                    appendedFont = $(this);
+                    //appendedFont = $(this);
                 }
             });
             if (font == 0) {
-                $(appendedFont).after("<option>" + fontsize + "</option>");
+                //$(appendedFont).after("<option>" + fontsize + "</option>");
+                fontsize = "";
             }
             $("[name='fontSize']").val(fontsize).trigger("change");
             var pageWidth = $('iframe').contents().find(".page").css("max-width").replace("px", "");
@@ -180,10 +197,10 @@
                 $('iframe').contents().find($(this).attr("data-element")).css("color", text);
             });
             var logoWidth = $('iframe').contents().find(".logo").width(),
-            logoHeight = $('iframe').contents().find(".logo").height();
+                logoHeight = $('iframe').contents().find(".logo").height();
 
             useLogo();
-            $('iframe').contents().find(".logo").css("width", logoWidth +"px");
+            $('iframe').contents().find(".logo").css("width", logoWidth + "px");
             $('iframe').contents().find(".logo").css("height", logoHeight + "px");
             $('iframe').contents().find(".logo").css("line-height", logoHeight + "px");
             $('iframe').contents().find("#customStyles").remove();
@@ -191,7 +208,7 @@
             $(".defaultBackground").each(function () {
 
                 var e = $(this).closest(".colorpicker-container"),
-                    element = $(".colorpicker", e).attr("data-element");
+                        element = $(".colorpicker", e).attr("data-element");
                 $('iframe').contents().find(element).css("background", "");
                 var color = $('iframe').contents().find(element).css("background-color");
                 $(this).html('<div class="sp-preview"><div class="sp-preview-inner" style="background-color: ' + color + '"></div></div> Use Default');
@@ -207,7 +224,7 @@
             $(".defaultTextColor").each(function () {
 
                 var e = $(this).closest(".colorpicker-container"),
-                    element = $(".colorpicker", e).attr("data-element");
+                        element = $(".colorpicker", e).attr("data-element");
                 $('iframe').contents().find(element).css("color", "");
                 var color = $('iframe').contents().find(element).css("color");
                 $(this).html('<div class="sp-preview"><div class="sp-preview-inner" style="background-color: ' + color + '"></div></div> Use Default');

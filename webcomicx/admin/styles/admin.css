@@ -79,8 +79,10 @@ fieldset {
             padding-bottom: 5px;
         }
 select{
-	padding: 6px 3px;
+	padding: 5px 3px;
 	font-size: 17px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 	background-position: right center;
 	background-repeat: no-repeat;
 	-webkit-appearance: button;
@@ -628,7 +630,7 @@ aside section{
 }
 /*Custom Design Page*/
 .designer{
-    position: fixed;
+    display: table-row;
     width: 100%;
     overflow: auto; 
     height: 230px; 
@@ -639,11 +641,13 @@ aside section{
     right: 0;
     left: 0;
     border-bottom: 2px solid #333;
+    height: 220px;
+    position: relative;
 }
 .designer-inner{
     overflow: auto;
     padding: 8px 15px;
-    height: 190px;
+    -height: 100%
 }
 .design-option .button{
     font-size: 12px;
@@ -670,11 +674,8 @@ aside section{
 .designer select{
     margin: 0;
 }
-input[data-img]{
-    -font-size: 1.5em;
-}
 .min-max-designer{
-    position: absolute; 
+    display: table-row;
     bottom: 0;
     left: 0;
     right: 0;
@@ -688,8 +689,33 @@ input[data-img]{
     padding: 10px;
     background: #fff
 }
+.theme-selection{
+overflow: hidden;
+border: 0;
+padding: 0;
+}
+.theme-selection > div{
+margin: 0 5px 0 0;
+line-height: 0;
+background: #eee;
+border: 1px solid #B3B3B3;
+border-radius: 2px;
+}
+.theme-selection select{
+border: 0;
+border-radius: 0 2px 2px 0;
+border-left: 1px solid #ccc;
+padding: 6px 3px
+}
+.theme-selection label {
+border: 0;
+border-left: 1px;
+padding: 7px;
+line-height: 1.1!important
+}
 .site-preview{
-    position: fixed; 
+    display: table-row;
+    height: 100%;
     bottom: 0;
     top:230px;
     left: 0px;
@@ -701,6 +727,15 @@ input[data-img]{
     width: 100%;
     height: 100%;
     border: 0
+}
+.site-preview-loading{
+    position: fixed;
+top: 0;
+background: rgba(204, 204, 204, 0.95);
+bottom: 0;
+left: 0;
+right: 0;
+z-index: 999999;
 }
 .designer-style-display{
     height: 20px;
@@ -1157,7 +1192,12 @@ padding: 40px;
     display: initial !important;
 }
 }
+@media only screen and (max-width: 550px) {
 
+    .theme-selection {
+    width: 100%;
+    }
+}
 @media only screen and (max-width: 850px) {
     body{
     margin: 0
