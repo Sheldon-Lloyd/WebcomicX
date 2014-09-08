@@ -4,10 +4,12 @@
 @{
 	// set the name of the file
 	string filename = "~/content/xml/content/webpages.xml";
+    string filePath = "";
     var load = new Comic();
     var webpageXml = load.LoadComic(filename);
     var pageId = UrlData[0];
     bool include = false;
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
     var webpage = (from xml in webpageXml.Descendants("Page")
             where xml.Element("Id").Value==pageId
             select xml).FirstOrDefault();
@@ -17,6 +19,19 @@
     catch{
         include = false;
     }
+    try{
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
+            theme = Request["theme"];
+        }
+
+        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+        
+    }
+    catch{
+    }
+    Layout = filePath;
+
 }
 
 @if(include || WebSecurity.IsAuthenticated && webpage!=null){
@@ -34,7 +49,7 @@
         <meta name="description" content="@webpage.Element("Description").Value">
     }
     @section article{
-        <h2>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a id="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h2>
+        <h2>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h2>
 
         @Html.Raw(webpage.Element("Content").Value)
     }
