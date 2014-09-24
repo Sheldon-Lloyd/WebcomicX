@@ -193,6 +193,10 @@ footer p{
     vertical-align: middle;
     display: inline-block;
 }
+.logo img{
+    height: 1em;
+    display: inline-block;
+}
 .nav {
     padding: 0;
     margin: 0;
