@@ -194,6 +194,8 @@ footer p{
 }
 .logo{
     margin: 2px 0;
+    vertical-align: middle;
+    display: inline-block
 }
 .nav {
     padding: 0;
