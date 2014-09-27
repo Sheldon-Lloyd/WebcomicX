@@ -20,8 +20,10 @@
     }
 
 }
+
+
+@RenderPage(filePath)
+
 @if(WebSecurity.IsAuthenticated){
     @RenderPage("~/webcomicx/views/webcomicx-navbar.cshtml")
 }
-
-@RenderPage(filePath)
