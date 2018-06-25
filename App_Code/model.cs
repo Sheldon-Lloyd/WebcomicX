@@ -141,7 +141,7 @@ public class Comic{
     }
     public HtmlString ComicCopy(int currentComic,int page = 0){//display content of comic
         //intialize variable
-        var comicContent = @"You have not published a comic yet this is just a place holder until your fisrt comic is published";
+        var comicContent = @"You have not published a comic yet this is just a place holder until your first comic is published";
 
         //load comic-list xml
         var load = new Comic();
