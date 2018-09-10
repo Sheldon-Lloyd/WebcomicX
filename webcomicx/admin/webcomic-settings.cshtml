@@ -21,9 +21,6 @@
     var license= settings.Descendants("Settings").Descendants("License").ElementAt(0).Value;
     string currentTheme= settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
 
-    //get list of themes in directory
-     string[] themes = Directory.GetDirectories(Server.MapPath("/content/themes"));
-
     bool longCheck = false;
     bool shortCheck = false;
     bool blogCheck = blog.AsBool();
@@ -79,7 +76,9 @@
             settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=blog;
 
             settings.Save(Server.MapPath(filename));
-            Response.Redirect("~/webcomicx/admin/webcomic-settings?updated=updated");
+            
+            Session["updated"] = "true";
+            Response.Redirect("~/webcomicx/admin/webcomic-settings");
             
             if(next=="next"){
                 Response.Redirect("~/webcomicx/admin");
@@ -87,8 +86,9 @@
         }
     }
 }
-@if(updated=="updated"){
-<h3 class="prompt">Changes have been saved <a onclick="closePrompt()">&times;</a></h3>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 <div class="content-wrapper">
         <h2>Webcomic Settings</h2>
@@ -117,15 +117,7 @@
                 <textarea name="description">@description</textarea>
                 <br>
                 <label>Theme</label>
-                <select style="width: 100%" name="theme">
-                    @foreach (string theme in themes){
-                    Uri themeName = new Uri(theme);
-                    <option @if(currentTheme==themeName.Segments.Last()){<text>selected="selected"</text>} value="@themeName.Segments.Last()">
-                        @themeName.Segments.Last()
-                    </option>
-                    }
-                </select>
-
+                @RenderPage("~/webcomicx/views/theme-list.cshtml")
                 <input style="display: none" type="checkbox" id="blog" name="blog" checked="@blogCheck" value="true">
                 <label onclick="checkButton()" id="checkBox" class="button-switch button @checkStyle" for="blog" style="display: initial">Include Blog</label>
                 <br>
