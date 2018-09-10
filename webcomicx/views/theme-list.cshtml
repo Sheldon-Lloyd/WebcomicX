@@ -1,0 +1,19 @@
+﻿@using System.Xml.Linq
+@using System.Xml
+@{
+    var load = new Comic();
+    var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+
+    //get list of themes in directory
+     string[] themes = Directory.GetDirectories(Server.MapPath("/content/themes"));
+    string currentTheme= settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+
+}
+                <select name="theme" id="theme">
+                    @foreach (string theme in themes){
+                    Uri themeName = new Uri(theme);
+                    <option @if(currentTheme==themeName.Segments.Last()){<text>selected="selected"</text>} value="@themeName.Segments.Last()">
+                        @themeName.Segments.Last()
+                    </option>
+                    }
+                </select>
