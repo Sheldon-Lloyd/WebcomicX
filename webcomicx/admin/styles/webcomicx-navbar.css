@@ -3,7 +3,6 @@
     margin: 0;
     padding: 7px;
     font-family: Rockwell, Consolas, "Courier New", Courier, monospace;
-    border-right: 1px solid #ccc;
     cursor: default;
     color: #888;
     font-size: 1.3em;
@@ -14,32 +13,65 @@
     -moz-box-sizing: initial;
     -webkit-box-sizing: initial;
 }
+#webcomicx-button{
+    height: 100%;
+    width: 100%;
+    background: #D7D7D7;
+    font-weight: 700;
+    border: 0;
+    transition: background .3s
+}
+#webcomicx-close{
+    background: #ccc;
+    border: 0;
+    margin: -8px -8px -8px 8px;
+    padding: 8px 16px;
+    font-size: 1.3em;
+    float: right;
+}
+#webcomicx-close:hover{
+    background: #f2f2f2;
+}
+#webcomicx-button:hover{
+    background: #f2f2f2;
+}
+#webcomicx-button:active{
+    background: #c2c2c2;
+}
+#webcomicx-button-txt1 {
+    font-size: .7em;
+    font-weight: 500;
+}
 #webcomicx-menu {
     background: #fff;
-    float: left;
-    margin: -10px;
+    margin: 0;
     position: relative;
+    display: table-row;
+    height: 100%
+}
+#webcomicx-menu-inner{
+    height: 100%;
+    display: table-cell
 }
 ul#webcomicx-menu {
-    display: none;
     background: #fff;
-    position: absolute;
     left: 0;
     width: 100%;
-    padding-left: 8px;
+    padding: 0;
     list-style: none;
-    border-right: 1px solid #ccc;
-    border-left: 1px solid #ccc;
-}
-ul#webcomicx-menu li{
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+    margin: 0;
+    display: block;
+    height: 100%;
+    overflow: auto
 }
 ul#webcomicx-menu li a{
+    padding: 10px;
+    border-top: 1px solid #ccc;
     display: block;
 }
-#webcomicx-menu:hover ul#webcomicx-menu{
-    display: initial;
+#webcomicxLogoutForm{
+    margin: 0;
+    display: block
 }
 #webcomicx-login {
     display: block;
@@ -55,21 +87,24 @@ ul#webcomicx-menu li a{
 #webcomicx-comic-name {
     float: left;
 }
-#webcomicx-navbar form{
-    display: inline-block;
-}
 #webcomicx-navbar {
     zoom:1;
     background: #ccc;
-    padding: 10px;
     font-size: 16px;
     position: fixed;
-    z-index: 99999999;
+    z-index: 2;
     left: 0;
-    right: 0;
+    bottom: 0;
     top: 0;
     line-height: 1;
-    border-bottom: 1px solid #888;
+}
+#webcomicx-nav-inner {
+    background: #fff;
+    float: left;
+    margin: 0;
+    position: relative;
+    height: 100%;
+    display: table;
 }
 #webcomicx-navbar a{
     color: #365b87;
@@ -79,9 +114,6 @@ ul#webcomicx-menu li a{
     color: #333;
     text-decoration: underline
 }
-#webcomicx-login a:hover{
-    text-decoration: none
-}
 #webcomicx-navbar:after {
 clear: both;
 }
@@ -89,8 +121,9 @@ clear: both;
 content: "";
 display: table;
 }
-body{
-    margin-top: 40px!important;
+body,html{
+    margin: 0;
+    padding: 0
 }
 @media only screen and (max-width: 600px) {
     #webcomicx-login {
@@ -109,16 +142,5 @@ body{
         float: initial;
         margin-top: 0px
     }
-    body{
-        margin-top: 80px!important;
-    }
 
-}
-@media only screen and (max-width: 320px) {
-    body{
-        margin-top: 100px!important;
-    }
-    #webcomicx-navbar form{
-    display: block;
-}
 }

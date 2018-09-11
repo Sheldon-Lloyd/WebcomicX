@@ -25,8 +25,9 @@
 
 
 }
-@if(updated=="updated"){
-<h3 class="prompt">Changes have been saved <a onclick="closePrompt()">&times;</a></h3>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 <form method="post" action="/webcomicx/admin/controlers/edit-about/@tutorial">
 <div>

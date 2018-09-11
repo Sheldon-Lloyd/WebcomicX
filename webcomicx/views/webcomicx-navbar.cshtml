@@ -1,40 +1,94 @@
 ﻿@using System.Xml.Linq
+@using System.Web.Optimization;
 
 @{
-    if(WebSecurity.IsAuthenticated && Request["design"]=="true"){
-        <div style="position: fixed;height: 100%;width: 100%;z-index: 9999999"></div>
-    }
-    else{
+    if (WebSecurity.IsAuthenticated) {
+
         var load = new Comic();
 
         var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
 
-        
-        <link rel="stylesheet" href="~/webcomicx/admin/styles/webcomicx-navbar.min.css">
-        
-        <div id="webcomicx-navbar">
-                    <section id="webcomicx-login">
-                            <span>
-                                <a id="webcomicx-username" href="~/webcomicx/admin/account" title="Manage Account">@WebSecurity.CurrentUserName</a>
-                            </span>
-                                <form id="webcomicxLogoutForm" action="~/webcomicx/admin/account/logout" method="post">
-                                    @AntiForgery.GetHtml()
-                                    <a href="javascript:document.getElementById('webcomicxLogoutForm').submit()">Log out</a>
-                                </form>
-                    </section>
-            <nav id="webcomicx-menu">
-                <h3 id="webcomicx-title">WebcomicX <span id="webcomicx-menu-arrow">&#9660;</span></h3>
-                    <ul id="webcomicx-menu">
-                        <li><a href="~/webcomicx/admin">Dashboard</a></li>
-                        <li><a href="/webcomicx/admin/manage-comics">Comics</a></li>
-                        <li><a href="/webcomicx/admin/manage-webpages">Webpages</a></li>
-                        @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
-                        <li><a href="/webcomicx/admin/blog">Blog</a></li>
-                        }
-                        <li><a href="/webcomicx/admin/customize">Customize</a></li>
-                        <li><a href="/webcomicx/admin/webcomic-settings">Settings</a></li>
-                        </ul>
-            </nav>
-        </div>
+        <html>
+        <head>
+            <link href="~/webcomicx/admin/styles/webcomicx-navbar.css" rel="stylesheet">
+            <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
+            <script>
+                function adminMenu() {
+                    e = window.parent.document.getElementById('webcomicXadmin');
+                    if ($(e).attr('data-expanded') !== 'true') {
+                        $(e).css({
+                            width: '100%',
+                            height: '100%',
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            margin: 0
+                        });
+                        $(e).attr('data-expanded', 'true');
+                        $('#webcomicx-navbar').show()
+                        $('#webcomicx-button').css({
+                            opacity: .8,
+                            textIndent: '-200%'
+                        })
+                    }
+                    else {
+                        $(e).css({
+                            width: '',
+                            height: '',
+                            left: '',
+                            right: '',
+                            top: '',
+                            bottom: '',
+                            margin: ''
+                        });
+                        $(e).attr('data-expanded', '');
+                        $('#webcomicx-navbar').hide();
+                        $('#webcomicx-button').css({
+                            opacity: '',
+                            textIndent: ''
+                        })
+
+                    }
+                }
+            </script>
+        </head>
+        <body>
+            <button onclick="adminMenu(); " id="webcomicx-button">
+                <span id="webcomicx-button-txt1">WebcomicX</span>
+                <img alt="" src="/webcomicx/admin/images/glyphicons_280_settings.png">
+                <span>Admin</span>
+            </button>
+            <div style="display: none" id="webcomicx-navbar">
+                <div id="webcomicx-nav-inner">
+                    <h3 id="webcomicx-title">WebcomicX <button onclick="adminMenu()" id="webcomicx-close">&times;</button></h3>
+                    <nav id="webcomicx-menu">
+                        <div id="webcomicx-menu-inner">
+                            <ul id="webcomicx-menu">
+                                <li><a href="~/webcomicx/admin" target="_parent">Dashboard</a></li>
+                                <li><a href="/webcomicx/admin/manage-comics" target="_parent">Comics</a></li>
+                                <li><a href="/webcomicx/admin/manage-webpages" target="_parent">Webpages</a></li>
+                                @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true")
+                                {
+                                    <li><a href="/webcomicx/admin/blog">Blog</a></li>
+                                }
+                                <li><a href="/webcomicx/admin/customize" target="_parent">Customize</a></li>
+                                <li><a href="/webcomicx/admin/webcomic-settings" target="_parent">Settings</a></li>
+                                <li>
+                                    <a id="webcomicx-username" href="~/webcomicx/admin/account" target="_parent" title="Manage Account">@WebSecurity.CurrentUserName</a>
+                                </li>
+                                <li>
+                                    <form id="webcomicxLogoutForm" action="~/webcomicx/admin/account/logout" target="_parent" method="post">
+                                        @AntiForgery.GetHtml()
+                                        <a href="javascript:document.getElementById('webcomicxLogoutForm').submit()">Log out</a>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </body>
+    </html>
     }
 }
