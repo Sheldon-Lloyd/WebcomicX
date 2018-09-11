@@ -9,7 +9,7 @@
     include = Request["include"].AsBool();
     var guide = Request["tutorial"].AsBool();
 
-    var returnUrl = "~/webcomicx/admin/about?updated=updated";
+    var returnUrl = "~/webcomicx/admin/about";
 
     if(guide){
         returnUrl = returnUrl+"&tutorial=true";
@@ -30,6 +30,9 @@
     //save webcomic settings and about page
     settings.Save(Server.MapPath(settingsFilename));
     about.Save(Server.MapPath(filename));
+
+    Session["updated"] = "true";
+
     Response.Redirect(returnUrl);
   }
 }

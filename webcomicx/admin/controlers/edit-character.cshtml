@@ -42,7 +42,8 @@ if(IsPost){
     character.Element("Name").Value=name;   
     character.Element("Bio").Value=bio;
     characterXml.Save(Server.MapPath(filename));
-    Response.Redirect("/webcomicx/admin/characters/edit/"+characterNumber+"?updated=updated");
+    Session["updated"] = "true";
+    Response.Redirect("/webcomicx/admin/characters/edit/"+characterNumber);
 }
 
 }

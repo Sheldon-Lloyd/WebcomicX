@@ -11,7 +11,7 @@
     var postId = UrlData[0];
     var updated = Request["updated"];
     var guide = Request["tutorial"].AsBool();
-    var returnUrl="~/webcomicx/admin/blog/edit-post/"+postId+"?updated=updated";
+    var returnUrl="~/webcomicx/admin/blog/edit-post/"+postId;
     var tutorial = "";
     if(guide){
         returnUrl = returnUrl+"&tutorial=true";
@@ -38,13 +38,15 @@
         post.Element("Status").Value=status;
         post.Element("Title").Value=title;
         blog.Save(Server.MapPath(filename));
-
+        
+        Session["updated"] = "true";
         Response.Redirect(returnUrl);
 
         }
 }
-@if(updated=="updated"){
-<div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 <form method="post" action="">
 
