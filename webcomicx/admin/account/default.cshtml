@@ -80,13 +80,16 @@
             }
         }
             account.Save(Server.MapPath("~/App_Data/account.xml"));
-            Response.Redirect("~/webcomicx/admin/account?updated=updated");
+            Session["updated"] = "true";
+            Response.Redirect("~/webcomicx/admin/account");
         }
     }
 }
-@if(updated=="updated"){
-<h3 class="prompt">Profile Updated <a onclick="closePrompt()"> &times;</a></h3>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
+
 <h2>Edit User Profile</h2>
         <form method="post" action="">
             <fieldset>

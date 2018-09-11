@@ -48,7 +48,7 @@
                 }
             }
             else {
-                    ModelState.AddFormError("The user name or password provided is inc orrect.");
+                    ModelState.AddFormError("The user name or password provided is incorrect.");
             }
 
         }
@@ -64,6 +64,7 @@
         <label>Password</label>
         <input type="password" name="password">
         @Html.ValidationMessage("password")
+        <a href="~/webcomicx/admin/account/forgot-password">Forgot Password?</a>
         <br>
         <input type="submit" value="Sign in">
     </fieldset>
