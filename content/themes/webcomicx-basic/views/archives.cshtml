@@ -11,11 +11,11 @@
     int collectionNo = 0;
     Page.PreppendTitle = "Archives - ";
     Page.Style = "archives";
-
+    var comicTitle = settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value;
     Layout = "../layouts/_main.cshtml";
 }
 @section head{
-<meta name="description" content="Archives For the entire @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
+<meta name="description" content="Archives For the entire @comicTitle Webcomic @load.PrimaryAuthor()">
 <!--[if gte IE 9]>
   <style type="text/css">
     .collection-cover-inner .front h3{
@@ -37,7 +37,7 @@
 }
 @section comic{
         <div class="container">   
-            <h2 class="padding">Comic Archives</h2>
+            <h1 class="padding">@comicTitle Comic Archives</h1>
             @foreach(var collection in collections.Descendants("Collection")){
                 collectionNo++;
                     int comicCount = 0;
@@ -48,18 +48,18 @@
             <div class="collection cf">
 
                  @if(collection.Element("Cover").Value=="" && collection.Element("Description").Value==""){
-                    <h3 class="ie" style="padding:10px ">@collection.Element("Title").Value</h3>
+                    <h3 class="ie" title="@collection.Element("Title").Value" style="padding:10px ">@collection.Element("Title").Value</h3>
    
                  }
                  else if(collection.Element("Cover").Value!="" || collection.Element("Description").Value!=""){
                 <div class="collection-cover">
-                    <div @if(collection.Element("Cover").Value!="" && collection.Element("Description").Value!=""){<text>class="collection-cover-inner"</text>}>
-
+                    <div @(collection.Element("Cover").Value!=""&& collection.Element("Description").Value!=""?"class=collection-cover-inner":"")>
+                        
                         @if(collection.Element("Cover").Value!=""){
                             WebImage cover = new WebImage("~/content/uploads/covers/"+collection.Element("Cover").Value);
                             <figure @if(collection.Element("Description").Value!=""){<text>class="front"</text>}>
                                 <div>
-                                <h3 class="ie collection-cover-header">@collection.Element("Title").Value</h3>
+                                <h3 title="@collection.Element("Title").Value" class="ie collection-cover-header">@collection.Element("Title").Value</h3>
 
                             <img width="auto" height="auto" src="@Href(cover.FileName)" alt="@collection.Element("Cover").Value">
                                 </div>
@@ -68,7 +68,7 @@
                         @if(collection.Element("Description").Value!=""){
                             <figure @if(collection.Element("Cover").Value!=""){<text>class="back"</text>}>
                                 <div>
-                    <h3 class="ie">@collection.Element("Title").Value</h3>
+                    <h3 title="@collection.Element("Title").Value" class="ie">@collection.Element("Title").Value</h3>
 
                                 <p>@collection.Element("Description").Value</p>
                     </div>
@@ -83,38 +83,11 @@
                   string pagesfilename = "/content/xml/comics/comic-"+comic.Element("ComicValue").Value+".xml";
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
-                      <li class="accordion" >
-                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);">
+                    <li class="accordion" >
+                        <h4 class="accordion">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <button class="accordion-toggle" title="Show pages">+</button>
                         </h4>
-                          <div class=" is-hidden" style="position: relative">
-                             <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
-                              <a class="previous" onclick="horizontalBack(this)" rel="prev"><b>‹</b></a>
-                          <div class="comic-collection" onscroll="toggleScrollBtn(this)">
-                            <ul >
-
-                              @foreach(var page in pages.Descendants("Page")){
-                                    pageCount++;
-                                    <li>
-                                        <a href="/comic/read/@comic.Element("ComicValue").Value/#!/page/@pageCount">
-                                            @if(page.Element("Image").Value!=""){
-                                            <img width="auto" height="auto" src="/content/uploads/pages/thumbnail/@page.Element("Image").Value" alt="Comic #@comic.Element("ComicValue").Value - @comic.Element("Title").Value Page @pageCount">
-                                                                                                                                                                                                        }
-                                            <span>Page @pageCount</span>
-                                        </a>
-                                        
-                                    </li>
-                                }
-                                @if(pageCount==0){
-                                <li>
-                                    <p style="white-space: normal">This comic doesn't have any pages yet</p>
-                                </li>
-                                }
-                          </ul>
-                          </div>
-                              </div>
-                      </li>
+                    </li>
               }
                                 @if(comicCount==0){
                                     <li>
@@ -133,45 +106,13 @@
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
                       <li class="accordion" >
-                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);" class="comic-collection ">
+                        <h4 class="accordion" class="comic-collection ">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <button class="accordion-toggle" title="Show pages">+</button>
                         </h4>
-                          <div class=" is-hidden">
-                             <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
-                              <a class="previous" onclick="horizontalBack(this)" rel="prev"><b>‹</b></a>
-                          <div class="comic-collection">
-                            <ul >
-
-                              @foreach(var page in pages.Descendants("Page")){
-                                    pageCount++;
-                                    <li>
-                                        <a href="/comic/@comic.Element("ComicValue").Value/#!/page/@pageCount">
-                                            @if(page.Element("Image").Value!=""){
-                                            <img width="auto" height="auto" src="/content/uploads/pages/thumbnail/@page.Element("Image").Value" alt="Comic #@comic.Element("ComicValue").Value - @comic.Element("Title").Value Page @pageCount">
-                                            }
-                                            <span>Page @pageCount</span>
-                                        </a>
-                                        
-                                    </li>
-                                }
-                                @if(pageCount==0){
-                                <li>
-                                    <p>This comic doesn't have pages yet</p>
-                                </li>
-                                }
-                          </ul>
-                          </div>
-
-                              </div>
                       </li>
                 }
             }
                 </ul>
                 </div>
         </div>
-}
-@section scripts{
-<script src="@Href("../scripts/script.min.js?v=1")" async></script>
-
 }

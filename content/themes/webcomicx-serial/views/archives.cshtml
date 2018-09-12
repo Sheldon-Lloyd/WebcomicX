@@ -11,11 +11,11 @@
     int collectionNo = 0;
     Page.PreppendTitle = "Archives - ";
     Page.Style = "archives";
-
+    var comicTitle = settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value;
     Layout = "../layouts/_main.cshtml";
 }
 @section head{
-<meta name="description" content="Archives For the entire @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
+<meta name="description" content="Archives For the entire @comicTitle Webcomic @load.PrimaryAuthor()">
 <!--[if gte IE 9]>
   <style type="text/css">
     .collection-cover-inner .front h3{
@@ -37,7 +37,7 @@
 }
 @section comic{
         <div class="container">   
-            <h2 class="padding">Comic Archives</h2>
+            <h1 class="padding">@comicTitle Comic Archives</h1>
             @foreach(var collection in collections.Descendants("Collection")){
                 collectionNo++;
                     int comicCount = 0;
@@ -53,7 +53,7 @@
                  }
                  else if(collection.Element("Cover").Value!="" || collection.Element("Description").Value!=""){
                 <div class="collection-cover">
-                    <div @if(collection.Element("Cover").Value!="" && collection.Element("Description").Value!=""){<text>class="collection-cover-inner"</text>}>
+                    <div @(collection.Element("Cover").Value!="" && collection.Element("Description").Value!=""?"class=collection-cover-inner":"")>
 
                         @if(collection.Element("Cover").Value!=""){
                             WebImage cover = new WebImage("~/content/uploads/covers/"+collection.Element("Cover").Value);
@@ -84,9 +84,9 @@
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
                       <li class="accordion" >
-                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);">
+                        <h4 class="accordion cf">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <button class="accordion-toggle" title="Show pages">+</button>
+                            <button class="accordion-toggle" title="Show pages" onclick="accordion(this);toggleScrollBtn(this);">+</button>
                         </h4>
                           <div class=" is-hidden" style="position: relative">
                              <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
@@ -133,9 +133,9 @@
                   var pages = load.LoadComic(pagesfilename);
                   int pageCount = 0;
                       <li class="accordion" >
-                        <h4 class="accordion cf" onclick="accordion(this);toggleScrollBtn(this);" class="comic-collection ">
+                        <h4 class="accordion cf" class="comic-collection ">
                             <a href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())">@comic.Element("Title").Value</a>
-                            <button class="accordion-toggle" title="Show pages">+</button>
+                            <button class="accordion-toggle" title="Show pages" onclick="accordion(this);toggleScrollBtn(this);">+</button>
                         </h4>
                           <div class=" is-hidden">
                              <a class="next" rel="next" onclick="horizontalNext(this)"><b>›</b></a>
