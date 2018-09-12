@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml;
-using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Web;
 using System.Web.SessionState;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.IO;
-using System.Web;
 using System.Web.Mvc;
 using System.Linq;
-using  System.Web.Helpers;
+using System.Web.Helpers;
 using WebMatrix;
+using WebMatrix.WebData;
 using System.Text;
 /// <summary>
-/// Summary description for ClassName
+/// Loads the xml for the sites comic and settings
 /// </summary>
 public class Comic{
     public XDocument LoadComic(string filename){//load xml file if it exists
@@ -69,10 +67,12 @@ public class Comic{
         return previousComic;
 
     }
-    public string viewComic(int currentComic){
+    public string viewComic(int currentComic, int pageNo = 0){
         //view a specific comic
         var viewComic = "/comic/read/"+currentComic+"/";
-
+        if(pageNo>0){//go to the page of the comic
+            viewComic = viewComic+"#page-"+pageNo;
+        }
         return viewComic;
     }
     public string comicImg(int currentComic, int pageNo = -1){
@@ -173,11 +173,13 @@ public class Comic{
         return new HtmlString(comicDescription);
 
     }
-    public HtmlString WebComic(int currentComic,string attr="",Func<dynamic,object> htmlBefore =null,Func<dynamic,object> htmlAfter =null){//render webcomic
+    public HtmlString WebComic(int currentComic,string attr="",Func<dynamic,object> htmlBefore =null,Func<dynamic,object> htmlAfter =null,bool lazyLoad = false){//render webcomic
         //initialize variable
         var webComic = "";
         var webComicHtml = "";
-        var pageNo = 0;
+        int pageNo = 0;
+        string src ="";
+
         if(htmlBefore==null) htmlBefore =item => new HtmlString(String.Format(""));
         if(htmlAfter==null) htmlAfter =item => new HtmlString(String.Format(""));
         //load settings and comic pages xml
@@ -194,7 +196,7 @@ public class Comic{
                     string caption = "";
                     string alt = "";
                     if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
-                        caption = "<figcaption>"+load.ComicCopy(currentComic,pageNo)+"</figcaption>";
+                        caption = "<figcaption id='page-"+pageNo+"-caption'>"+load.ComicCopy(currentComic,pageNo)+"</figcaption>";
                     }
                     if(page.Element("Description").Value!=""){
                         alt = page.Element("Description").Value;
@@ -203,8 +205,15 @@ public class Comic{
                         alt = load.comicTitle(currentComic).ToString()+" page "+pageNo;
                     }
 
+                    if(lazyLoad && pageNo>2){
+                        src = "data-src='"+load.comicImg(currentComic,pageNo)+"'";
+                    }
+                    else{
+                        src = "src='"+load.comicImg(currentComic,pageNo)+"'";
+                    }
+
                     //create the image element and set its src
-                    webComic = "<figure><img  height='auto' width='auto' alt='"+ alt +"' src='"+load.comicImg(currentComic,pageNo)+"'>"+caption+"</figure>";
+                    webComic = "<figure><img "+src+" height='auto' width='auto' alt='"+ alt +"' >"+caption+"</figure>";
                     }
                 else{//use a title instead of a image
                 if(load.ComicCopy(currentComic,pageNo).ToString()!=""){
@@ -294,7 +303,7 @@ public class Comic{
 
         return author;
     }
-    public HtmlString comicHeading(int comicNo){//create heading for comic page
+    public HtmlString comicHeading(int comicNo,string headingTag="h1",string dateFormat="MMMM, d yyyy"){//create heading for comic page
         //intialize variables
         string edit = "";
         string publishHeading = "";
@@ -309,7 +318,7 @@ public class Comic{
         pageCount = pagesDoc.Descendants("Page").Count();        
         if(HttpContext.Current.User.Identity.IsAuthenticated){
             //if user is authenticated display edit page link
-                    edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' class='edit'>Edit</a>";
+            edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' class='edit'>Edit</a>";
         }
         try{
         publishDate = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("Date").ElementAt(comicNo-1).Value);
@@ -318,13 +327,16 @@ public class Comic{
                 
         //set publishHeading variable with date and author
         if(load.comicAuthor(comicNo)!=""){
-            publishHeading = "<h5><span>By "+load.comicAuthor(comicNo)+" </span> on  <span id='pubDate' itemprop='datePublished'>"+publishDate.ToString("MMMM, d yyyy")+"</span></h5>";
+            publishHeading = "<h5><span>By "+load.comicAuthor(comicNo)+" </span> <time datetime='"+publishDate.ToString("yyyy-MM-d")+"' id='pubDate' itemprop='datePublished' pubdate>"+publishDate.ToString(dateFormat)+"</time></h5>";
+        }
+        else if(load.PrimaryAuthor().ToString()!=""){
+            publishHeading = "<h5><span>"+load.PrimaryAuthor(link:true)+"</span> <time datetime='"+publishDate.ToString("yyyy-MM-d")+"' id='pubDate' itemprop='datePublished' pubdate>"+publishDate.ToString(dateFormat)+"</time></h5>";
         }
         else{
-            publishHeading = "<h5><span>"+load.comicAuthor(comicNo)+"</span> <span id='pubDate' itemprop='datePublished'> "+publishDate.ToString("MMMM, d yyyy")+"</span></h5>";
+            publishHeading = "<h5><time datetime='"+publishDate.ToString("yyyy-MM-d")+"' id='pubDate' itemprop='datePublished' pubdate>"+publishDate.ToString(dateFormat)+"</time></h5>";
         }
         //add comic title, and publishHeading to create comic heading
-        string comicHeading = "<h2 itemprop='headline'>"+load.comicTitle(comicNo) +edit+"</h2>"+publishHeading;
+        string comicHeading = "<"+headingTag+" itemprop='headline'>"+load.comicTitle(comicNo) +edit+"</"+headingTag+">"+publishHeading;
 
         return new HtmlString(comicHeading);
     }
@@ -332,21 +344,22 @@ public class Comic{
         var load = new Comic();
         var settings = load.LoadComic("/App_Data/WebcomicX.xml");
         var styles = load.LoadComic("/App_Data/styles.xml");
-        var customStyles = load.LoadComic("/content/themes/"+settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value+"/styles/custom-styles.xml");
-        var style = "";
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
 
+        if(WebSecurity.IsAuthenticated){
+            if(HttpContext.Current.Session["previewTheme"]!=null){
+            theme = HttpContext.Current.Session["previewTheme"].ToString();
+            }
+        }
+        var customStyles = load.LoadComic("/content/themes/"+theme+"/styles/custom-styles.xml");
+        var style = "";
+        var pageBody = "";
         //general styles
         var pageWidth = styles.Descendants("Styles").Descendants("General").Descendants("Width").ElementAt(0).Value;
         var pageBackground = styles.Descendants("Styles").Descendants("General").Descendants("Background").ElementAt(0).Value;
         var linkColor = styles.Descendants("Styles").Descendants("General").Descendants("LinkColor").ElementAt(0).Value;
-        var fontSize = styles.Descendants("Styles").Descendants("General").Descendants("FontSize").ElementAt(0).Value;
-        var headerLogo = styles.Descendants("Styles").Descendants("Header").Descendants("Logo").ElementAt(0).Value;
+        var fontSize = styles.Descendants("Styles").Descendants("General").Descendants("FontSize").ElementAt(0).Value;        
         bool include = Convert.ToBoolean(styles.Descendants("Header").Descendants("IncludeLogo").ElementAt(0).Value);
-
-        if(headerLogo!=""&&include){
-            WebImage logo = new WebImage("~/content/uploads/design/"+headerLogo);
-            headerLogo = ".logo {display:inline-block;margin:auto;text-align:left;text-indent: -99999px;white-space: nowrap;height:"+logo.Height+"px;line-height:"+logo.Height+"px;width:"+logo.Width+"px;background:url(/content/uploads/design/"+headerLogo+") no-repeat;}";
-        }
 
         if(pageWidth!=""){
             pageWidth = ".page {max-width:" +pageWidth+"px}";
@@ -354,10 +367,15 @@ public class Comic{
         if(linkColor!=""){
             linkColor = ".body a{color:"+linkColor+"}";
         }
-        if(pageBackground!=""&&fontSize!=""){
-            pageBackground = ".body {background:"+pageBackground+";font-size:"+fontSize +"px}";
+        if(pageBackground!=""||fontSize!=""){
+            if(pageBackground!=""){
+                pageBackground ="background-color:"+pageBackground;
+            }
+            if(fontSize!=""){
+                fontSize = "font-size:"+fontSize;
+            }
+            pageBody =".body {"+pageBackground+";"+fontSize+"}";
         }
-
         foreach(var customStyle in customStyles.Descendants("Style")){
             var backgroundColor = "";
             var textColor = "";
@@ -386,14 +404,68 @@ public class Comic{
             }
         }
 
-        style = "<style id='customStyles'>" + pageWidth + pageBackground + linkColor + style + headerLogo + "</style>";
+        style = "<style id='customStyles'>" + pageWidth + pageBody + linkColor + style + "</style>";
 
         return new HtmlString(style);
+    }
+    public IHtmlString comicLogo(){
+        var load = new Comic();
+        var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+        var styles = load.LoadComic("/App_Data/styles.xml");
+        bool include = Convert.ToBoolean(styles.Descendants("Header").Descendants("IncludeLogo").ElementAt(0).Value);
+        var logo = styles.Descendants("Styles").Descendants("Header").Descendants("Logo").ElementAt(0).Value;
+        var comicName = settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value;
+        if(logo!=""&&include){
+            WebImage logoImg = new WebImage("~/content/uploads/design/"+logo);
+            logo = "<img class='webcomicX-logo' height='auto' width='auto' src='/content/uploads/design/"+logo+"' alt='"+comicName+"' title='"+comicName+"'>";
+        }
+        else{
+            logo = "<span  class='webcomicX-logo'>"+comicName+"</span>";
+        }
+        return new HtmlString(logo);
+    }
+    public IHtmlString ManageSite(){
+        var html = "";
+        if(WebSecurity.IsAuthenticated){
+            if(HttpContext.Current.Session["previewTheme"]==null){
+                html = "<iframe id='webcomicXadmin' scrolling='no' frameBorder='0' style='position:fixed' width='70px' height='60px' src='/webcomicx/views/webcomicx-navbar.cshtml'></iframe>";
+            }
+        }
+        
+        return new HtmlString(html);
+    }
+    public string SiteTheme(string page = null){
+        var load = new Comic();
+        string filePath = "";
+        var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+
+        try{
+            var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if(WebSecurity.IsAuthenticated){
+            if(HttpContext.Current.Session["previewTheme"]!=null){
+            theme = HttpContext.Current.Session["previewTheme"].ToString();
+            }
+        }
+        if(page == null){
+            filePath = "~/content/themes/" + theme + "/views/home.cshtml";
+        }
+        else{
+            filePath = "~/content/themes/" + theme + "/views/"+page+".cshtml";
+
+        }
+        }
+        catch{
+        }
+        if(HttpContext.Current.Session["previewTheme"]!=null){
+
+            HttpContext.Current.Session.Remove("previewTheme");
+        }
+        return filePath;
     }
     public IHtmlString webcomicxVersion(){
         //version nuber for webcomicx
         //make sure this is always at the bottom of model.cs
-        var verion = new HtmlString("<a href='http://webcomicx.com' target='_blank'>WebcomicX 0.2</a>");
+        var verion = new HtmlString("<a href='http://webcomicx.com'rel='nofollow' target='_blank'>WebcomicX 0.3</a>");
         return verion;
     }
 }
