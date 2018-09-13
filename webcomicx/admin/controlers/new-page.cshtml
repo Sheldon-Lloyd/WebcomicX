@@ -2,16 +2,19 @@
 @using System.Xml
 
 @{
-    var comicCount= UrlData[0];
-                    var pageCount = 0;
-
+    var comicNo= UrlData[0].AsInt();
+    var pageCount = 0;
+    var comicNode = comicNo-1;
 	// set the name of the file
-	string filename = Server.MapPath("/content/xml/comics/comic-"+comicCount+".xml");
+	string filename = Server.MapPath("/content/xml/comics/comic-"+comicNo+".xml");
+    string comicfilename = "/content/xml/comics/comic-list.xml";
 
 	if (File.Exists(filename)){//if file exist load file and appeand nodes to xml file
             var load = new Comic();
 
     var doc = XDocument.Load(filename);
+    var comics = load.LoadComic(comicfilename);
+
     var account = load.LoadComic("/App_Data/account.xml");
     var user = (from xml in account.Descendants("User")
                 where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
@@ -68,15 +71,18 @@
 
                     doc.Descendants("PageList").ElementAt(0).Add(newElement);
 
+                    //change date of when comic was updated
+                    comics.Descendants("Comic").Descendants("EditDate").ElementAt(comicNode).Value=date.ToString();
+
+                    comics.Save(Server.MapPath(comicfilename));
 
                     doc.Save(filename);
                     if(guide){
-                        returnUrl = "~/webcomicx/admin/edit-comic/"+comicCount+"?tutorial=true";
+                        returnUrl = "~/webcomicx/admin/edit-comic/"+comicNo+"?tutorial=true";
                     }
                     else{
-                        returnUrl = "~/webcomicx/admin/edit-comic/"+comicCount;
+                        returnUrl = "~/webcomicx/admin/edit-comic/"+comicNo;
                     }
-
                     Response.Redirect(returnUrl);
             
         }
@@ -84,9 +90,9 @@
 
 <!DOCTYPE html>
 
-        <h2>Pages For Comic #@comicCount: @doc.Descendants("Title").ElementAt(0).Value</h2>                
+        <h2>Pages For Comic #@comicNo: @doc.Descendants("Title").ElementAt(0).Value</h2>                
         
-        <form method="post" enctype="multipart/form-data" action="/webcomicx/admin/manage-pages/@comicCount">
+        <form method="post" enctype="multipart/form-data" action="/webcomicx/admin/manage-pages/@comicNo">
             <fieldset>
                 <h3>Add a New Page</h3>
                 <label>Image</label>
@@ -102,16 +108,16 @@
             @foreach(var page in doc.Descendants("Page")){
                 pageCount++;
                 <div>
-                    <a href="@Href("~/comic/"+comicCount+"/#!/page/"+pageCount)" target="_blank"><img src="@Href("~/content/uploads/pages/thumbnail/"+page.Element("Image").Value)" alt="page number @pageCount"></a>
-                    <a href="/webcomicx/admin/edit-page/@comicCount/@pageCount">Edit</a> | <a>Delete</a> | <a href="@Href("~/comic/"+comicCount+"/#!/page/"+pageCount)">View</a>
+                    <a href="@load.viewComic(comicNo,pageCount)" target="_blank"><img src="@Href("~/content/uploads/pages/thumbnail/"+page.Element("Image").Value)" alt="page number @pageCount"></a>
+                    <a href="/webcomicx/admin/edit-page/@comicNo/@pageCount">Edit</a> | <a>Delete</a> | <a href="@load.viewComic(comicNo,pageCount)">View</a>
                 </div>                
-                    <form method="post" action="/modules/delete-page"><button type="submit" value="@pageCount" name="pageNumber">Delete</button><input type="hidden" value="@comicCount" name="comicNumber"></form>
+                    <form method="post" action="/modules/delete-page"><button type="submit" value="@pageCount" name="pageNumber">Delete</button><input type="hidden" value="@comicNo" name="comicNumber"></form>
             }
 
         </div>
 }
 }
 else{
-    <span> comic #@comicCount hasnt been created yet! <a href="@Href("~/webcomicx/admin/new-comic")">Create it</a></span>
+    <span> comic #@comicNo hasnt been created yet! <a href="@Href("~/webcomicx/admin/new-comic")">Create it</a></span>
 }
 }

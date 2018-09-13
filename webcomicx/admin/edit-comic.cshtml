@@ -16,17 +16,18 @@
     var author = "";
     var content = "";
     var collectionNo = "";
-    var comicNode = comicNumber-1;
+    var comicNode = comicNumber - 1;
     var comicfilename = "/content/xml/comics/comic-list.xml";
-    var pagesfilename = "/content/xml/comics/comic-"+comicNumber+".xml";  
+    var pagesfilename = "/content/xml/comics/comic-" + comicNumber + ".xml";
     var guide = Request["tutorial"].AsBool();
-    var updated = Request["updated"];
-    var returnUrl="~/webcomicx/admin/edit-comic/"+comicNumber+"?updated=updated";
+    var updated = "";
+    var returnUrl = "~/webcomicx/admin/edit-comic/" + comicNumber;
     var tutorial = "";
+    var date = DateTime.UtcNow;
 
-    if(guide){//if user is in tutorial
+    if (guide) {//if user is in tutorial
         //mode change th urls on this page to ensure they stay in the tutorial when completing tasks
-        returnUrl = returnUrl+"&tutorial=true";
+        returnUrl = returnUrl + "&tutorial=true";
         tutorial = "?tutorial=true";
     }
 
@@ -42,67 +43,76 @@
                 where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
                 select xml).FirstOrDefault();
 
-    try{
-    title = comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value;
-    }catch{}
-    try{
-    description = comic.Descendants("ComicCopy").Descendants("Description").ElementAt(0).Value;
-    }catch{}
-    try{
-    content = comic.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value;
-    }catch{}
-if(IsPost){
-    author = user.Element("PenName").Value;
-    title = Request["title"];
-    description = Request.Unvalidated("description");
-    content = Request.Unvalidated("comicContent");
-    collectionNo = Request["collection"];
+    try {//check to see if the comic exists in the comic list
+        title = comicList.Descendants("Comic").ElementAt(comicNode).Value;
+    } catch {//when it does exist redirect to create a new comic
+        Session["comic-exist"] = "false";
 
-    //edit xml files
-    if(comicList.XPathSelectElement("//Title[" + comicNode +"]") !=null){
-    comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value=title;
+        Response.Redirect("~/webcomicx/admin/new-comic");
     }
-    if(comic.XPathSelectElement("//ComicCopy") !=null){
-        if(comic.XPathSelectElement("//ComicCopy/Description") !=null){
-        comic.Descendants("ComicCopy").Descendants("Description").ElementAt(0).Value=description;
-        }
-        else{
-        var newElement =  new XElement(
-            new XElement("Description",description)
-        );
-        comic.Descendants("ComicCopy").ElementAt(0).Add(newElement);
 
-        }
-        if(comic.XPathSelectElement("//ComicCopy/Content") !=null){
-        comic.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value=content;
-        }
-        else{
-        var newElement =  new XElement(
-            new XElement("Content",content)
-        );
-        comic.Descendants("ComicCopy").ElementAt(0).Add(newElement);
+    try {
+        title = comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value;
+    } catch { }
+    try {
+        description = comic.Descendants("ComicCopy").Descendants("Description").ElementAt(0).Value;
+    } catch { }
+    try {
+        content = comic.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value;
+    } catch { }
+    if (IsPost) {
+        author = user.Element("PenName").Value;
+        title = Request["title"];
+        description = Request.Unvalidated("description");
+        content = Request.Unvalidated("comicContent");
+        collectionNo = Request["collection"];
 
+        //edit xml files
+        if (comicList.XPathSelectElement("//Title") != null) {//check if comic is included in comic-list.xml file
+            comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value = title;
         }
+        if (comic.XPathSelectElement("//ComicCopy") != null) {
+            if (comic.XPathSelectElement("//ComicCopy/Description") != null) {
+                comic.Descendants("ComicCopy").Descendants("Description").ElementAt(0).Value = description;
+            } else {
+                var newElement = new XElement(
+                    new XElement("Description", description)
+                );
+                comic.Descendants("ComicCopy").ElementAt(0).Add(newElement);
+
+            }
+            if (comic.XPathSelectElement("//ComicCopy/Content") != null) {
+                comic.Descendants("ComicCopy").Descendants("Content").ElementAt(0).Value = content;
+            } else {
+                var newElement = new XElement(
+                    new XElement("Content", content)
+                );
+                comic.Descendants("ComicCopy").ElementAt(0).Add(newElement);
+
+            }
+        } else {
+            var newElement = new XElement("ComicCopy",
+                new XElement("Author", author),
+                new XElement("Description", description),
+                new XElement("Content", content)
+            );
+
+            comic.Descendants("PageList").ElementAt(0).AddBeforeSelf(newElement);
+        }
+        comicList.Descendants("Comic").Descendants("Collection").ElementAt(comicNode).Value = collectionNo;
+        comicList.Descendants("Comic").Descendants("EditDate").ElementAt(comicNode).Value = date.ToString();
+
+        Session["updated"] = "true";
+
+        //save comic
+        comicList.Save(Server.MapPath(comicfilename));
+        comic.Save(Server.MapPath(pagesfilename));
+        Response.Redirect(returnUrl);
     }
-    else{
-        var newElement =  new XElement("ComicCopy",
-            new XElement("Author", author),
-            new XElement("Description", description),
-            new XElement("Content",content)            
-        );
-
-        comic.Descendants("PageList").ElementAt(0).AddBeforeSelf(newElement);
-    }
-    comicList.Descendants("Comic").Descendants("Collection").ElementAt(comicNode).Value=collectionNo;
-
-    //save comic
-    comicList.Save(Server.MapPath(comicfilename));
-    comic.Save(Server.MapPath(pagesfilename));
-    Response.Redirect(returnUrl);
 }
-}
-@if(updated=="updated"){
-<div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 
 <h2 class="content-wrapper">
@@ -132,7 +142,7 @@ if(IsPost){
             <form method="post" enctype="multipart/form-data">
             <fieldset>
                 <input placeholder="Title" type="text" name="title" value="@title">
-                <label>Other Content</label>
+                <label>Comic Information</label>
 	            <textarea class="copy" name="comicContent">@content</textarea>
 	            <br />
 
@@ -191,9 +201,9 @@ if(IsPost){
             //count pages
                 pageCount++;
                 <li style="background-image:url('@Href("~/content/uploads/pages/thumbnail/"+page.Element("Image").Value)');background-size: contain;background-position:center top;background-repeat: no-repeat;cursor:initial;padding-top:0">
-                    <a style="display: block;height: 100%" href="@Href("~/comic/"+comicNumber+"/#!/page/"+pageCount)" target="_blank"></a>
+                    <a style="display: block;height: 100%" href="/webcomicx/admin/edit-page/@comicNumber/@pageCount/@tutorial"></a>
                     <div class="options">
-                    <a href="/webcomicx/admin/edit-page/@comicNumber/@pageCount/@tutorial">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a href="@Href("~/comic/read/"+comicNumber+"/#!/page/"+pageCount)" target="_blank">View</a>
+                    <a href="/webcomicx/admin/edit-page/@comicNumber/@pageCount/@tutorial">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a href="@load.viewComic(comicNumber,pageCount)" target="_blank">View</a>
                     </div>
                     <form class="delete is-hidden" method="post" action="/webcomicx/admin/controlers/delete-page">
                         <div>

@@ -5,22 +5,22 @@
     Page.Title = "Edit Page";
 
     var comicNo= UrlData[0].AsInt();
-    var pageNo = UrlData[1];
-    int pageNode = Convert.ToInt32(pageNo)-1;
+    int pageNo = UrlData[1].AsInt();
+    int pageNode = pageNo-1;
+    var comicNode = comicNo-1;
     var guide = Request["tutorial"].AsBool();
-    var updated = Request["updated"];
-
-    var returnUrl = "/webcomicx/admin/edit-page/"+comicNo+"/"+pageNo+"?updated=updated";
+    var returnUrl = "/webcomicx/admin/edit-page/"+comicNo+"/"+pageNo;
     var tutorial = "";
     if(guide){
         returnUrl = returnUrl+"&tutorial=true";
         tutorial = "?tutorial=true";
     }
 
-    string comicfilename = "/content/xml/comics/comic-"+comicNo+".xml";
+    string pagesfilename = "/content/xml/comics/comic-"+comicNo+".xml";
+    string comicfilename = "/content/xml/comics/comic-list.xml";
     var loadXml= new Comic();
-    var page= loadXml.LoadComic(comicfilename);
-    var comics= loadXml.LoadComic("/content/xml/comics/comic-list.xml");
+    var page= loadXml.LoadComic(pagesfilename);
+    var comics= loadXml.LoadComic(comicfilename);
     var account = loadXml.LoadComic("/App_Data/account.xml");
     var user = (from xml in account.Descendants("User")
                 where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
@@ -35,6 +35,8 @@
         var newFileName = "";
         var imageThumbPath = "";
         WebImage image = null;
+        var date = DateTime.UtcNow;
+
         int i = 0;
         image = WebImage.GetImageFromRequest();
         if (image != null){
@@ -64,18 +66,27 @@
         //page.Descendants("Page").Descendants("Author").ElementAt(pageNode).Value=attribute;
         page.Descendants("Page").Descendants("Description").ElementAt(pageNode).Value=description;
         page.Descendants("Page").Descendants("Content").ElementAt(pageNode).Value=content;
-        page.Save(Server.MapPath(comicfilename));
+        
+        //change date of when comic was updated
+        comics.Descendants("Comic").Descendants("EditDate").ElementAt(comicNode).Value=date.ToString();
+
+        comics.Save(Server.MapPath(comicfilename));
+        page.Save(Server.MapPath(pagesfilename));
+
+        Session["updated"] = "true";
+
         Response.Redirect(returnUrl);
     }
 }
 
-@if(updated=="updated"){
-<div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+@if(Session["updated"]=="true"){
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 <div class="content-wrapper">
         <h2>
             Edit Page @pageNo For @comics.Descendants("Comic").Descendants("Title").ElementAt(comicNo-1).Value
-            <a class="button float-right" href="/comic/read/@comicNo/#!/page/@pageNo" target="_blank">View Page</a><a class="button float-right" href="/webcomicx/admin/edit-comic/@comicNo/@tutorial"> &laquo; Back to Comic #@comicNo</a>
+            <a class="button float-right" href="@loadXml.viewComic(comicNo,pageNo)" target="_blank">View Page</a><a class="button float-right" href="/webcomicx/admin/edit-comic/@comicNo/@tutorial"> &laquo; Back to Comic #@comicNo</a>
         </h2>
         <form method="post" enctype="multipart/form-data">
             <fieldset>

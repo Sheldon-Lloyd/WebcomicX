@@ -4,83 +4,56 @@
 @{
     Page.Title = "New Comic";
 
-        //set variables
-        var title = "";
-        var author = "";
-        var description = "";
-        var content = "";
-        var guide = Request["tutorial"].AsBool();
-        var tutorial = "";
-        if(guide){
-            tutorial ="?tutorial=true";
-        }
+    //set variables
+    var title = "";
+    var author = "";
+    var description = "";
+    var content = "";
+    var guide = Request["tutorial"].AsBool();
+    var tutorial = "";
+    if (guide) {
+        tutorial = "?tutorial=true";
+    }
 
-        var load = new Comic();
-        var settings = load.LoadComic("/App_Data/WebcomicX.xml");
-        var account = load.LoadComic("/App_Data/account.xml");
-        var user = (from xml in account.Descendants("User")
+    var load = new Comic();
+    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    var account = load.LoadComic("/App_Data/account.xml");
+    var user = (from xml in account.Descendants("User")
                 where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
-                   select xml).FirstOrDefault();
+                select xml).FirstOrDefault();
 
-    if (IsPost){
+    if (IsPost) {
         //set variables
         title = Request["title"];
         description = Request["description"];
-        description = Request.Unvalidated("content");
+        content = Request.Unvalidated("content");
         author = user.Element("PenName").Value;
         var date = DateTime.UtcNow;
         int comicCount = 0;
-        var imagePath = "";
-        var newFileName = "";
-        var imageThumbPath = "";
-        WebImage image = null;
-        int i = 0;
         var returnUrl = "";
 
-              
-        image = WebImage.GetImageFromRequest();
-        if (image != null){
-            newFileName = Path.GetFileNameWithoutExtension(image.FileName);
-            var extension = Path.GetExtension(image.FileName);
-            var imagefilename = newFileName;
-            while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/pages/"+newFileName+extension))){
-                i++;
-            
-                newFileName = imagefilename+"-"+i;
 
-            }
-            newFileName=newFileName+extension;
-            imagePath = @"pages/"+newFileName;
 
-            //get height of the image
-            var imgageHeight = image.Height;
-            
-            image.Resize(width: 800, height:imgageHeight, preserveAspectRatio: true,preventEnlarge:true);
-            image.Save(@"~/content/uploads/" + imagePath);
-            imageThumbPath = @"pages/thumbnail/"+newFileName;
-            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
-            image.Save(@"~/content/uploads/" + imageThumbPath);
-            }
+        // set the name of the file
+        string filename = Server.MapPath("/content/xml/comics/comic-list.xml");
 
-			// set the name of the file
-			string filename = Server.MapPath("/content/xml/comics/comic-list.xml");
+        // check if the file exists
+        if (File.Exists(filename)) {//if file exist load file and appeand nodes to xml file
 
-			// check if the file exists
-			if (File.Exists(filename)){//if file exist load file and appeand nodes to xml file
-            
             var doc = XDocument.Load(filename);
             //XNamespace df = doc.Root.Name.Namespace;
 
-            foreach(var comicItem in doc.Descendants("Comic")){
+            foreach (var comicItem in doc.Descendants("Comic")) {
                 comicCount++;
             }
 
-            var newElement =  new XElement(
+            var newElement = new XElement(
                 new XElement("Comic",
                     new XElement("Title", title),
-                    new XElement("ComicValue", (comicCount+1)),
+                    new XElement("ComicValue", (comicCount + 1)),
                     new XElement("Collection", ""),
-                    new XElement("Date", date)
+                    new XElement("Date", date),
+                    new XElement("EditDate", date)
                 )
             );
 
@@ -95,24 +68,25 @@
                     new XElement("ComicCopy",
                         new XElement("Author", author),
                         new XElement("Description", description),
-                        new XElement("Content",content)
+                        new XElement("Content", content)
                     ),
-                    new XElement("PageList","")
+                    new XElement("PageList", "")
                 ));
 
-            comic.Save(Server.MapPath("/content/xml/comics/comic-"+(comicCount+1)+".xml"));
-            
+            comic.Save(Server.MapPath("/content/xml/comics/comic-" + (comicCount + 1) + ".xml"));
 
-			}
-			else{//if it doesnt exist create the file
+
+        } else {//if it doesnt exist create the file
 
             XDocument doc = new XDocument(
                 new XElement("ComicList",
                 new XElement("Comic",
                     new XElement("Title", title),
-                    new XElement("ComicValue", (comicCount+1)),
+                    new XElement("ComicValue", (comicCount + 1)),
                     new XElement("Collection", ""),
-                    new XElement("Date", date)
+                    new XElement("Date", date),
+                    new XElement("EditDate", date)
+
                 )
             ));
             doc.Save(filename);
@@ -123,47 +97,45 @@
                     new XElement("ComicCopy",
                         new XElement("Author", author),
                         new XElement("Description", description),
-                        new XElement("Content",content)
+                        new XElement("Content", content)
                     ),
-                    new XElement("PageList","")
+                    new XElement("PageList", "")
                 ));
 
-            comic.Save(Server.MapPath("/content/xml/comics/comic-"+(comicCount+1)+".xml"));
+            comic.Save(Server.MapPath("/content/xml/comics/comic-" + (comicCount + 1) + ".xml"));
 
-			}
-            if(guide){
-                returnUrl = "~/webcomicx/admin/edit-comic/"+(comicCount+1)+"?next=next&tutorial=true";
-            }
-            else{
-                returnUrl ="~/webcomicx/admin/edit-comic/"+(comicCount+1)+"?next=next";
-            }
-                
-            Response.Redirect(returnUrl);
+        }
+        if (guide) {
+            returnUrl = "~/webcomicx/admin/edit-comic/" + (comicCount + 1) + "?next=next&tutorial=true";
+        } else {
+            returnUrl = "~/webcomicx/admin/edit-comic/" + (comicCount + 1) + "?next=next";
+        }
+
+        Response.Redirect(returnUrl);
     }
 
 
 }
-<h2>New Comic</h2>    
+@if (Session["comic-exist"] == "false") {
+    HttpContext.Current.Session.Remove("comic-does-not-exist");
+    <div class="prompt warning">This comic does not exist but you can create a new one <a href="http://webcomicx.com/guide#publishing-comics">Learn more</a> <a onclick="closePrompt()">&times;</a></div>
+}
+<h2>New Comic</h2>
 <div class="content-wrapper">
-        <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
 
-            <fieldset>
-                <label>Title</label>
-                <input type="text" name="title" value="@title">
-                <div class="imageUpload">
-                    <label>Image</label>
-    		        <input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
-		            <div class="image-list"></div>
-                </div>
-                <label>Extra Content</label>
-                <textarea style="min-height: 200px" name="content">@content</textarea>
-                <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
-                <textarea style="min-height: 100px" name="description">@description</textarea>
+        <fieldset>
+            <label>Title</label>
+            <input type="text" name="title" value="@title">
+            <label>Comic Information</label>
+            <textarea style="min-height: 200px" name="content">@content</textarea>
+            <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
+            <textarea style="min-height: 100px" name="description">@description</textarea>
 
-                <div>
+            <div>
                 <a href="/webcomicx/admin/manage-comics">Cancel</a>
                 <input type="submit" value="Next">
-                </div>
-            </fieldset>
-        </form>
+            </div>
+        </fieldset>
+    </form>
 </div>
