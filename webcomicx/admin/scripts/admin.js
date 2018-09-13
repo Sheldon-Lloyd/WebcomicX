@@ -351,7 +351,7 @@ $("#newCollection").submit(function (event) {
     function deletePrompt(e){
         $(e).closest('.item-list li').children('.delete').toggle()
     }
-
+    setTimeout(function () { closePrompt() }, 9001);
 /*-----------------Form manipulation-----------------*/
     //check box
         function checkButton(){
@@ -569,12 +569,31 @@ $("#newCollection").submit(function (event) {
         $(".design-option").hide();
         $(option).show();
     }
+    function setTheme() {
+        //make sure theme stays the same when navigating site
+
+        //set theme for next page when iframe changes
+        $('#sitePreview').contents().find('body').attr('onbeforeunload', "$.ajax({ async:false, url: '/webcomicx/admin/customize/design?theme=" + $('#theme').val() + "'});setTimeout(document.readyState ? 10 : 5000);");
+
+        //remove admin panel if its there
+        $('#sitePreview').contents().find('webcomicXadmin').remove();
+    }
+
     $(document).ready(function () {
         $('#theme').on('change', function () {
+            //change and preview the selected theme
             var theme = $(this).val();
-            //alert("hello");
-            $('#sitePreview').contents().find('body').append('<h1 style="position: fixed;top: 0;background: rgba(204, 204, 204, 0.95);bottom: 0;left: 0;right: 0;z-index: 999999;text-align:center;padding:20px">Loading...</h1>');
-            $('#sitePreview').attr('src', '/?design=true&theme=' + theme);
+            $('#sitePreview').remove()
+            $('.site-preview-inner').append('<h1 class="site-preview-loading">Loading...</h1>');
+
+            $.ajax({
+                url: "/webcomicx/admin/customize/design?theme=" + theme
+            }).done(function () {
+                $('.site-preview-inner').append('<iframe  id="sitePreview" src="/"  onload="setTheme()" ></iframe>');
+                $("#sitePreview").on("load", function () {
+                    $('.site-preview-loading').remove();
+                });
+            });
         });
     });
     function toogleDesigner() {
@@ -595,31 +614,20 @@ $("#newCollection").submit(function (event) {
     }
     function useLogo() {
         e = document.getElementById("includeLogo");
-        var include = $(e).val();
-
+        var include = $(e).val(),
+        logoTitle = $('iframe').contents().find(".webcomicX-logo").text()!==''?$('iframe').contents().find(".webcomicX-logo").text():$('iframe').contents().find(".webcomicX-logo").attr('alt');
         if (e.checked != 1) {
             $("#logo").hide();
             $("#logo").val("");
-            $('iframe').contents().find(".logo").css("background", "none");
-            $('iframe').contents().find(".logo").css("text-indent", "0");
-            $('iframe').contents().find(".logo").css("height", "auto");
-            $('iframe').contents().find(".logo").css("width", "auto");
+            $('iframe').contents().find(".webcomicX-logo").replaceWith('<span class="webcomicX-logo">'+logoTitle+'</span>')
         }
         else {
             $("#logo").css("display","inline-block");
             imgUrl = $("#logo").attr("data-img");
             if (imgUrl != "") {
                 var imgLogo = new Image();
-                imgLogo.src = "/content/uploads/design/" + imgUrl;
-                $('iframe').contents().find(".logo").css("width", imgLogo.width + "px");
-                $('iframe').contents().find(".logo").css("height", imgLogo.height + "px");
-                $('iframe').contents().find(".logo").css("background", "url('" + imgLogo.src + "') no-repeat");
-                $('iframe').contents().find(".logo").css("text-align", "left");
-                $('iframe').contents().find(".logo").css("text-indent", "-999999px");
-                $('iframe').contents().find(".logo").css("margin", "auto");
-                $('iframe').contents().find(".logo").css("line-height", imgLogo.height + "px");
-                $('iframe').contents().find(".logo").css("display", "inline-block");
-                $('iframe').contents().find(".logo").css("display", "inline-block");
+                imgLogo.src = imgUrl;
+                $('iframe').contents().find(".webcomicX-logo").replaceWith('<img class="webcomicX-logo" src="' + imgUrl + '" alt="' + logoTitle + '" width="auto" height="auto">');
             }
         }
     }
@@ -646,15 +654,7 @@ $("#newCollection").submit(function (event) {
                         if (imgUrl != "") {
                             var img = new Image();
                             img.src = imgUrl;
-                            $('iframe').contents().find(".logo").css("width", img.width + "px");
-                            $('iframe').contents().find(".logo").css("height", img.height + "px");
-                            $('iframe').contents().find(".logo").css("background", "url('" + img.src + "') no-repeat");
-                            $('iframe').contents().find(".logo").css("text-align", "left");
-                            $('iframe').contents().find(".logo").css("text-indent", "-999999px");
-                            $('iframe').contents().find(".logo").css("margin", "auto");
-                            $('iframe').contents().find(".logo").css("line-height", img.height + "px");
-                            $('iframe').contents().find(".logo").css("display", "inline-block");
-                            $('iframe').contents().find(".logo").css("display", "inline-block");
+                            useLogo();
                         }
                     };
                     reader.readAsDataURL(file);

@@ -10,7 +10,7 @@
 
         <html>
         <head>
-            <link href="~/webcomicx/admin/styles/webcomicx-navbar.css" rel="stylesheet">
+            @Styles.Render("~/webcomicx/admin/styles/admin-nav")
             <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
             <script>
                 function adminMenu() {
@@ -68,8 +68,7 @@
                                 <li><a href="~/webcomicx/admin" target="_parent">Dashboard</a></li>
                                 <li><a href="/webcomicx/admin/manage-comics" target="_parent">Comics</a></li>
                                 <li><a href="/webcomicx/admin/manage-webpages" target="_parent">Webpages</a></li>
-                                @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true")
-                                {
+                                @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
                                     <li><a href="/webcomicx/admin/blog">Blog</a></li>
                                 }
                                 <li><a href="/webcomicx/admin/customize" target="_parent">Customize</a></li>
@@ -90,5 +89,5 @@
             </div>
         </body>
     </html>
+        }
     }
-}

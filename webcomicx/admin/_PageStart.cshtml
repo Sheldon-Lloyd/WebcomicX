@@ -1,31 +1,46 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using System.Web.Optimization
 
 @{
     // Set the layout page for the whole site
     Layout = "~/webcomicx/admin/layouts/_AdminLayout.cshtml";
     var currentUrl = Request.Url.GetComponents(UriComponents.AbsoluteUri, UriFormat.UriEscaped);
     Uri url = new Uri(currentUrl);
-    string path = String.Format("{0}{1}{2}{3}", url.Scheme, Uri.SchemeDelimiter, url.Authority, url.AbsolutePath);
-    var signinUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped)+"/webcomicx/admin/account/signin";
+    string path = String.Format("{0}{1}{2}{3}", url.Scheme, Uri.SchemeDelimiter, url.Authority, url.AbsolutePath).ToLower();
+    var signinUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped) + "/webcomicx/admin/account/signin";
+    var forgotPasswordUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped) + "/webcomicx/admin/account/forgot-password";
+    var resetPasswordUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped) + "/webcomicx/admin/account/password-reset";
     int userCount = 0;
-    
+    var bundles = BundleTable.Bundles;
+    BundleTable.EnableOptimizations = true;
+
     //load xml
     var load = new Comic();
     var account = load.LoadComic("/App_Data/account.xml");
 
     //count the number of accounts for this webcomic
-    foreach(var user in account.Descendants("User")){
+    foreach (var user in account.Descendants("User")) {
         userCount++;
     }
     //if their are no accounts send user to setup page
-    if(userCount>0){
-        if(!WebSecurity.IsAuthenticated){
+    if (userCount > 0) {
+        if (!WebSecurity.IsAuthenticated) {
             var redirectUrl = currentUrl;
-            if(path!=signinUrl){
-                    Response.Redirect("~/webcomicx/admin/account/signin?redirect="+redirectUrl);
+            if (path != signinUrl && path != forgotPasswordUrl && path != resetPasswordUrl) {
+                Response.Redirect("~/webcomicx/admin/account/signin?redirect=" + redirectUrl);
             }
         }
     }
+
+    //Minify the admin css
+    bundles.Add(new StyleBundle("~/webcomicx/admin/styles/css").Include(
+"~/webcomicx/admin/styles/admin.css"));
+    bundles.Add(new StyleBundle("~/webcomicx/admin/styles/admin-nav").Include(
+"~/webcomicx/admin/styles/webcomicx-navbar.css"));
+
+    //Minify the amin javascript
+    bundles.Add(new ScriptBundle("~/webcomicx/admin/scripts/js").Include("~/webcomicx/admin/scripts/admin.js"));
+
 
 }

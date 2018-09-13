@@ -363,9 +363,7 @@ z-index: 999
 }
 
 .panel-content{
-    border-top: 2px groove #ccc;
-    padding-top: 10px
-    
+    border-top: 2px groove #ccc;   
 }
 .side-panel .submit-button{
     position: fixed;
@@ -518,19 +516,23 @@ hgroup.title h2 {
     opacity: .7;
 }
 
-.prompt{
-position: fixed;
-top: 50px;
--background-color: rgb(153, 235, 255 );
-background: #590;
-color: #fff;
-display: block;
-z-index: 9;
-padding: 5px 20px;
-border: 1px solid #555;
-border-radius: 3px;
+.prompt {
+    position: fixed;
+    top: 50px;
+    background: rgba(172, 220, 172, 0.7);
+    display: block;
+    z-index: 9;
+    padding: 5px 20px;
+    border: 1px solid #555;
+    border-radius: 3px;
 }
-
+.prompt a[onclick]{
+text-decoration: none;
+margin-left:20px
+}
+.prompt.warning {
+    background: rgba(242, 242, 147, 0.7);
+}
 /* content */
 article {
     float: left;
@@ -565,17 +567,16 @@ aside section{
     display: block
 }
 
-    aside ul {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 0
-    }
+aside ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+}
 
-        aside li {
-            padding: 10px 0;
-            display: block;
-            border-top: 1px solid #F4F4F4;
-        }
+aside li {
+    padding: 10px 0;
+    border-top: 1px solid #F4F4F4;
+}
 
 /* login page */
 #loginForm {
@@ -635,7 +636,7 @@ aside section{
     overflow: auto; 
     height: 230px; 
     left: 0;
-    background: #ccc;
+    background: #eee;
     top: 0;
     z-index: 9999;
     right: 0;
@@ -660,8 +661,8 @@ aside section{
     padding: 0;
     height: 100%;
     background: #eee;
-    border-radius: 4px;
-    border: 1px #bbb groove;
+    border-radius: 3px;
+    border: 1px #bbb solid;
     margin: 5px 15px 5px 0;
 }
 .designer label{
@@ -723,13 +724,17 @@ line-height: 1.1!important
     right: 0; 
     z-index: 99999;
 }
+.site-preview-inner {
+    display: table-cell;
+    position: relative
+}
 .site-preview iframe{
     width: 100%;
     height: 100%;
     border: 0
 }
 .site-preview-loading{
-    position: fixed;
+    position: absolute;
 top: 0;
 background: rgba(204, 204, 204, 0.95);
 bottom: 0;
@@ -786,7 +791,8 @@ z-index: 999999;
     margin: 0
 }
 .message-guide li{
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    border: 0
 }
 .message-guide-dismiss{
     position: absolute;

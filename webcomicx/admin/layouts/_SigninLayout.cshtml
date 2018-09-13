@@ -1,5 +1,4 @@
-﻿@{
-}
+﻿@using  System.Web.Optimization
 
 <!DOCTYPE html>
 
@@ -8,7 +7,7 @@
         <meta charset="utf-8" />
         <title>Webcomicx @Page.Title</title>
         <link href="~/webcomicx/admin/jquery-themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
-        <link href="/webcomicx/admin/styles/admin.min.css" rel="stylesheet" type="text/css" />
+        @Styles.Render("~/webcomicx/admin/styles/css")
         <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js" async></script>
         <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
     <script src="~/webcomicx/admin/Scripts/jquery.validate.min.js"></script>

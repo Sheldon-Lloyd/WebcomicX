@@ -1,50 +1,60 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using System.Web.Optimization
 
 @{
     var load = new Comic();
     var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
 
+
+
+
 }
+
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>@Page.Title - WebcomicX</title>
-        <link href="~/webcomicx/admin/jquery-themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
-        <link href="~/webcomicx/admin/styles/admin.min.css" rel="stylesheet" type="text/css" />
-        <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
-        <script src="~/webcomicx/admin/Scripts/jquery-ui-1.9.2.min.js"></script>
-        <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
-        <script src="@Href("~/webcomicx/admin/scripts/admin.min.js")"></script>
-        <meta name="viewport" content="width=device-width" />
-        @RenderSection("header", required: false)
-    </head>
-    <body>
-        <div style="height: auto; min-height: 100%; position: relative;padding-bottom: 40px">
-                    <section id="login">
-                        <h3><a href="/">@settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value</a></h3>
-                        @if (WebSecurity.IsAuthenticated) {
-                            <text>
-                                Hello, <a class="username" href="~/webcomicx/admin/account" title="Manage Account">@WebSecurity.CurrentUserName</a>!
-                                <form id="logoutForm" action="~/webcomicx/admin/account/logout" method="post">
-                                    @AntiForgery.GetHtml()
-                                    <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
-                                </form>
-                            </text>
-                        }                    </section>
+<head>
+    <meta charset="utf-8" />
+    <title>@Page.Title - WebcomicX</title>
+    <link href="~/webcomicx/admin/jquery-themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
+    <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/webcomicx/admin/Scripts/jquery-ui-1.9.2.min.js"></script>
+    <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
+    @Scripts.Render("~/webcomicx/admin/scripts/js")
+    @Styles.Render("~/webcomicx/admin/styles/css")
+
+    <meta name="viewport" content="width=device-width" />
+    @RenderSection("header", required: false)
+</head>
+<body>
+    <div style="height: auto; min-height: 100%; position: relative;padding-bottom: 40px">
+        <section id="login">
+            <h3><a href="/">@settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value</a></h3>
+            @if (WebSecurity.IsAuthenticated)
+            {
+                <text>
+                    Hello, <a class="username" href="~/webcomicx/admin/account" title="Manage Account">@WebSecurity.CurrentUserName</a>!
+                    <form id="logoutForm" action="~/webcomicx/admin/account/logout" method="post">
+                        @AntiForgery.GetHtml()
+                        <a href="javascript:document.getElementById('logoutForm').submit()">Log out</a>
+                    </form>
+                </text>
+            }
+        </section>
 
         <div class="side-panel">
             <header>
-                <h1 class="site-title" onclick="accordion(this)" @if(IsSectionDefined("sidePanel")){<text>style="cursor:pointer" </text>}>WebcomicX <span @if(IsSectionDefined("sidePanel")){<text>style="display: initial"</text>}>&#9660;</span></h1>
-                <div  class="accordion @if(!IsSectionDefined("sidePanel")){<text> menu-fix </text>}" style="@if(IsSectionDefined("sidePanel")){<text>display: none;</text>} clear: both">
+                <h1 class="site-title" onclick="accordion(this)" @if (IsSectionDefined("sidePanel")) { <text> style="cursor:pointer" </text> }>WebcomicX <span @if (IsSectionDefined("sidePanel")) { <text> style="display: initial" </text> }>&#9660;</span></h1>
+                <div class="accordion @if(!IsSectionDefined("sidePanel")){<text> menu-fix </text>}" style="@if(IsSectionDefined("sidePanel")){<text>display: none;</text>} clear: both">
                     <nav>
                         <ul id="menu">
                             <li><a href="~/webcomicx/admin">Dashboard</a></li>
                             <li><a href="/webcomicx/admin/manage-comics">Comics</a></li>
                             <li><a href="/webcomicx/admin/manage-webpages">Webpages</a></li>
-                            @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
-                            <li><a href="/webcomicx/admin/blog">Blog</a></li>
+                            @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true")
+                            {
+                                <li><a href="/webcomicx/admin/blog">Blog</a></li>
                             }
                             <li><a href="/webcomicx/admin/customize">Customize</a></li>
                             <li><a href="/webcomicx/admin/webcomic-settings">Settings</a></li>
@@ -53,10 +63,11 @@
                 </div>
                 <div class="clear-fix"></div>
             </header>
-            @if(IsSectionDefined("sidePanel")){
-            <div class="panel-content">
-                @RenderSection("sidePanel", false)
-            </div>
+            @if (IsSectionDefined("sidePanel"))
+            {
+                <div class="panel-content">
+                    @RenderSection("sidePanel", false)
+                </div>
             }
         </div>
         <div id="body">
@@ -66,11 +77,11 @@
             </section>
         </div>
         <footer>
-                <div class="float-left">
-                    <p>@load.webcomicxVersion()</p>
-                </div>
-        </footer>
+            <div class="float-left">
+                <p>@load.webcomicxVersion()</p>
             </div>
+        </footer>
+    </div>
     @RenderSection("scripts", required: false)
-    </body>
+</body>
 </html>
