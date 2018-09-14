@@ -123,11 +123,11 @@ a[role="button"]{
     border-radius: 3px 3px 0 0;
 }
 /*------------------Layout-------------------*/
-.body{
-	background:#fbfbfb;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:17px;
-	color:#555;
+.body {
+    background: #fbfbfb;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    color: #555;
 }
 .body a{
 	text-decoration:none;
@@ -151,6 +151,12 @@ a[role="button"]{
 .side{
 	float:right;
 	width:300px;
+}
+#comicHeading time:before{
+    content: "| "
+}
+#pageNo:before{
+    content: "\00BB"
 }
 .comments{
 	font-size:.85em;
@@ -181,12 +187,22 @@ footer p{
 	border:1px #ccc solid;
     text-align: right;
 }
-.header h1{
-	float:left;
-	margin:0;
-    line-height: 1.3
+.branding{
+    float: left;
+    margin: 0;
+    line-height: 1.3;
+    font-size: 1.75em;
+    font-weight: 700;
 }
-.header h1 span{
+.branding:after {
+/*hack to make sure img stays verticaly aligned*/
+content: "|";
+display: inline-block;
+width: .1px;
+visibility: hidden;
+}
+
+.subheading{
 	font-size:.5em;
 	font-weight:100;
 	vertical-align:middle;
@@ -201,11 +217,13 @@ footer p{
     height: 1em;
     display: inline-block;
 }
+nav, .menu dl, .nav, .nav li {
+    background: inherit
+}
 .nav {
     padding: 0;
     margin: 0;
-    font-size: 1.1em
-
+    font-size: 1.1em;
 }
 
 .nav li {
@@ -218,7 +236,6 @@ footer p{
 	padding:10px 15px;
     display: inline-block;
     position: relative
-
 }
 
 .nav li a:hover {
@@ -236,8 +253,7 @@ li.menu{
 }
 .menu dl{
 	position:absolute;
-	top:42px;
-	background:#efefef;
+	top:2.3em;
 	right:0;
 	z-index:2;
 	min-width:100%;
@@ -294,11 +310,18 @@ li.menu{
 }
 
 /*-----------------Modules----------------------*/
+#webcomicXadmin{
+    z-index: 7;
+    bottom: 0;
+    left: 0
+}
+
 /*Webcomic*/
 .webcomic{
 	text-align:center;
 	border-radius:3px;
     margin:10px 0;
+    background: #fff
 }
 .webcomic img{
 	max-width:100%;
@@ -324,10 +347,11 @@ li.menu{
     overflow-y: auto;
     position: absolute;
     background: #efefef;
-    background: rgba(239, 239, 239, 0.8);
+    background: rgba(239, 239, 239, 0.9);
     max-height: 100%;
     width: 100%;
     text-align: left;
+    line-height: 1.5;
     bottom: 0%;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
@@ -413,13 +437,32 @@ li.menu{
 	position:relative;
 	z-index:1
 }
-
+.previous [rel="prev"]:before{
+	content:"\2039";
+    margin: 0 8px;
+    font-weight: bold;
+}
+.previous [rel="first"]:before{
+	content:"\00AB";
+    margin: 0 8px;
+    font-weight: bold;
+}
 .next{
 	float:right;
 	position:relative;
 	z-index:1
-
 }
+.next [rel="next"]:after{
+	content: "\203A";
+    margin: 0 8px;
+    font-weight: bold;
+}
+.next [rel="last"]:after{
+	content: "\00BB";
+    margin: 0 8px;
+    font-weight: bold;
+}
+
 .previous a{
 	float:left;
     font-size: 54px;
@@ -577,9 +620,9 @@ h4.comic-collection span {
 
 .collection{
     position: relative;   
-    margin-bottom: 40px;
     background: #efefef;
-    color: #555
+    color: #555;
+    border-top: 2px solid;
 }
 .collection p{
     margin: 0;
@@ -593,6 +636,9 @@ h4.comic-collection span {
 }
 .collection-cover h3 {
     padding: 10px 10px 0px;
+    padding: 10px 10px 0px;
+    text-overflow: ellipsis;
+    overflow: hidden
 }
 .collection-cover img {
     max-width: 100%;
@@ -623,7 +669,7 @@ h4.comic-collection span {
     padding: 10px 10px 20px;
     transition-delay:.2s;
     color: #fff;
-    height: 90%;
+    height: 100%;
 
 
 }
@@ -852,10 +898,12 @@ transition: all 1.5s ease-in!important;
     .header{
         text-align: center;
     }
-    .header h1{
+    .header .branding{
         float: none;
     }
-}
+    .menu dl {
+        top: 2.22em;
+    }
 
 @media screen and (max-width:620px){
     .nav {

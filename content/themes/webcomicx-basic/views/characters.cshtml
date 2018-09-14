@@ -16,8 +16,10 @@
 @section head{
 <meta name="description" content="Characters of the @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
 }
+@section heading{
+    <h1>Character Profiles @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/characters">Manage</a>}</h1>
+}
 @section article{
-    <h2>Character Profiles @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/characters">Manage</a>}</h2>
     <ul class="character item-list cf">
     @foreach(var character in characterXml.Descendants("Profile")){//display characters
     

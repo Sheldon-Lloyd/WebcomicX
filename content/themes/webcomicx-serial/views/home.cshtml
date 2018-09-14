@@ -2,14 +2,16 @@
 @using System.Xml
 
 @{
-   int pageNo = 0;
+    int pageNo = 0;
     int comicIndex = 0;
     //load xml for webcomic settings and comix list
     var load = new Comic();
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
-    var doc = load.LoadComic("/content/xml/comics/comic-list.xml");
-    var comicNo=doc.Descendants("Comic").Count();
-    
+    var comicList = load.LoadComic("/content/xml/comics/comic-list.xml");
+    var comicNo=comicList.Descendants("Comic").Count();
+    DateTime updated = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("EditDate").ElementAt(comicNo - 1).Value);
+
+
     var pagesDoc = load.LoadComic("/content/xml/comics/comic-"+comicNo+".xml");
     int pageCount = pagesDoc.Descendants("Page").Count();
 
@@ -18,6 +20,7 @@
     
 @section head{
 <meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
+<link rel="canonical" href="/">
 }
 @section comic{
 
@@ -26,7 +29,7 @@
         <label><a href="/comic/archives">Comic</a></label>
         <form>
             <select id="chapter-nav">
-            @foreach(var comic in doc.Descendants("Comic")){
+            @foreach(var comic in comicList.Descendants("Comic")){
                 //list comics
                 comicIndex++;
                 if(comicIndex==comicNo){
@@ -67,13 +70,15 @@
 <div class="webcomic">
     <div class="comic-pagination cf top-border">
         <nav>
-            <div class="previous @if(comicNo<2 && pageCount<1){<text> is-hidden </text>}" >	
-                <a href="/comic/read/1/" rel="first"><b>&laquo;</b><span>First </span></a>
-                <a href="@load.previous(comicNo,true)" class="previous" rel="prev"><b>&#139;</b><span>Previous</span></a>
-            </div>	
-            <span class="comic-pagination-archive">
-			    <a href="/comic/archives">Archives</a>
-			</span>
+            @if(comicNo>1){
+                <div class="previous">
+                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First </span></a>
+                    <a href="@load.previous(comicNo,true)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
+                </div>
+                }	
+                <span class="comic-pagination-archive">
+			        <a href="/comic/archives">Archives</a>
+			    </span>
         </nav>
     </div>
     <div id="pageContent">
@@ -81,32 +86,41 @@
         @load.WebComic(comicNo)
         </noscript>
     </div>
-<div class="comic-pagination cf bottom-border">
-    <nav>
-        <div class="previous @if(comicNo<2 && pageCount<1){<text> is-hidden </text>}">
-            <a href="/comic/read/1/" rel="first"><b>&laquo;</b><span>First </span></a>
-            <a href="@load.previous(comicNo,true)" class="previous" rel="prev"><b>&#139;</b><span>Previous</span></a>
-        </div>	
-        <span class="comic-pagination-archive"><a href="/comic/archives">Archives</a></span>
-    </nav>
-</div>
+    <div class="comic-pagination cf bottom-border">
+        <nav>
+            @if(comicNo>1){
+                <div class="previous">
+                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First </span></a>
+                    <a href="@load.previous(comicNo,true)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
+                </div>
+                }	
+                <span class="comic-pagination-archive">
+			        <a href="/comic/archives">Archives</a>
+			    </span>
+        </nav>
+    </div>
 </div>
 }
-@section article{
+@section heading{
     <section id="comicHeading">
         @load.comicHeading(comicNo)
     </section>
+}
+@section article{
     <div id="authorComments">
         @load.ComicCopy(comicNo)
     </div>
 }
 @section comments{}
 @section scripts{
-<script src="@Href("../scripts/comic.min.js?v=1")" ></script>
 <script>
-    $(document).ready(function () {
-        $(".webcomicXreader").webcomicXreader({comicNo:@comicNo,pageNo:@pageNo});
-    });
+    window.onload = (function () {
+        $(".webcomicXreader").webcomicXreader({
+            comicNo:@comicNo,
+            pageNo:@pageNo,
+            updateVersion:@updated.ToString("M-d-yy-hm")
+            });
+    })
 </script>
 
 }

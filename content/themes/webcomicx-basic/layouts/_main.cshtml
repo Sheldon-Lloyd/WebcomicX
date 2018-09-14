@@ -1,5 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using System.Web.Optimization
 @{
     //load xml files
     var load = new Comic();
@@ -14,152 +15,149 @@
 
     var blogUrl = Href("~/blog");
     var blogSource = blogSettings.Descendants("Type").ElementAt(0).Value;
-    if(blogSource=="external"){
+    if (blogSource == "external") {
         blogUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
     }
     //get webpages the has been set to include
     var webpages = (from xml in webpagesXml.Descendants("Page")
-            where xml.Element("Include").Value=="True"
-            select xml);
-    
+                    where xml.Element("Include").Value == "True"
+                    select xml);
+
 }
 
 <!DOCTYPE html>
 <html>
-    
-    <head>
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-        <link rel="alternate" type="application/rss+xml" title="@Page.PreppendTitle @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value @Page.Title @load.PrimaryAuthor()" href="@Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)/feed/rss">
-        @RenderSection("prependHead",false)
-        <title>@Page.PreppendTitle @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value @Page.Title @load.PrimaryAuthor()</title>
-        <link rel="stylesheet" href="@Href("../styles/main.min.css?v=1")">
-        <script src="@Href("../scripts/jquery-1.10.2.min.js?v=1")"></script>
-        <script src="@Href("../scripts/modernizr-2.7.1.min.js?v=1")" async></script>
-        @load.customStyles()
-        @RenderSection("head",false)
-    </head>
-    
-    <body class="body" @RenderSection("bodyjs",false)>
-        <div class="header cf">
-            <header>
-                <h1>
-		            <a class="logo" href="@Href("~/")">@settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value</a>
-		            <span>@load.PrimaryAuthor(link:true)</span>
-		        </h1>
-            </header>
 
-                <nav role="navigation">
-                    <ul class="nav">
-                        @if(settings.Descendants("AboutPage").ElementAt(0).Value.AsBool()){
-                        <li><a href="@Href("~/comic/about")">About</a>
-                        </li>
-                            }
-                            @if(settings.Descendants("CharactersPage").ElementAt(0).Value.AsBool()){
-                        <li><a href="@Href("~/comic/characters")">Characters</a>
-                        </li>
-                             }
-                        <li>
-                            @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
-                            <a href="@blogUrl">Blog</a>
-                            }
-                        </li>
-                            @if(webpages.Count() > 0){
-                        <li class="menu" tabindex="0">	
-                            <a>More &darr;</a>
-                            <dl>
-                                @foreach(var webpage in webpages){
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <link rel="alternate" type="application/rss+xml" title="@Page.PreppendTitle @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value @Page.Title @load.PrimaryAuthor()" href="@Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)/feed/rss">
+    @RenderSection("prependHead", false)
+    <title>@Page.PreppendTitle @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value @Page.Title @load.PrimaryAuthor()</title>
+    @Styles.Render("~/content/themes/webcomicx-basic/styles/css")
+    @load.customStyles()
+    @RenderSection("head", false)
+</head>
+
+<body class="body" @RenderSection("bodyjs", false)>
+    <div class="header cf">
+        <header>
+            <div class="branding">
+                <a class="logo" href="@Href("~/")">@load.comicLogo()</a>
+                <span class="subheading">@load.PrimaryAuthor(link: true)</span>
+            </div>
+        </header>
+
+        <nav role="navigation">
+            <ul class="nav">
+                @if (settings.Descendants("AboutPage").ElementAt(0).Value.AsBool()) {
+                    <li>
+                        <a href="@Href("~/comic/about")">About</a>
+                    </li>
+                }
+                @if (settings.Descendants("CharactersPage").ElementAt(0).Value.AsBool()) {
+                    <li>
+                        <a href="@Href("~/comic/characters")">Characters</a>
+                    </li>
+                }
+                <li>
+                    @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
+                        <a href="@blogUrl">Blog</a>
+                    }
+                </li>
+                @if (webpages.Count() > 0) {
+                    <li class="menu" tabindex="0">
+                        <a>More &darr;</a>
+                        <dl>
+                            @foreach (var webpage in webpages) {
                                 <dd><a href="@load.WebpageUrl(webpage.Element("Id").Value)" tabindex="0">@webpage.Element("Title").Value</a></dd>
-                                }
-                            </dl>
-                        </li>
                             }
-                    </ul>
-                </nav>
-        </div>
-        <div class="page @Page.Style">
-            <main role="main">
+                        </dl>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+    <div class="page @Page.Style">
+        <main role="main">
 
-                @RenderSection("comic",false)
+            @RenderSection("comic", false)
 
-                @load.Widgets("top")
-                <div class="content main">
-                    @if(IsSectionDefined("article")){
+            @load.Widgets("top")
+            <div class="content main">
+                @if (IsSectionDefined("article")) {
                     <div class="container inner-content">
                         <article role="article">
-                        @RenderSection("article",false)
+                            @RenderSection("heading", false)
+                            @RenderSection("article", false)
                         </article>
                     </div>
-                    }
-                    @if(IsSectionDefined("comments")){
-                        if(currentPlugin!=""){
-                    <div class="comments container">
-                        	<h3>Comments  </h3>
-                        <div>
-                        @RenderSection("comments",false)
-                            @try{
-                                @RenderPage("/Content/plugins/comments/"+currentPlugin+"/default.cshtml");
-                            }
-                            catch{
-                                
-                            }
+                }
+                @if (IsSectionDefined("comments")) {
+                    if (currentPlugin != "") {
+                        <div class="comments container">
+                            <h3>Comments  </h3>
+                            <div>
+                                @RenderSection("comments", false)
+                                @try {
+                                    @RenderPage("/Content/plugins/comments/" + currentPlugin + "/default.cshtml");
+                                } catch {
 
+                                }
+
+                            </div>
                         </div>
-                    </div>
-                          }
-                        else{
-                            //hack for making sure a section is rendered for pages
-                            <text>@RenderSection("comments",false)</text>
-                        }
+                    } else {
+                        //hack for making sure a section is rendered for pages
+                        <text>@RenderSection("comments", false)</text>
                     }
+                }
 
-                </div>
-            </main>
-            <aside>
-                <div class="content side">
-                    @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
+            </div>
+        </main>
+        <aside>
+            <div class="content side">
+                @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
                     <div class="container news-feed">
                         <h4><a href="@blogUrl">Recent Blog Posts</a></h4>
-                        @RenderPage("/webcomicx/views/"+blogSource+"-blog.cshtml","General")
+                        @RenderPage("/webcomicx/views/" + blogSource + "-blog.cshtml", "General")
                     </div>
-                    }
+                }
 
-                    @load.Widgets("side")
+                @load.Widgets("side")
 
-                </div>
-            </aside>
-            @RenderBody()
-        </div>
-        <div class="footer">
-            @load.Widgets("bottom")
-            <footer>
-                <div>
-                    <p>
-                        @if(settings.Descendants("Settings").Descendants("License").ElementAt(0).Value==""){
+            </div>
+        </aside>
+        @RenderBody()
+    </div>
+    <div class="footer">
+        @load.Widgets("bottom")
+        <footer>
+            <div>
+                <p>
+                    @if (settings.Descendants("Settings").Descendants("License").ElementAt(0).Value == "") {
                         <text>&copy; @DateTime.Now.Year </text>
-                        }
-                        else{
-                            @Html.Raw(settings.Descendants("Settings").Descendants("License").ElementAt(0).Value)
-                        }
-                        @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value
-                    </p>
-                    <p>
+                    } else {
+                        @Html.Raw(settings.Descendants("Settings").Descendants("License").ElementAt(0).Value)
+                    }
+                    @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value
+                </p>
+                <p>
                     By
-                    @foreach(var author in authors.Descendants("Settings").Descendants("User")) {
-                    <a href="@author.Element("ProfilePage").Value" target="_blank" rel="author">@author.Element("PenName").Value</a>
-                    <br>
-                        }
-                    </p>
-                    <p>
+                    @foreach (var author in authors.Descendants("Settings").Descendants("User")) {
+                        <a href="@author.Element("ProfilePage").Value" target="_blank" rel="author">@author.Element("PenName").Value</a>
+                        <br>
+                    }
+                </p>
+                <p>
                     Powered by @load.webcomicxVersion()
-                    </p>
-                </div>
-            </footer>
-        </div>
-        <script src="@Href("../scripts/script.min.js?v=1")" async></script>
+                </p>
+            </div>
+        </footer>
+    </div>
+    @Scripts.Render("~/content/themes/webcomicx-basic/scripts/js")
+    @RenderSection("scripts", false)
 
-        @RenderSection("scripts",false)
-
-    </body>
+</body>
 
 </html>

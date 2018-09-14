@@ -14,13 +14,16 @@
 @section head{
 <meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
 }
-@section article{
-    <h2>
+@section heading{
+    <h1>
         About @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value
         @if(WebSecurity.IsAuthenticated){
             <a class="edit" href="/webcomicx/admin/about">Edit</a>
         }
-    </h2>
+    </h1>
+            
+        }
+@section article{
     <h3>@load.PrimaryAuthor()</h3>
     <h4>Genre: <span>@settings.Descendants("Settings").Descendants("Genre").ElementAt(0).Value</span></h4>
     <h4>Style: <span>@settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value</span></h4>

@@ -48,7 +48,7 @@
     }
 
     function accordion(e) {
-        e = $(e).parent();
+        e = $(e).closest("li.accordion");
         $(".accordion-toggle").html("+");
         $(".accordion-toggle").attr("title","Show pages");
 

@@ -5,8 +5,8 @@
         scrollPosition = $(pages).scrollLeft();
         var scrollLeft;
         $(".previous",e).show();
-        w = $(pages).width();
-        sw = $(pages).children('ul')[0].scrollWidth - w;
+        w = $(pages).width();//width
+        sw = $(pages).children('ul')[0].scrollWidth - w;//scroll width
         if (scrollPosition < sw) {
             scrollLeft = scrollPosition + w;
             $(pages).animate({ scrollLeft: scrollLeft }, 500);
@@ -67,92 +67,98 @@
         }
     }
     //accessible menu
-    $(document).ready(function () {
+$(document).ready(function () {
         $(".menu dl a").focus(function () {
             $(this).closest(".menu dl").css("display", "block");
         })
         $(".menu dl a").focusout(function () {
             $(this).closest(".menu dl").css("display", "");
-        })
+        });
+        //hide all captions
+        $('.webcomic-img figcaption').css('top', '-100%');
+        $('.page-script-hide').hide();
+        $('.page-script-show').css('display', 'inline-block');
 
-    });$(document).ready(function () {
-var navLink = "";
-var url = window.location.pathname;
-url = url.split("/");
-currentComic = parseInt(url[3]);
+        //show caption
+        $('.page-script-show').on('click', function () {
+            event.preventDefault();
+            $(this).closest('.webcomic-img').find('figcaption').css('top', '0%');
+            $(this).hide();
+            $(this).parent().find('.page-script-hide').css('display', 'inline-block');
+        });
+        //hide caption
+        $('.page-script-hide').on('click', function () {
+            event.preventDefault();
+            $(this).closest('.webcomic-img').find('figcaption').css('top', '-100%');
+            $(this).hide();
+            $(this).parent().find('.page-script-show').css('display', 'inline-block');
 
-if(isNaN(currentComic)){
-    try{
-    currentComic = newest;
-        
+        });
+
+    });
+$(document).ready(function () {
+    var navLink = "";
+    var url = window.location.pathname;
+    url = url.split("/");
+    currentComic = document.getElementById("chapters").options[document.getElementById("chapters").selectedIndex].value;
+
+    if (isNaN(currentComic)) {
+        try {
+            currentComic = newest;
+
+        }
+        catch (Error) {
+
+        }
     }
-    catch(Error){
-        
+    var preComic = currentComic - 1;
+    var x;
+    var filename = "/content/xml/comics/comic-" + currentComic + ".xml";
+
+
+    function checkKey(e) {
+        e = e || window.event;
+        if (e.keyCode == 37) {
+            previous();
+        }
+        if (e.keyCode == 39) {
+            next();
+        }
     }
-}
-var preComic = currentComic - 1;
-var xmlDoc2;
-var x2;
-var filename = "/content/xml/comics/comic-" + currentComic + ".xml";
 
-if (window.XMLHttpRequest)
-  {// code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
-  }
-else
-  {// code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-xmlhttp.open("GET",filename,false);
-xmlhttp.send();
-xmlDoc=xmlhttp.responseXML;
+    document.onkeydown = checkKey;
 
-    xmlhttp.open("GET", "/content/xml/comics/comic-list.xml", false);
-    xmlhttp.send();
-    comicListXml = xmlhttp.responseXML;
-    comicList = comicListXml.getElementsByTagName("Comic");
 
-if (preComic > 0) {
-    xmlhttp.open("GET", "/content/xml/comics/comic-" + preComic + ".xml", false);
-    xmlhttp.send();
-    xmlDoc2 = xmlhttp.responseXML;
-    x2 = xmlDoc2.getElementsByTagName("Page");
-}
-x=xmlDoc.getElementsByTagName("Page");
-i=0;
-function displayPage(){}
-function editLink(){}
-function editNav(){}
+    function next() {
+        $.ajax({
+            async: true, dataType: "xml", url: "/content/xml/comics/comic-list.xml", success: function (xml) {
+                comicList = xml.getElementsByTagName("Comic");
 
-    function go(elementID) {
-        var myElement = elementID.id;
-        var e = document.getElementById(myElement);
-        var gotoUrl = "/comic/read/"+ e.options[e.selectedIndex].value;
-        window.location = gotoUrl;
+                if (comicList.length > currentComic) {
+                    window.location = "/comic/read/" + (parseInt(currentComic) + 1);
+                }
+            }
+        });
     }
-function checkKey(e) {
-    e = e || window.event;
-    if(e.keyCode==37){
-    previous();
-    }
-    if(e.keyCode==39){
-    next();
-    }
-}
 
-document.onkeydown = checkKey;
+    function previous() {
+        if (preComic > 0) {
+            $.ajax({
+                async: true, dataType: "xml", url: "/content/xml/comics/comic-" + preComic + ".xml", success: function (xml) {
+                    x = xml.getElementsByTagName("Page");
+                }
+            });
+        }
 
-
-function next() {
-    if (comicList.length > currentComic) {
-        window.location = "/comic/read/" + (currentComic + 1);
+        if (x != undefined) {
+            window.location = "/comic/read/" + preComic;
+        }
     }
-}
-
-function previous() {
-    if (x2 != undefined) {
-        window.location = "/comic/read/" + preComic;
-    }
-}
 
 });
+function go(elementID) {
+    var myElement = elementID.id;
+    var e = document.getElementById(myElement);
+    var gotoUrl = "/comic/read/" + e.options[e.selectedIndex].value;
+    window.location = gotoUrl;
+}
