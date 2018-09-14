@@ -2,11 +2,13 @@
 @using System.Xml
 
 @{
+    //intialize variables
     bool include = false;
     var status = "";
     var redirectUrl = "";
     string filePath = "";
-	// set the name of the file
+
+    // load the blog xml
     var load = new Comic();
     var blog = load.LoadComic("/content/xml/content/blog.xml");
     var blogSettings = load.LoadComic("/App_Data/blog-settings.xml");
@@ -14,57 +16,72 @@
     var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
     include = settings.Descendants("Blog").ElementAt(0).Value.AsBool();
 
+    //load site manager
+    @load.ManageSite();
 
-    var postId = UrlData[0];
-    var post = (from xml in blog.Descendants("Post")
-            where xml.Element("Id").Value==postId
-            select xml).FirstOrDefault();
-    if(post!=null){
-        status = post.Element("Status").Value;
-    }
-    if(type!="webcomicx"){
-        redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
-        Response.Status = "301 Moved Permanently";
-        Response.AddHeader("Location",redirectUrl);
-    }
-    try{
-        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
-            theme = Request["theme"];
+        var postId = UrlData[0];
+        var post = (from xml in blog.Descendants("Post")
+                    where xml.Element("Id").Value == postId
+                    select xml).FirstOrDefault();
+        if (post != null) {
+            status = post.Element("Status").Value;
+        }
+        if (type != "webcomicx") {
+            redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
+            Response.Status = "301 Moved Permanently";
+            Response.AddHeader("Location", redirectUrl);
+        }
+        try {
+            var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+            if (WebSecurity.IsAuthenticated) {
+                if (HttpContext.Current.Session["previewTheme"] != null) {
+                    theme = HttpContext.Current.Session["previewTheme"].ToString();
+                }
+            }
+            filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+
+        } catch {
+        }
+        if (HttpContext.Current.Session["previewTheme"] != null) {
+
+            HttpContext.Current.Session.Remove("previewTheme");
         }
 
-        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
-        
-    }
-    catch{
-    }
+        Layout = filePath;
 
-    Layout = filePath;
-
-}
-@if(status=="publish"&&include){
-        redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/blog/post/"+postId+"/"+post.Element("PermaLink").Value;
-    if(UrlData[1]!=post.Element("PermaLink").Value){
+    }
+@if (status == "publish" && include) {//check rather the blog is included an set to publish
+    redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped) + "/blog/post/" + postId + "/" + post.Element("PermaLink").Value;
+    if (UrlData[1] != post.Element("PermaLink").Value) {
         Response.Status = "301 Moved Permanently";
-        Response.AddHeader("Location",redirectUrl);
+        Response.AddHeader("Location", redirectUrl);
     }
-    Page.PreppendTitle = post.Element("Title").Value+" - ";
-@section head{
-    <meta name="description" content="@post.Element("Description").Value">
-}
-@section article{
-    <h2 itemprop="headline">@post.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>}</h2>
+    Page.PrependTitle = post.Element("Title").Value + " - ";
+    @section head{
+        <meta name="description" content="@post.Element("Description").Value">
+    }
+    @section heading{
+        <h1 itemprop="headline">
+            @post.Element("Title").Value @if (WebSecurity.IsAuthenticated) {
+                <a class="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>
+            }
+        </h1>
+    }
 
-    @Html.Raw(post.Element("Content").Value)
-}
-@section comments{}
-}
-else{
-    Page.PreppendTitle = "404 - ";
+    @section article{
+        @*Display the article for the blog post*@
+        @Html.Raw(post.Element("Content").Value)
+    }
+    @section comments{}
+} else {
+    Page.PrependTitle = "404 - ";
     Response.Status = "404 Not Found";
+    @section heading{
+        <h1 itemprop="headline">404!</h1>
+    }
     @section article{
 
-    <h2>Sorry, the page you were looking for does not exist.</h2>
+        <h2>Sorry, the page you were looking for does not exist.</h2>
 
     }
 }

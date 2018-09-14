@@ -1,34 +1,48 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using System.Web.Optimization
+
 
 @{
-    //intialize variables 
+    //intialize variables
     var hostUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
     var currentUrl = Request.Url.GetComponents(UriComponents.AbsoluteUri, UriFormat.Unescaped);
     int userCount = 0;
-    
+
     //load xml
     var load = new Comic();
     var account = load.LoadComic("/App_Data/account.xml");
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
+    var bundles = BundleTable.Bundles;
+    var themeCss = "";
+    var themeScript = "";
+    BundleTable.EnableOptimizations = true;
 
-    //set layout
-    try{
+
+    try {
         var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-        Layout = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+        if (HttpContext.Current.Request["theme"] != null) {
+            theme = HttpContext.Current.Request["theme"];
+        }
+        themeScript = "~/content/themes/" + theme + "/scripts/";
+        themeCss = "~/content/themes/" + theme + "/styles/";
+        bundles.Add(new StyleBundle(themeCss + "css").IncludeDirectory(
+    themeCss, "*.css"));
+        bundles.Add(new ScriptBundle(themeScript + "js").IncludeDirectory(themeScript, "*.js"));
+    } catch {
+
     }
-    catch{
-        Layout = null;
-    }
+
+
     //count the number of accounts for this webcomic
-    foreach(var user in account.Descendants("User")){
+    foreach (var user in account.Descendants("User")) {
         userCount++;
     }
     //if their are no accounts send user to setup page
-    if(userCount<=0){
+    if (userCount <= 0) {
         var accountUrl = hostUrl + VirtualPathUtility.ToAbsolute("~/webcomicx/admin/account/setup");
-        if(currentUrl!=accountUrl){
+        if (currentUrl != accountUrl) {
             Response.Redirect(accountUrl);
         }
-    }    
+    }
 }

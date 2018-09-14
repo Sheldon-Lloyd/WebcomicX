@@ -4,24 +4,9 @@
 @{
     var load = new Comic();
     Layout = null;
-    string filePath = "";
-    var settings = load.LoadComic("/App_Data/WebcomicX.xml");
-    try{
-        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
-            theme = Request["theme"];
-        }
-
-        filePath = "~/content/themes/" + theme + "/views/home.cshtml";
-        
-    }
-    catch{
-    }
 
 }
-@RenderPage(filePath)
 
-@if(WebSecurity.IsAuthenticated){
-    @RenderPage("~/webcomicx/views/webcomicx-navbar.cshtml")
-}
+@RenderPage(load.SiteTheme())
 
+@load.ManageSite()

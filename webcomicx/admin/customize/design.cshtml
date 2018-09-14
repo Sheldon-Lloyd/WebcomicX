@@ -1,162 +1,175 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using System.Web.Optimization
+
 @{
     Layout = null;
     Page.Title = "Design Template";
     var guide = Request["tutorial"].AsBool();
-    var load= new Comic();
+    var theme = Request["theme"];
+    var load = new Comic();
     var styles = load.LoadComic("/App_Data/styles.xml");
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
-    var customStyles = load.LoadComic("/content/themes/"+settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value+"/styles/custom-styles.xml");
-    string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+    var currentTheme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+    var customStyles = load.LoadComic("/content/themes/" + currentTheme + "/styles/custom-styles.xml");
+    string pattern = "[^a-zA-Z0-9]+"; //regex pattern
     var tutorial = "";
-    if(guide){
+    if (guide) {
         tutorial = "?tutorial=true";
     }
-        //edit general styles
+    //edit general styles
     var pageWidth = styles.Descendants("Styles").Descendants("General").Descendants("Width").ElementAt(0).Value;
     var pageBackground = styles.Descendants("Styles").Descendants("General").Descendants("Background").ElementAt(0).Value;
     var linkColor = styles.Descendants("Styles").Descendants("General").Descendants("LinkColor").ElementAt(0).Value;
     var logo = styles.Descendants("Header").Descendants("Logo").ElementAt(0).Value;
     bool include = styles.Descendants("Header").Descendants("IncludeLogo").ElementAt(0).Value.AsBool();
 
-    var checkStyle = "is-checked";
-
-    if(!include){
-        checkStyle ="is-unchecked";
-    }
-    if(guide){
+    if (guide) {
         tutorial = "?tutorial=true";
     }
-
+    Session["previewTheme"] = theme == null ? currentTheme : theme;
+    Session.Timeout = 1;
+    Response.Cookies["previewTheme"].Value = theme;
+    Response.Cookies["previewTheme"].Expires = DateTime.Now.AddMinutes(.001);
 }
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>@Page.Title - WebcomicX</title>
-        <link href="~/webcomicx/admin/jquery-themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
-        <link rel='stylesheet' href='/webcomicx/admin/styles/spectrum.css' />
-        <link href="~/webcomicx/admin/styles/admin.min.css" rel="stylesheet" type="text/css" />
-        <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
-        <script src="~/webcomicx/admin/Scripts/jquery-ui-1.9.2.min.js"></script>
-        <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
-        <script src='/webcomicx/admin/scripts/spectrum.js'></script>
-        <script src="@Href("~/webcomicx/admin/scripts/admin.min.js")"></script>
-        <meta name="viewport" content="width=device-width" />
-    </head>
-    <body style="display: table;margin: 0;width: 100%;overflow: hidden">
+<head>
+    <meta charset="utf-8" />
+    <title>@Page.Title - WebcomicX @Session["previewTheme"]</title>
+    <link href="~/webcomicx/admin/jquery-themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />
+    <link rel='stylesheet' href='/webcomicx/admin/styles/spectrum.css' />
+    @Styles.Render("~/webcomicx/admin/styles/css")
+    <script src="~/webcomicx/admin/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/webcomicx/admin/Scripts/jquery-ui-1.9.2.min.js"></script>
+    <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
+    <script src='/webcomicx/admin/scripts/spectrum.js'></script>
+    @Scripts.Render("~/webcomicx/admin/scripts/js")
+    <meta name="viewport" content="width=device-width" />
+</head>
+<body style="display: table;margin: 0;width: 100%;overflow: hidden">
 
-<div class="designer">
-    <div class="designer-inner">
-    <form method="post" action="/webcomicx/admin/controlers/change-design" enctype="multipart/form-data">
-        <button name="reset" value="True" class="float-right button">Reset Design</button><button class="button float-right">Save Design</button><a style="font-size: 1.1em" class="button float-right" href="/webcomicx/admin/customize/@tutorial"> &laquo; Back to Layout</a> 
-        <div class="theme-selection" >
-            <div >
-        <label for="theme" class="float-left">Theme</label>
-        <div style="overflow: hidden">
-            @RenderPage("~/webcomicx/views/theme-list.cshtml")
+    <div class="designer">
+        <div class="designer-inner">
+            <form method="post" action="/webcomicx/admin/controlers/change-design" enctype="multipart/form-data">
+                <button name="reset" value="True" class="float-right button">Reset Design</button><button class="button float-right">Save Design</button><a style="font-size: 1.1em" class="button float-right" href="/webcomicx/admin/customize/@tutorial"> &laquo; Back to Layout</a>
+                <div class="theme-selection">
+                    <div>
+                        <label for="theme" class="float-left">Theme</label>
+                        <div style="overflow: hidden">
+                            @RenderPage("~/webcomicx/views/theme-list.cshtml")
+                        </div>
+                    </div>
+                </div>
+                <h2>Customize Design</h2>
+                <select onchange="designOptions(this)">
+                    <option value="general">General Design</option>
+                    @foreach (var style in customStyles.Descendants("Style")) {
+                        var styleName = System.Text.RegularExpressions.Regex.Replace(style.Element("Name").Value, pattern, "");
+                        try {
+                            <option value="@styleName">@style.Element("Name").Value</option>
+                        } catch { }
+                    }
+                </select>
+                <div id="general" class="cf design-option" data-element=".body">
+                    <div class="float-left margin-right pageWidth-container">
+                        <label>Page Width: <span class="pageWidth"></span></label>
+                        <input value="@pageWidth" name="width" class="pageWidth" style="width: 100px; vertical-align: middle;margin: 0 5px 0 10px;padding: 0" type="range" max="1600" min="500px" onchange="pageWidth(this)"><!--[if lt IE 9]>px<![endif]-->
+
+                        <div class="gradient-container" style="display: inline-block; border-left: 1px solid #ccc">
+                            <a class="button defaultWidth">Use Default</a>
+                        </div>
+                    </div>
+                    <div class="float-left margin-right colorpicker-container">
+                        <label>Background Color <span class="desiner-style-display"></span></label>
+                        <div class="gradient-container">
+                            <input name="pageBackground" class="colorpicker editBackground" data-element=".body" value="@pageBackground" onchange="backgroundColor(this,'.body')">
+                            <a class="button defaultBackground" id="defaultColor" role="button"><div class="sp-preview"><div class="sp-preview-inner" style="background-color: rgb(0, 0, 0);"></div></div>Use Default</a>
+                        </div>
+                    </div>
+                    <div class="float-left margin-right">
+                        <label>Font Size</label>
+                        <div class="gradient-container">
+                            <select name="fontSize" onchange="pageFont(this)">
+                                <option value="">Default</option>
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                                <option value="22">22</option>
+                                <option value="24">24</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="float-left">
+                        <label>Logo</label>
+                        <div class="gradient-container" style="display: inline-block; border-right: 1px solid #ccc">
+                            <input id="includeLogo" class="checkbox button" type="checkbox" checked="@include" name="includeLogo" onchange="useLogo()" value="True"><label for="includeLogo" class="button">Use Logo</label>
+                        </div>
+                        <input id="logo" name="logo" onchange="showUploadedLogo(this)" type="file" style="@(!include?"display: none;":"") vertical-align:middle" data-img="/content/uploads/design/@logo">
+                    </div>
+                    <div class="float-left margin-right colorpicker-container">
+                        <label>Link Color <span class="desiner-style-display"></span></label>
+                        <div class="gradient-container">
+                            <input name="pageLinks" class="colorpicker editText" data-element=".body a" value="@linkColor" onchange="textColor(this,'.body a')">
+                            <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
+                        </div>
+                    </div>
+                </div>
+                @foreach (var style in customStyles.Descendants("Style")) {
+                    try {
+                        var styleName = System.Text.RegularExpressions.Regex.Replace(style.Element("Name").Value, pattern, "");
+                        <div id="@styleName" data-element=".@style.Element("ClassName").Value" class="cf is-hidden design-option">
+                            <div class="float-left margin-right colorpicker-container">
+                                <label>Background Color</label>
+                                <div class="gradient-container">
+                                    <input name="@(styleName + "-background")" class="colorpicker editBackground" data-element=".@style.Element("ClassName").Value @style.Element("BackgroundSubElements").Value" value='@style.Element("BackgroundColor").Value' onchange="backgroundColor(this,'.@style.Element("ClassName").Value @style.Element("BackgroundSubElements").Value')">
+                                    <a class="button defaultBackground" id="defaultColor" role="button">Use Default</a>
+                                </div>
+                            </div>
+                            <div class="float-left margin-right colorpicker-container">
+                                <label>Text Color</label>
+                                <div class="gradient-container">
+                                    <input name="@(styleName + "-text")" class="colorpicker editText" data-element=".@style.Element("ClassName").Value @style.Element("TextSubElements").Value" value="@style.Element("TextColor").Value" onchange="textColor(this,'.@style.Element("ClassName").Value @style.Element("TextSubElements").Value')">
+                                    <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
+                                </div>
+                            </div>
+                        </div>
+                    } catch { }
+                }
+            </form>
         </div>
-        </div>
-        </div>
-        <h2>Customize Design</h2>
-        <select onchange="designOptions(this)">
-            <option value="general">General Design</option>
-    @foreach(var style in customStyles.Descendants("Style")){
-        var styleName = System.Text.RegularExpressions.Regex.Replace(style.Element("Name").Value,pattern, "");
-        try{
-            <option value="@styleName">@style.Element("Name").Value</option>
-        }catch{}
-        }
-        </select>
-        <div id="general" class="cf design-option" data-element=".body">
-        <div class="float-left margin-right pageWidth-container">
-            <label>Page Width: <span class="pageWidth"></span></label>
-            <input value="@pageWidth" name="width" class="pageWidth" style="width: 100px; vertical-align: middle;margin: 0 5px 0 10px;padding: 0" type="range" max="1600" min="500px" onchange="pageWidth(this)" ><!--[if lt IE 9]>px<![endif]-->
-            
-            <div class="gradient-container" style="display: inline-block; border-left: 1px solid #ccc">
-                <a class="button defaultWidth">Use Default</a>
-            </div>
-        </div>
-        <div class="float-left margin-right colorpicker-container">
-            <label>Background Color <span class="desiner-style-display"></span></label>
-            <div class="gradient-container">
-            <input name="pageBackground"  class="colorpicker editBackground" data-element=".body" value="@pageBackground" onchange="backgroundColor(this,'.body')">
-            <a class="button defaultBackground" id="defaultColor" role="button"><div class="sp-preview"><div class="sp-preview-inner" style="background-color: rgb(0, 0, 0);"></div></div>Use Default</a>
-            </div>
-        </div>
-        <div class="float-left margin-right">
-            <label>Font Size</label>
-            <div class="gradient-container">
-            <select name="fontSize" onchange="pageFont(this)">
-                <option value="">Default</option>
-                <option value="10">10</option>
-                <option value="12">12</option>
-                <option value="14">14</option>
-                <option value="16">16</option>
-                <option value="18">18</option>
-                <option value="20">20</option>
-                <option value="22">22</option>
-                <option value="24">24</option>
-            </select>
-            </div>
-        </div>
-        <div class="float-left">
-            <label>Logo</label>
-            <div class="gradient-container" style="display: inline-block; border-right: 1px solid #ccc">
-<input id="includeLogo" class="checkbox button" type="checkbox" checked="@include" name="includeLogo" onchange="useLogo()" value="True"><label  for="includeLogo" class="button">Use Logo</label>
-            </div>
-        <input id="logo" name="logo" onchange="showUploadedLogo(this)" type="file" style="@if(!include){<text>display: none;</text>} vertical-align:middle" data-img="@logo">
-            </div>
-        <div class="float-left margin-right colorpicker-container">
-            <label>Link Color <span class="desiner-style-display"></span></label>
-            <div class="gradient-container">
-            <input name="pageLinks"  class="colorpicker editText" data-element=".body a" value="@linkColor" onchange="textColor(this,'.body a')">
-            <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
-            </div>
-        </div>
-        </div>
-    @foreach(var style in customStyles.Descendants("Style")){
-        try{
-        var styleName = System.Text.RegularExpressions.Regex.Replace(style.Element("Name").Value,pattern, "");
-        <div id="@styleName" data-element=".@style.Element("ClassName").Value" class="cf is-hidden design-option">
-        <div class="float-left margin-right colorpicker-container">
-        <label>Background Color</label>
-         <div class="gradient-container">
-        <input name="@(styleName + "-background")"  class="colorpicker editBackground" data-element=".@style.Element("ClassName").Value @style.Element("BackgroundSubElements").Value" value='@style.Element("BackgroundColor").Value' onchange="backgroundColor(this,'.@style.Element("ClassName").Value @style.Element("BackgroundSubElements").Value')">
-            <a class="button defaultBackground" id="defaultColor" role="button">Use Default</a>
-            </div>
-        </div>
-        <div class="float-left margin-right colorpicker-container">
-        <label>Text Color</label>
-            <div class="gradient-container">
-            <input name="@(styleName + "-text")"  class="colorpicker editText" data-element=".@style.Element("ClassName").Value @style.Element("TextSubElements").Value" value="@style.Element("TextColor").Value" onchange="textColor(this,'.@style.Element("ClassName").Value @style.Element("TextSubElements").Value')">
-            <a class="button defaultTextColor" id="defaultColor" role="button">Use Default</a>
-            </div>
-        </div>
-        </div>
-        }catch{}
-    }
-    </form>
     </div>
-</div>
     <div class="min-max-designer">
-    <a onclick="toogleDesigner()">Minimize Designer</a>
+        <a onclick="toogleDesigner()">Minimize Designer</a>
     </div>
-<div class="site-preview">
-<iframe id="sitePreview" src="/?design=true">
-</iframe>
-</div>
+    <div class="site-preview">
+        <div class="site-preview-inner">
+            <iframe id="sitePreview" src="/"></iframe>
+        </div>
+    </div>
     <script>
-
         $('#sitePreview').load(function () {
-            $(this).contents().find('a').click(function (event) {
-                var theme = $('#theme').val()
-                linkHref = $(this).attr('href');
-                $('#sitePreview').attr('src', linkHref + '?design=true&theme=' + theme);
 
+
+            $(this).contents().find('form').submit(function (event) {
                 event.preventDefault();
+            });
+            $(this).contents().find('a').click(function (event) {
+                if ($(this).is('a:not([href^="#"])')) {
+                    var theme = $('#theme').val()
+                    linkHref = $(this).attr('href');
+                    event.preventDefault();
+                    $.ajax({
+                        url: "/webcomicx/admin/customize/design?theme=" + theme
+                    }).done(function () {
+                        $('#sitePreview').attr('src', '/');
+                        $('#sitePreview').attr('src', linkHref);
+                    });
+                }
             });
             var font = 0;
             var appendedFont;
@@ -166,17 +179,14 @@
                 preferredFormat: "hex"
 
             });
+
             var fontsize = $('iframe').contents().find(".body").css("font-size").replace("px", "");
             $("[name='fontSize'] option").each(function () {
                 if (fontsize == $(this).val()) {
                     font = fontsize
                 }
-                if ($(this).val() < fontsize) {
-                    //appendedFont = $(this);
-                }
             });
             if (font == 0) {
-                //$(appendedFont).after("<option>" + fontsize + "</option>");
                 fontsize = "";
             }
             $("[name='fontSize']").val(fontsize).trigger("change");
@@ -196,19 +206,13 @@
                 var text = $('iframe').contents().find($(this).attr("data-element")).css("color");
                 $('iframe').contents().find($(this).attr("data-element")).css("color", text);
             });
-            var logoWidth = $('iframe').contents().find(".logo").width(),
-                logoHeight = $('iframe').contents().find(".logo").height();
 
-            useLogo();
-            $('iframe').contents().find(".logo").css("width", logoWidth + "px");
-            $('iframe').contents().find(".logo").css("height", logoHeight + "px");
-            $('iframe').contents().find(".logo").css("line-height", logoHeight + "px");
             $('iframe').contents().find("#customStyles").remove();
 
             $(".defaultBackground").each(function () {
 
                 var e = $(this).closest(".colorpicker-container"),
-                        element = $(".colorpicker", e).attr("data-element");
+                    element = $(".colorpicker", e).attr("data-element");
                 $('iframe').contents().find(element).css("background", "");
                 var color = $('iframe').contents().find(element).css("background-color");
                 $(this).html('<div class="sp-preview"><div class="sp-preview-inner" style="background-color: ' + color + '"></div></div> Use Default');
@@ -224,7 +228,7 @@
             $(".defaultTextColor").each(function () {
 
                 var e = $(this).closest(".colorpicker-container"),
-                        element = $(".colorpicker", e).attr("data-element");
+                    element = $(".colorpicker", e).attr("data-element");
                 $('iframe').contents().find(element).css("color", "");
                 var color = $('iframe').contents().find(element).css("color");
                 $(this).html('<div class="sp-preview"><div class="sp-preview-inner" style="background-color: ' + color + '"></div></div> Use Default');
@@ -238,7 +242,6 @@
                 }
             });
         });
-
     </script>
-    </body>
+</body>
 </html>

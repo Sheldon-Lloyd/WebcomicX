@@ -10,6 +10,8 @@
     var pageId = UrlData[0];
     bool include = false;
     var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
+    @load.ManageSite();
+
     var webpage = (from xml in webpageXml.Descendants("Page")
             where xml.Element("Id").Value==pageId
             select xml).FirstOrDefault();
@@ -21,10 +23,13 @@
     }
     try{
         var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-        if(Request["theme"]!=null&&WebSecurity.IsAuthenticated){
-            theme = Request["theme"];
+        if(HttpContext.Current.Request.Cookies["previewTheme"]!=null&&WebSecurity.IsAuthenticated){
+            theme = HttpContext.Current.Request.Cookies["previewTheme"].Value;
         }
+        if(HttpContext.Current.Session["previewTheme"]!=null){
 
+            HttpContext.Current.Session.Remove("previewTheme");
+        }
         filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
         
     }
@@ -48,8 +53,10 @@
     @section head{
         <meta name="description" content="@webpage.Element("Description").Value">
     }
+    @section heading{
+        <h1>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h1>
+    }
     @section article{
-        <h2>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h2>
 
         @Html.Raw(webpage.Element("Content").Value)
     }
