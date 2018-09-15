@@ -465,7 +465,7 @@ public class Comic{
     public IHtmlString webcomicxVersion(){
         //version nuber for webcomicx
         //make sure this is always at the bottom of model.cs
-        var verion = new HtmlString("<a href='http://webcomicx.com'rel='nofollow' target='_blank'>WebcomicX 0.3</a>");
+        var verion = new HtmlString("<a href='http://webcomicx.com'rel='nofollow' target='_blank'>WebcomicX 0.3.1</a>");
         return verion;
     }
 }
