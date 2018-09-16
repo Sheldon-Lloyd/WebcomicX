@@ -14,7 +14,7 @@
 
     var comicCount = comicList.Descendants("Comic").Count();
     int pageCount = pagesDoc.Descendants("Page").Count();
-    DateTime updated = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("EditDate").ElementAt(comicNo-1).Value);
+    var updated = load.comicDate(comicNo,"M-d-yy-hm");
 
     Page.Title =" - "+ comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value;
     var host = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
@@ -127,7 +127,7 @@
     window.onload = (function () {
         $(".webcomicXreader").webcomicXreader({
             comicNo:@comicNo,
-            updateVersion:@updated.ToString("M-d-yy-hm")
+            updateVersion:"@updated"
             });
     })    
 </script>

@@ -303,12 +303,29 @@ public class Comic{
 
         return author;
     }
+    public string comicDate(int comicNo, string dateFormat="MMMM, d yyyy",string dateType="publish"){
+        DateTime publishDate = DateTime.UtcNow;
+        dateType = dateType.ToLower();
+        var load = new Comic();
+        var comicList = load.LoadComic("/content/xml/comics/comic-list.xml");
+        try {
+        if(dateType=="publish"){
+            publishDate = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("Date").ElementAt(comicNo-1).Value);
+
+        }else if(dateType=="edit"){
+            Convert.ToDateTime(comicList.Descendants("Comic").Descendants("EditDate").ElementAt(comicNo - 1).Value);
+        }
+        } catch{
+        }
+
+        return publishDate.ToString(dateFormat);
+    }
     public HtmlString comicHeading(int comicNo,string headingTag="h1",string dateFormat="MMMM, d yyyy"){//create heading for comic page
         //intialize variables
         string edit = "";
         string publishHeading = "";
         int pageCount = 0;
-        DateTime publishDate = DateTime.UtcNow;
+        DateTime publishDate = Convert.ToDateTime(comicDate(comicNo));
 
         //load settings, comic list, and comic page xml
         var load = new Comic();
@@ -320,10 +337,6 @@ public class Comic{
             //if user is authenticated display edit page link
             edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' class='edit'>Edit</a>";
         }
-        try{
-        publishDate = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("Date").ElementAt(comicNo-1).Value);
-        }
-        catch{}
                 
         //set publishHeading variable with date and author
         if(load.comicAuthor(comicNo)!=""){

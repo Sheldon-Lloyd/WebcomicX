@@ -9,21 +9,21 @@
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
     var comicList = load.LoadComic("/content/xml/comics/comic-list.xml");
     var comicNo=comicList.Descendants("Comic").Count();
-    DateTime updated = Convert.ToDateTime(comicList.Descendants("Comic").Descendants("EditDate").ElementAt(comicNo - 1).Value);
+    var updated = load.comicDate(comicNo:comicNo,dateFormat:"M-d-yy-hm",dateType:"edit");
 
 
     var pagesDoc = load.LoadComic("/content/xml/comics/comic-"+comicNo+".xml");
     int pageCount = pagesDoc.Descendants("Page").Count();
 
     Layout = "../layouts/_main.cshtml";
-    }
-    
+}
+
 @section head{
 <meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
 <link rel="canonical" href="/">
 }
 @section comic{
-
+    @updated
 <div class="archive-nav cf">
     <div id="archive-comic" class="chapters container archive-nav-inner">
         <label><a href="/comic/archives">Comic</a></label>
@@ -118,7 +118,7 @@
         $(".webcomicXreader").webcomicXreader({
             comicNo:@comicNo,
             pageNo:@pageNo,
-            updateVersion:@updated.ToString("M-d-yy-hm")
+            updateVersion:"@updated"
             });
     })
 </script>
