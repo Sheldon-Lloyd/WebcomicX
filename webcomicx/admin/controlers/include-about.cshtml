@@ -7,7 +7,7 @@
         string filename = "/App_Data/WebcomicX.xml";
         var load = new Comic();
         var settings = load.LoadComic(filename);
-        settings.Descendants("AboutPage").ElementAt(0).Value.AsBool()=include.ToString();
+        settings.Descendants("AboutPage").ElementAt(0).Value=include.ToString();
         settings.Save(Server.MapPath(filename));
     }
 }

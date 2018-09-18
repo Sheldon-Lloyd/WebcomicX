@@ -1,5 +1,7 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using WebMatrix.WebData
+
 @{
     Page.PreppendTitle = "About - ";
     var load = new Comic();
@@ -9,30 +11,28 @@
 
     Layout = "../layouts/_main.cshtml";
 }
-@if(include || WebSecurity.IsAuthenticated){
+@if (include || WebSecurity.IsAuthenticated) {
 
-@section head{
-<meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
-}
-@section heading{
-    <h1>
-        About @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value
-        @if(WebSecurity.IsAuthenticated){
-            <a class="edit" href="/webcomicx/admin/about">Edit</a>
-        }
-    </h1>
-}
-@section article{
-    <h3>@load.PrimaryAuthor()</h3>
-    <h4>Genre: <span>@settings.Descendants("Settings").Descendants("Genre").ElementAt(0).Value</span></h4>
-    <h4>Style: <span>@settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value</span></h4>
-    @Html.Raw(about.Descendants("About").Descendants("Content").ElementAt(0).Value)
-}
-}
-else{
+    @section head{
+        <meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
+    }
+    @section heading{
+        <h1>
+            About @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value
+            @if (WebSecurity.IsAuthenticated) {
+                <a class="edit" href="/webcomicx/admin/about">Edit</a>
+            }
+        </h1>
+    }
+    @section article{
+        <h3>@load.PrimaryAuthor()</h3>
+        <h4>Genre: <span>@settings.Descendants("Settings").Descendants("Genre").ElementAt(0).Value</span></h4>
+        <h4>Style: <span>@settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value</span></h4>
+        @Html.Raw(about.Descendants("About").Descendants("Content").ElementAt(0).Value)
+    }
+} else {
     Response.Status = "404 Not Found";
     @section article{
-
         <h2>Sorry, the page you were looking for does not exist.</h2>
     }
 }

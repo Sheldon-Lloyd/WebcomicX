@@ -1,6 +1,7 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @using System.Web.Optimization
+@using WebMatrix.WebData
 
 @{
     var load = new Comic();
@@ -10,7 +11,6 @@
 
 
 }
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +23,6 @@
     <script src="~/webcomicx/admin/Scripts/modernizr-2.7.1.min.js" async></script>
     @Scripts.Render("~/webcomicx/admin/scripts/js")
     @Styles.Render("~/webcomicx/admin/styles/css")
-
     <meta name="viewport" content="width=device-width" />
     @RenderSection("header", required: false)
 </head>
@@ -31,8 +30,7 @@
     <div style="height: auto; min-height: 100%; position: relative;padding-bottom: 40px">
         <section id="login">
             <h3><a href="/">@settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value</a></h3>
-            @if (WebSecurity.IsAuthenticated)
-            {
+            @if (WebSecurity.IsAuthenticated) {
                 <text>
                     Hello, <a class="username" href="~/webcomicx/admin/account" title="Manage Account">@WebSecurity.CurrentUserName</a>!
                     <form id="logoutForm" action="~/webcomicx/admin/account/logout" method="post">
@@ -42,7 +40,6 @@
                 </text>
             }
         </section>
-
         <div class="side-panel">
             <header>
                 <h1 class="site-title" onclick="accordion(this)" @if (IsSectionDefined("sidePanel")) { <text> style="cursor:pointer" </text> }>WebcomicX <span @if (IsSectionDefined("sidePanel")) { <text> style="display: initial" </text> }>&#9660;</span></h1>
@@ -52,8 +49,7 @@
                             <li><a href="~/webcomicx/admin">Dashboard</a></li>
                             <li><a href="/webcomicx/admin/manage-comics">Comics</a></li>
                             <li><a href="/webcomicx/admin/manage-webpages">Webpages</a></li>
-                            @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true")
-                            {
+                            @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
                                 <li><a href="/webcomicx/admin/blog">Blog</a></li>
                             }
                             <li><a href="/webcomicx/admin/customize">Customize</a></li>
@@ -63,8 +59,7 @@
                 </div>
                 <div class="clear-fix"></div>
             </header>
-            @if (IsSectionDefined("sidePanel"))
-            {
+            @if (IsSectionDefined("sidePanel")) {
                 <div class="panel-content">
                     @RenderSection("sidePanel", false)
                 </div>

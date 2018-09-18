@@ -1,4 +1,5 @@
 ﻿@using System.Xml.Linq
+@using WebMatrix.WebData
 
 @{
     Page.PreppendTitle = "Characters - ";
@@ -12,33 +13,31 @@
     Layout = "../layouts/_main.cshtml";
 
 }
-@if(include || WebSecurity.IsAuthenticated){
-@section head{
-<meta name="description" content="Characters of the @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
-}
-@section heading{
-    <h1>Character Profiles @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/characters">Manage</a>}</h1>
-            
-}
-@section article{
-    <ul class="character item-list cf">
-    @foreach(var character in characterXml.Descendants("Profile")){//display characters
-    
-        <li id="character-@character.Element("Number").Value" class="cf">
-            <h4>@character.Element("Name").Value</h4>
-            <img width="auto" height="auto" src="/content/uploads/characters/@character.Element("Image").Value" alt="@character.Element("Name").Value">
-            <div>
-                <p>@Html.Raw(character.Element("Bio").Value.Replace("\n", "<br>"))</p>
-            </div>
-        </li>
+@if (include || WebSecurity.IsAuthenticated) {
+    @section head{
+        <meta name="description" content="Characters of the @settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value Webcomic @load.PrimaryAuthor()">
     }
-    </ul>
-}
-}
-else{
-@section article{
+    @section heading{
+        <h1>Character Profiles @if (WebSecurity.IsAuthenticated) {<a class="edit" href="/webcomicx/admin/characters">Manage</a>}</h1>
 
-    Response.Status = "404 Not Found";
-    <h2>Sorry, the page you were looking for does not exist.</h2>
-}
+    }
+    @section article{
+        <ul class="character item-list cf">
+            @foreach (var character in characterXml.Descendants("Profile")) {//display characters
+
+                <li id="character-@character.Element("Number").Value" class="cf">
+                    <h4>@character.Element("Name").Value</h4>
+                    <img width="auto" height="auto" src="/content/uploads/characters/@character.Element("Image").Value" alt="@character.Element("Name").Value">
+                    <div>
+                        <p>@Html.Raw(character.Element("Bio").Value.Replace("\n", "<br>"))</p>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+} else {
+    @section article{
+        Response.Status = "404 Not Found";
+        <h2>Sorry, the page you were looking for does not exist.</h2>
+    }
 }

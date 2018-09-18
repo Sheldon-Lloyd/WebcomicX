@@ -1,5 +1,7 @@
-﻿@{
-    if(WebSecurity.IsAuthenticated){
+﻿@using WebMatrix.WebData
+
+@{
+    if (WebSecurity.IsAuthenticated) {
         if (IsPost) {
             // Verify the request was submitted by the user
             AntiForgery.Validate();

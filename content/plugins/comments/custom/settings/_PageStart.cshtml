@@ -1,6 +1,7 @@
-﻿@{
-if(!WebSecurity.IsAuthenticated){
-    Response.Redirect("~/webcomicx/admin/account/signin");
-}
-   
+﻿@using WebMatrix.WebData
+@{
+    if (!WebSecurity.IsAuthenticated) {
+        Response.Redirect("~/webcomicx/admin/account/signin");
+    }
+
 }

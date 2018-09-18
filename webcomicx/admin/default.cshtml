@@ -1,6 +1,8 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @using System.ServiceModel.Syndication
+@using WebMatrix.WebData
+
 @{
     int comicCount = 0;
     int pageCount = 0;
@@ -14,69 +16,68 @@
 
     var user = (from xml in accountXml.Descendants("User")
                 where xml.Element("UserName").Value == WebSecurity.CurrentUserName.ToString()
-                   select xml).FirstOrDefault();
-    
+                select xml).FirstOrDefault();
+
 
     var blog = load.LoadComic("~/content/xml/content/blog.xml");
 
-    foreach(var comic in comics.Descendants("Comic")){
+    foreach (var comic in comics.Descendants("Comic")) {
         comicCount++;
     }
-    foreach(var page in webpages.Descendants("Page")){
+    foreach (var page in webpages.Descendants("Page")) {
         pageCount++;
     }
-    foreach(var posts in blog.Descendants("Post")){
+    foreach (var posts in blog.Descendants("Post")) {
         postCount++;
     }
-    Page.Title ="Dashboard";
+    Page.Title = "Dashboard";
 }
-
-@if(user.Element("NewUser").Value=="true"){
-    if(user.Element("SystemRole").Value=="Admin"){
-    <div class="message-guide">
-        <a class="message-guide-dismiss" onclick="welcomeDismiss()">&times; Dismiss</a>
-        <h3>Welcome to @load.webcomicxVersion()</h3>
-        <p>Here is a list of steps you can take to help you get started with WebcomicX</p>
-        <ol>
-            <li><a href="/webcomicx/admin/customize?tutorial=true">Customize your site</a></li>
-            <li><a href="/webcomicx/admin/about?tutorial=true">Add an About page</a></li>
-            <li><a href="/webcomicx/admin/characters?tutorial=true">Add a Character Profiles page</a></li>
-            <li><a href="/webcomicx/admin/blog?tutorial=true">Setup your Blog</a> or <a href="/webcomicx/admin/manage-comics?tutorial=true">Post your first comic</a></li>
-        </ol>
-    </div>
+@if (user.Element("NewUser").Value == "true") {
+    if (user.Element("SystemRole").Value == "Admin") {
+        <div class="message-guide">
+            <a class="message-guide-dismiss" onclick="welcomeDismiss()">&times; Dismiss</a>
+            <h3>Welcome to @load.webcomicxVersion()</h3>
+            <p>Here is a list of steps you can take to help you get started with WebcomicX</p>
+            <ol>
+                <li><a href="/webcomicx/admin/customize?tutorial=true">Customize your site</a></li>
+                <li><a href="/webcomicx/admin/about?tutorial=true">Add an About page</a></li>
+                <li><a href="/webcomicx/admin/characters?tutorial=true">Add a Character Profiles page</a></li>
+                <li><a href="/webcomicx/admin/blog?tutorial=true">Setup your Blog</a> or <a href="/webcomicx/admin/manage-comics?tutorial=true">Post your first comic</a></li>
+            </ol>
+        </div>
     }
 }
-<h2>Dashboard <a href="/webcomicx/admin/new-comic" class="button float-right">Create New Comic</a></h2> 
+<h2>Dashboard <a href="/webcomicx/admin/new-comic" class="button float-right">Create New Comic</a></h2>
 <div class="clear-fix"></div>
 <div class="content-wrapper">
-            <ul class="item-list float-left">
-                <li>
-                    <h4><a href="/webcomicx/admin/manage-comics">Manage Comics</a> <span class="float-right sub-text">Comics (@comicCount)</span></h4>  
-                    <p>Add pages to your comic and organize them in to collections</p>                  
-                </li>
-                <li>
-                    <h4><a href="/webcomicx/admin/manage-webpages">Manage Webpages</a> <span class="float-right sub-text">Pages (@pageCount)</span></h4>
-                    <p>Edit your about page character profile page. You can also add new pages or creating links for pages on external websites</p>                  
-                </li>
-                @if(settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=="true"){
-                <li>
-                    <h4><a href="/webcomicx/admin/blog">Manage Blog</a> <span class="float-right sub-text">Posts (@postCount)</span></h4>
-                    <p>If your webcomic also has a blog you can manage it here</p>                  
-                </li>
-                }
-                <li>
-                    <h4><a href="/webcomicx/admin/webcomic-settings">Webcomic Settings</a></h4>
-                    <p>Change the settings and details of your webcomic such as it name and description</p>
-                </li>
-                <li>
-                    <h4><a href="/account/settings">Account Settings</a></h4>
-                    <p>Edit Your account settings such as your name and password</p>
-                </li>
-                <li>
-                    <h4><a href="/webcomicx/admin/customize">Customize Site</a></h4>
-                    <p>Custumize your site by adding widgets, changing the layout, and choose a comment plugin your of choice</p>
-                </li>
-            </ul>
+    <ul class="item-list float-left">
+        <li>
+            <h4><a href="/webcomicx/admin/manage-comics">Manage Comics</a> <span class="float-right sub-text">Comics (@comicCount)</span></h4>
+            <p>Add pages to your comic and organize them in to collections</p>
+        </li>
+        <li>
+            <h4><a href="/webcomicx/admin/manage-webpages">Manage Webpages</a> <span class="float-right sub-text">Pages (@pageCount)</span></h4>
+            <p>Edit your about page character profile page. You can also add new pages or creating links for pages on external websites</p>
+        </li>
+        @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
+            <li>
+                <h4><a href="/webcomicx/admin/blog">Manage Blog</a> <span class="float-right sub-text">Posts (@postCount)</span></h4>
+                <p>If your webcomic also has a blog you can manage it here</p>
+            </li>
+        }
+        <li>
+            <h4><a href="/webcomicx/admin/webcomic-settings">Webcomic Settings</a></h4>
+            <p>Change the settings and details of your webcomic such as it name and description</p>
+        </li>
+        <li>
+            <h4><a href="/account/settings">Account Settings</a></h4>
+            <p>Edit Your account settings such as your name and password</p>
+        </li>
+        <li>
+            <h4><a href="/webcomicx/admin/customize">Customize Site</a></h4>
+            <p>Custumize your site by adding widgets, changing the layout, and choose a comment plugin your of choice</p>
+        </li>
+    </ul>
 </div>
 <aside>
     <section>
@@ -89,32 +90,30 @@
         </ul>
     </section>
     <section>
-    <h3><a href="http://blog.webcomicx.com">WebcomicX News</a></h3>
-    @{
-    var url = "http://blog.webcomicx.com";
-    var feedurl = "http://blog.webcomicx.com/feeds/posts/default?alt=rss";
-    try{
+        <h3><a href="http://blog.webcomicx.com">WebcomicX News</a></h3>
+        @{
+            var url = "http://blog.webcomicx.com";
+            var feedurl = "http://blog.webcomicx.com/feeds/posts/default?alt=rss";
+            try {
 
-        XmlReader reader = XmlReader.Create(feedurl);
-        SyndicationFeed feed = SyndicationFeed.Load(reader);
-        <ul>
-            @foreach (SyndicationItem item in feed.Items.Take(5)){
-                try{
-                <li class="webcomicx-blog-item"><a href="@item.Links[0].Uri" target="_blank">@item.Title.Text</a>
-                <div class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</div>
-                </li>
-                }
-                catch{
-                <li><a>Error! Blog could not be loaded.</a></li>
-                }
-            }    
-        </ul>
-    }
-    catch{
-        <h3>Error, Blog could not be loaded!</h3>
+                XmlReader reader = XmlReader.Create(feedurl);
+                SyndicationFeed feed = SyndicationFeed.Load(reader);
+                <ul>
+                    @foreach (SyndicationItem item in feed.Items.Take(5)) {
+                        try {
+                            <li class="webcomicx-blog-item">
+                                <a href="@item.Links[0].Uri" target="_blank">@item.Title.Text</a>
+                                <div class="sub-text">@item.PublishDate.ToString("MMM dd yyyy")</div>
+                            </li>
+                        } catch {
+                            <li><a>Error! Blog could not be loaded.</a></li>
+                        }
+                    }
+                </ul>
+            } catch {
+                <h3>Error, Blog could not be loaded!</h3>
 
-    }
-}
+            }
+        }
     </section>
-
 </aside>

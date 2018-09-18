@@ -1,9 +1,10 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using WebMatrix.WebData
 
 @{
-	// set the name of the file
-	string filename = "~/content/xml/content/webpages.xml";
+    // set the name of the file
+    string filename = "~/content/xml/content/webpages.xml";
     string filePath = "";
     var load = new Comic();
     var webpageXml = load.LoadComic(filename);
@@ -13,56 +14,50 @@
     @load.ManageSite();
 
     var webpage = (from xml in webpageXml.Descendants("Page")
-            where xml.Element("Id").Value==pageId
-            select xml).FirstOrDefault();
-    try{
+                   where xml.Element("Id").Value == pageId
+                   select xml).FirstOrDefault();
+    try {
         include = webpage.Element("Include").Value.AsBool();
-    }
-    catch{
+    } catch {
         include = false;
     }
-    try{
+    try {
         var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-        if(HttpContext.Current.Request.Cookies["previewTheme"]!=null&&WebSecurity.IsAuthenticated){
+        if (HttpContext.Current.Request.Cookies["previewTheme"] != null && WebSecurity.IsAuthenticated) {
             theme = HttpContext.Current.Request.Cookies["previewTheme"].Value;
         }
-        if(HttpContext.Current.Session["previewTheme"]!=null){
+        if (HttpContext.Current.Session["previewTheme"] != null) {
 
             HttpContext.Current.Session.Remove("previewTheme");
         }
         filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
-        
-    }
-    catch{
+
+    } catch {
     }
     Layout = filePath;
 
 }
-
-@if(include || WebSecurity.IsAuthenticated && webpage!=null){
-    if(webpage.Element("External").Value.AsBool()){
+@if (include || WebSecurity.IsAuthenticated && webpage != null) {
+    if (webpage.Element("External").Value.AsBool()) {
         Response.Redirect(webpage.Element("PermaLink").Value);
+    } else {
+        var redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped) + "/p/" + pageId + "/" + webpage.Element("PermaLink").Value;
+        if (UrlData[1] != webpage.Element("PermaLink").Value) {
+            Response.Status = "301 Moved Permanently";
+            Response.AddHeader("Location", redirectUrl);
+        }
+        Page.PreppendTitle = webpage.Element("Title").Value + " - ";
+        @section head{
+            <meta name="description" content="@webpage.Element("Description").Value">
+        }
+        @section heading{
+            <h1>@webpage.Element("Title").Value @if (WebSecurity.IsAuthenticated) {<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h1>
+        }
+        @section article{
+            @Html.Raw(webpage.Element("Content").Value)
+        }
     }
-    else{
-    var redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)+"/p/"+pageId+"/"+webpage.Element("PermaLink").Value;
-    if(UrlData[1]!=webpage.Element("PermaLink").Value){
-        Response.Status = "301 Moved Permanently";
-        Response.AddHeader("Location",redirectUrl);
-    }
-    Page.PreppendTitle = webpage.Element("Title").Value+" - ";
-    @section head{
-        <meta name="description" content="@webpage.Element("Description").Value">
-    }
-    @section heading{
-        <h1>@webpage.Element("Title").Value @if(WebSecurity.IsAuthenticated){<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h1>
-    }
-    @section article{
-
-        @Html.Raw(webpage.Element("Content").Value)
-    }
-    }
-}
-else{
+} else {
     Page.PreppendTitle = "404";
     Response.Status = "404 Not Found";
     @section article{

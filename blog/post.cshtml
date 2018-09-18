@@ -1,5 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using WebMatrix.WebData
 
 @{
     //intialize variables
@@ -19,37 +20,37 @@
     //load site manager
     @load.ManageSite();
 
-        var postId = UrlData[0];
-        var post = (from xml in blog.Descendants("Post")
-                    where xml.Element("Id").Value == postId
-                    select xml).FirstOrDefault();
-        if (post != null) {
-            status = post.Element("Status").Value;
-        }
-        if (type != "webcomicx") {
-            redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
-            Response.Status = "301 Moved Permanently";
-            Response.AddHeader("Location", redirectUrl);
-        }
-        try {
-            var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-            if (WebSecurity.IsAuthenticated) {
-                if (HttpContext.Current.Session["previewTheme"] != null) {
-                    theme = HttpContext.Current.Session["previewTheme"].ToString();
-                }
-            }
-            filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
-
-        } catch {
-        }
-        if (HttpContext.Current.Session["previewTheme"] != null) {
-
-            HttpContext.Current.Session.Remove("previewTheme");
-        }
-
-        Layout = filePath;
-
+    var postId = UrlData[0];
+    var post = (from xml in blog.Descendants("Post")
+                where xml.Element("Id").Value == postId
+                select xml).FirstOrDefault();
+    if (post != null) {
+        status = post.Element("Status").Value;
     }
+    if (type != "webcomicx") {
+        redirectUrl = blogSettings.Descendants("Url").ElementAt(0).Value;
+        Response.Status = "301 Moved Permanently";
+        Response.AddHeader("Location", redirectUrl);
+    }
+    try {
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if (WebSecurity.IsAuthenticated) {
+            if (HttpContext.Current.Session["previewTheme"] != null) {
+                theme = HttpContext.Current.Session["previewTheme"].ToString();
+            }
+        }
+        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+
+    } catch {
+    }
+    if (HttpContext.Current.Session["previewTheme"] != null) {
+
+        HttpContext.Current.Session.Remove("previewTheme");
+    }
+
+    Layout = filePath;
+
+}
 @if (status == "publish" && include) {//check rather the blog is included an set to publish
     redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped) + "/blog/post/" + postId + "/" + post.Element("PermaLink").Value;
     if (UrlData[1] != post.Element("PermaLink").Value) {
@@ -80,8 +81,6 @@
         <h1 itemprop="headline">404!</h1>
     }
     @section article{
-
         <h2>Sorry, the page you were looking for does not exist.</h2>
-
     }
 }

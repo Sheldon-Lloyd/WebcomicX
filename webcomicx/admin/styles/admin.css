@@ -868,7 +868,7 @@ padding: 0
     bottom: 3px;
     width: 90%;
 }
-#collections span{
+#collections .collection-name{
     display: initial;
     position: absolute;
     right: 0;

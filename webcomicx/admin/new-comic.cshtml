@@ -1,5 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using WebMatrix.WebData
 
 @{
     Page.Title = "New Comic";
@@ -123,7 +124,6 @@
 <h2>New Comic</h2>
 <div class="content-wrapper">
     <form method="post" enctype="multipart/form-data">
-
         <fieldset>
             <label>Title</label>
             <input type="text" name="title" value="@title">
@@ -131,7 +131,6 @@
             <textarea style="min-height: 200px" name="content">@content</textarea>
             <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
             <textarea style="min-height: 100px" name="description">@description</textarea>
-
             <div>
                 <a href="/webcomicx/admin/manage-comics">Cancel</a>
                 <input type="submit" value="Next">

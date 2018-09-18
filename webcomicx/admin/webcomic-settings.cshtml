@@ -1,5 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
+@using WebMatrix.WebData
 
 @{
     Page.Title = "Webcomix Settings";
@@ -18,21 +19,21 @@
     var style = settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value;
     var blog = settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value;
     var description = settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value;
-    var license= settings.Descendants("Settings").Descendants("License").ElementAt(0).Value;
-    string currentTheme= settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+    var license = settings.Descendants("Settings").Descendants("License").ElementAt(0).Value;
+    string currentTheme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
 
     bool longCheck = false;
     bool shortCheck = false;
     bool blogCheck = blog.AsBool();
     var checkStyle = "is-checked";
-    if(!blogCheck){
-        checkStyle ="is-unchecked";
+    if (!blogCheck) {
+        checkStyle = "is-unchecked";
     }
 
 
-    if(WebSecurity.IsAuthenticated){
+    if (WebSecurity.IsAuthenticated) {
 
-        if(IsPost){
+        if (IsPost) {
             comicName = Request["ComicName"];
             author = Request["author"];
             genre = Request["genre"];
@@ -42,88 +43,83 @@
             description = Request["description"];
             license = Request.Unvalidated("license");
 
-            if(blog ==null){
-                blog="false";
-                
+            if (blog == null) {
+                blog = "false";
+
             }
-            try{
-            settings.Descendants("Settings").Descendants("Genre").ElementAt(0).Value=genre;
+            try {
+                settings.Descendants("Settings").Descendants("Genre").ElementAt(0).Value = genre;
+            } catch {
+
             }
-            catch{
-                
+            try {
+                settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value = style;
+            } catch {
+
             }
-            try{
-            settings.Descendants("Settings").Descendants("Style").ElementAt(0).Value=style;
+            try {
+                settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value = description;
+            } catch {
+
             }
-            catch{
-                
+            try {
+                settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value = currentTheme;
+            } catch {
+
             }
-            try{
-            settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value=description;
-            }
-            catch{
-                
-            }
-            try{
-            settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value=currentTheme;
-            }
-            catch{
-                
-            }
-            settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value=comicName;
-            settings.Descendants("Settings").Descendants("Author").ElementAt(0).Value=author;           
-            settings.Descendants("Settings").Descendants("License").ElementAt(0).Value=license;           
-            settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value=blog;
+            settings.Descendants("Settings").Descendants("ComicName").ElementAt(0).Value = comicName;
+            settings.Descendants("Settings").Descendants("Author").ElementAt(0).Value = author;
+            settings.Descendants("Settings").Descendants("License").ElementAt(0).Value = license;
+            settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value = blog;
 
             settings.Save(Server.MapPath(filename));
-            
+
             Session["updated"] = "true";
             Response.Redirect("~/webcomicx/admin/webcomic-settings");
-            
-            if(next=="next"){
+
+            if (next == "next") {
                 Response.Redirect("~/webcomicx/admin");
             }
         }
     }
 }
-@if(Session["updated"]=="true"){
+@if (Session["updated"] == "true") {
     HttpContext.Current.Session.Remove("updated");
     <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
 }
 <div class="content-wrapper">
-        <h2>Webcomic Settings</h2>
-        <form method="post">
-            <fieldset>
-                <label>Comic Name</label>
-                <input type="text" name="ComicName" value="@comicName">
-                <label>Primary Author</label>
-                <select name="author">
-                    <option value="">none</option>
-                @foreach(var authorName in authors.Descendants("Settings").Descendants("User")) {
-                    <option @if(author==authorName.Element("UserName").Value){<text>selected="selected"</text>} value="@authorName.Element("UserName").Value" >@authorName.Element("PenName").Value (@authorName.Element("UserName").Value)</option>
-                    }
-                </select>
-                <label>License</label>
-                <select id="license" onchange="getLicense()" @if(license!=""){<text>style="max-width:145px"</text>}>
-                    <option value="">Copy Right</option>
-                    <option value="Other" @if(license!=""){<text>selected="selected"</text>}>Other</option>
-                </select>               
-                <input placeholder="Text or code to describe your license" id="licenseValue" @if(license==""){<text>type="hidden"</text>}else{<text>type="text"</text>} name="license" value="@license" style="max-width: 550px">
-                <label>Genre</label>
-                <input type="text" name="genre" value="@genre">
-                <label>Style</label>
-                <input type="text" name="style" value="@style">
-                <label>Description</label>
-                <textarea name="description">@description</textarea>
-                <br>
-                <label>Theme</label>
-                @RenderPage("~/webcomicx/views/theme-list.cshtml")
-                <input style="display: none" type="checkbox" id="blog" name="blog" checked="@blogCheck" value="true">
-                <label onclick="checkButton()" id="checkBox" class="button-switch button @checkStyle" for="blog" style="display: initial">Include Blog</label>
-                <br>
-
-                <br>
-                <input type="submit" value="Save">
-            </fieldset>
-        </form>
+    <h2>Webcomic Settings</h2>
+    <form method="post">
+        <fieldset>
+            <label>Comic Name</label>
+            <input type="text" name="ComicName" value="@comicName">
+            <label>Primary Author</label>
+            <select name="author">
+                <option value="">none</option>
+                @foreach (var authorName in authors.Descendants("Settings").Descendants("User")) {
+                    <option @if (author == authorName.Element("UserName").Value) { <text> selected="selected" </text> } value="@authorName.Element("UserName").Value">@authorName.Element("PenName").Value (@authorName.Element("UserName").Value)</option>
+                }
+            </select>
+            <label>License</label>
+            <select id="license" onchange="getLicense()" @if (license != "") { <text> style="max-width:145px" </text> }>
+                <option value="">Copy Right</option>
+                <option value="Other" @if (license != "") { <text> selected="selected" </text> }>Other</option>
+            </select>
+            <input placeholder="Text or code to describe your license" id="licenseValue" @if (license == "") { <text> type="hidden" </text> } else { <text> type="text" </text> } name="license" value="@license" style="max-width: 550px">
+            <label>Genre</label>
+            <input type="text" name="genre" value="@genre">
+            <label>Style</label>
+            <input type="text" name="style" value="@style">
+            <label>Description</label>
+            <textarea name="description">@description</textarea>
+            <br>
+            <label>Theme</label>
+            @RenderPage("~/webcomicx/views/theme-list.cshtml")
+            <input style="display: none" type="checkbox" id="blog" name="blog" checked="@blogCheck" value="true">
+            <label onclick="checkButton()" id="checkBox" class="button-switch button @checkStyle" for="blog" style="display: initial">Include Blog</label>
+            <br>
+            <br>
+            <input type="submit" value="Save">
+        </fieldset>
+    </form>
 </div>
