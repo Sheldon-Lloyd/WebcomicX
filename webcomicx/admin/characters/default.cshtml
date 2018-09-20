@@ -45,22 +45,23 @@
 <ul class="item-list" id="sortable">
 @foreach(var character in characterXml.Descendants("Profile")){//display characters
     
-    <li id="@character.Element("Number").Value" class="ui-state-default">
-        <form class="sort" action="/webcomicx/admin/controlers/character-position" method="post">
+    <li id="@character.Element("Number").Value" class="ui-state-default character-item flex">
+        <form class="sort vertical-align" action="/webcomicx/admin/controlers/character-position" method="post">
             <div>
                 <button type="submit" name="newPosition" value="0">&#9650;</button>
                 <input type="hidden" name="oldPosition" value="@characterNo">
             </div>
         </form>
-        <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial" class="image-box" style="margin-left:80px;background-image: url('/content/uploads/characters/@character.Element("Image").Value');background-size: contain;background-position: center;background-repeat: no-repeat;">
+        <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial" class="item-list-thumbnail vertical-align" style="background-image: url('/content/uploads/characters/@character.Element("Image").Value')">
         </a>
-        <div>
-            <h4><a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial">@character.Element("Name").Value</a></h4>
-            <div class="options">
-                <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value/@tutorial">Edit</a> | <a onclick="deletePrompt(this)">Delete</a>
-            </div>
+        <div class="vertical-align flex-100">
+            <h4><a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value@tutorial">@character.Element("Name").Value</a></h4>
+
             
         </div>
+            <div class="options vertical-align">
+                <a href="/webcomicx/admin/characters/edit/@character.Element("Number").Value@tutorial">Edit</a> | <a onclick="deletePrompt(this)">Delete</a>
+            </div>
                 <form id="deleteCharacter" class="delete" method="post" action="/webcomicx/admin/controlers/delete-character/@tutorial">
                     <div>
                         <h5>Delete This Character?</h5>

@@ -222,10 +222,14 @@ input.checkbox {
     margin:  0;
     vertical-align: middle;
 }
+.vertical-align{
+    vertical-align: middle;
+    display: inline-block;
+    align-self: center;
+}
 
 h2 .button{
     font-size: .8em;
-    -margin-left: 25px;
 }
 
     td input[type="submit"],
@@ -241,6 +245,12 @@ h2 .button{
 
 .float-right {
     float: right;
+}
+.flex{
+    display: flex
+}
+.flex-100{
+    flex: 100%
 }
 .margin-right{
     margin-right: 20px
@@ -463,25 +473,15 @@ ul#menu {
     background: none;
     font-family: Calibri;
     border: none;
-    border-top: 1px solid;
+    border-top: 2px solid;
     padding: 0px;
-    line-height: 0.6;
+    line-height: 0.8;
     font-size: 1.5em;
     margin-left: 15px ;
-    position: absolute;
-    top: 12px;
 }
 .item-list{
     list-style:none;
     padding: 0;
-}
-.item-list .image-box{
-    float: left;
-    height:100%; 
-    width: 100px;
-    background-color: #333;
-    margin-right: 20px;
-    
 }
 .item-list li{
     margin-bottom: 10px;
@@ -493,11 +493,18 @@ ul#menu {
     font-size: 18px;
 }
 .item-list .ui-state-default{
-    overflow: hidden;
-    height: 75px;
-    
+    overflow: hidden;    
 }
-
+.item-list-thumbnail{
+    width: 100px;
+    min-width: 100px;
+    background-color: #333;
+    margin: 0 20px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100px!important;
+}
 /* page titles */
 hgroup.title {
     margin-bottom: 10px;
@@ -920,6 +927,14 @@ display: none;
     background: transparent!important;
     top: 75px
 }
+/*---------------------Character page----------------------*/
+.character-item .sort{
+    position: relative;
+    top:0;
+    bottom: 0;
+
+}
+
 /*---------------------Widgets----------------------*/
 .widget  .ui-state-default{
         background: #fff;
@@ -1139,11 +1154,9 @@ color: #333
     text-overflow: ellipsis;
 }
 .item-list .options {
-    position: absolute;
     background: #ccc;
-    bottom: 0;
-    left: 195px;
-    padding: 15px   
+    margin: 0 15px;
+    white-space: nowrap 
 }
 .grid .options{
     position: absolute;
