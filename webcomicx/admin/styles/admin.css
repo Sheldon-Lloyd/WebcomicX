@@ -1155,7 +1155,7 @@ color: #333
 }
 .item-list .options {
     background: #ccc;
-    margin: 0 15px;
+    margin: 15px;
     white-space: nowrap 
 }
 .grid .options{
