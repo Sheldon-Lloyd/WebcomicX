@@ -102,7 +102,7 @@
                                 async: true, dataType: "xml", url: comicList, success: function (xml) {
                                     var comicListXml = xml,
                                         comicListX = comicListXml.getElementsByTagName("Comic");
-                                    if (settings.comicNo < comicListX.length) {
+                                    if (settings.comicNo <= comicListX.length) {
                                         $next.show();
 
                                         $next.attr("href", "/comic/read/" + (settings.comicNo + 1) + "/#!/page/1");
