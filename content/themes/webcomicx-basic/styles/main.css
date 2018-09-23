@@ -112,6 +112,12 @@ nav, section, figure{
     border-bottom: 0;
     border-radius: 3px 3px 0 0;
 }
+.float-left{
+    float: left
+}
+.float-right{
+    float: right;
+}
 /*----------------Layout-------------------*/
 .body{
 	background:#fbfbfb;
@@ -181,18 +187,20 @@ footer p{
     text-align: right;
 }
 .branding{
-    float: left;
-    margin: 0;
-    line-height: 1.3;
-    font-size: 1.75em;
     font-weight: 700;
+    line-height: 2em;
+    font-size: 1.5em;
+    background: #f1f1f1;
+    position: relative;
+    margin-right: 40px;
+    padding: 0 20px;
 }
 .branding:after {
-/*hack to make sure img stays verticaly aligned*/
-content: "|";
-display: inline-block;
-width: .1px;
-visibility: hidden;
+    /*hack to make sure img stays verticaly aligned*/
+    content: "|";
+    display: inline-block;
+    width: .1px;
+    visibility: hidden;
 }
 .subheading{
 	font-size:.5em;
@@ -206,32 +214,26 @@ visibility: hidden;
     display: inline-block
 }
 .logo img{
-    height: 1em;
+    height: 1.3em;
     display: inline-block;
-    vertical-align: text-bottom;
+    vertical-align: middle
 }
-nav, .nav, .nav li, .menu dl{
-    background:inherit
+nav, .menu ul, .nav,.menu {
+    background: inherit;
 }
 .nav {
     padding: 0;
     margin: 0;
-    font-size: 1.1em;
-    background:inherit
 }
 
 .nav li {
-    display: inline;
-    list-style: none;
-    background
-}
-
-.nav li a {
+    position: relative;
+    color: #365b87;
     text-decoration: none;
-	padding:10px 15px;
+    padding: 0 15px;
+    line-height: 3.1em;
     display: inline-block;
-    position: relative
-
+    white-space: nowrap;
 }
 
 .nav li a:hover {
@@ -241,31 +243,28 @@ nav, .nav, .nav li, .menu dl{
 li.menu{
 	position:relative;
 	cursor:default;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
-.menu:hover dl, .menu:focus dl{
+.menu:hover ul, .menu:focus ul{
 	display:block
 }
-.menu dl{
-	position:absolute;
-	top:2.3em;
-	right:0;
+.menu ul{
+    margin:0;
+    padding: 0;
+    position:absolute;
+    margin-top:4px;
+    right:0;
 	z-index:2;
-	min-width:100%;
-	border: 1px #ccc solid;
+    min-width:100%;
+    border: 1px #ccc solid;
+    border-top: 0;
 	display:none;
 	box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.3);
 	-webkit-box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.3);
 }
-.menu dl a{
-	display:block;
+.menu ul a{
+	display:inline-block;
 	cursor:pointer;
     white-space: nowrap;
-    float: left;
-}
-.menu dd, .menu dt,.menu dl{
-	margin:0
 }
 .news-feed{
     background: #fbfbfb;
@@ -868,14 +867,13 @@ h4.accordion {
 
 /*Resposive Web Design Styles*/
 @media screen and (max-width:768px){
-    .menu dl {
-        top: 2.22em;
+    .menu ul {
+        margin-top: 1px
     }
-        .main{
-	width:100%;
-    padding-right: initial;
-    margin-right: initial;
-
+    .main{
+        width:100%;
+        padding-right: initial;
+        margin-right: initial;
     }
     .side{
 	    width:100%;
@@ -885,16 +883,18 @@ h4.accordion {
     }
     .header .branding{
         float: none;
+        display: block;
+        margin: 0
     }
-}
-
-@media screen and (max-width:620px){
     .nav {
         float: none;
         margin: auto;
         text-align: center;
         width: 100%;
     }
+}
+
+@media screen and (max-width:620px){
     .page {
         max-width: 100%;
         width: initial;

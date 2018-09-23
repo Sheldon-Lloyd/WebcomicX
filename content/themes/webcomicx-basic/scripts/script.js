@@ -68,11 +68,11 @@
     }
     //accessible menu
 $(document).ready(function () {
-        $(".menu dl a").focus(function () {
-            $(this).closest(".menu dl").css("display", "block");
+        $(".menu ul a").focus(function () {
+            $(this).closest(".menu ul").css("display", "block");
         })
         $(".menu dl a").focusout(function () {
-            $(this).closest(".menu dl").css("display", "");
+            $(this).closest(".menu ul").css("display", "");
         });
         //hide all captions
         $('.webcomic-img figcaption').css('top', '-100%');

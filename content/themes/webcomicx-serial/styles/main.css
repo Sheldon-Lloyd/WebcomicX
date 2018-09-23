@@ -122,6 +122,12 @@ a[role="button"]{
     border-bottom: 0;
     border-radius: 3px 3px 0 0;
 }
+.float-left{
+    float:left
+}
+.float-right{
+    float: right
+}
 /*------------------Layout-------------------*/
 .body {
     background: #fbfbfb;
@@ -188,11 +194,13 @@ footer p{
     text-align: right;
 }
 .branding{
-    float: left;
-    margin: 0;
-    line-height: 1.3;
-    font-size: 1.75em;
     font-weight: 700;
+    line-height: 2em;
+    font-size: 1.5em;
+    background: #f1f1f1;
+    position: relative;
+    margin-right: 40px;
+    padding: 0 20px;
 }
 .branding:after {
 /*hack to make sure img stays verticaly aligned*/
@@ -214,28 +222,26 @@ visibility: hidden;
     display: inline-block
 }
 .logo img{
-    height: 1em;
+    height: 1.3em;
     display: inline-block;
+    vertical-align: middle
 }
-nav, .menu dl, .nav, .nav li {
-    background: inherit
+nav, .menu ul, .nav,.menu {
+    background: inherit;
 }
 .nav {
     padding: 0;
     margin: 0;
-    font-size: 1.1em;
 }
 
 .nav li {
-    display: inline;
-    list-style: none;
-}
-
-.nav li a {
+    position: relative;
+    color: #365b87;
     text-decoration: none;
-	padding:10px 15px;
+    padding: 0 15px;
+    line-height: 3.1em;
     display: inline-block;
-    position: relative
+    white-space: nowrap;
 }
 
 .nav li a:hover {
@@ -245,31 +251,28 @@ nav, .menu dl, .nav, .nav li {
 li.menu{
 	position:relative;
 	cursor:default;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
-.menu:hover dl, .menu:focus dl{
+.menu:hover ul, .menu:focus ul{
 	display:block
 }
-.menu dl{
-	position:absolute;
-	top:2.3em;
+.menu ul{
+    margin:0;
+    padding: 0;
+    position:absolute;
+	margin-top:4px;
 	right:0;
 	z-index:2;
 	min-width:100%;
-	border: 1px #ccc solid;
+    border: 1px #ccc solid;
+    border-top: 0;
 	display:none;
 	box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.3);
 	-webkit-box-shadow: inset 0px 8px 10px -5px rgba(0,0,0,0.3);
 }
-.menu dl a{
-	display:block;
+.menu ul a{
+	display:inline-block;
 	cursor:pointer;
     white-space: nowrap;
-    float: left;
-}
-.menu dd, .menu dt,.menu dl{
-	margin:0
 }
 .news-feed{
     background: #fbfbfb;
@@ -887,10 +890,9 @@ transition: all 1.5s ease-in!important;
 /*Resposive Web Design Styles*/
 @media screen and (max-width:768px){
 	.main{
-	width:100%;
-    padding-right: 0;
-    margin-right: 0;
-
+        width:100%;
+        padding-right: 0;
+        margin-right: 0;
     }
     .side{
 	    width:100%;
@@ -900,18 +902,21 @@ transition: all 1.5s ease-in!important;
     }
     .header .branding{
         float: none;
+        display: block;
+        margin:0
     }
-    .menu dl {
-        top: 2.22em;
-    }
-
-@media screen and (max-width:620px){
     .nav {
-        float: initial;
+        float: none;
         margin: auto;
         text-align: center;
         width: 100%;
     }
+    .menu ul{
+        margin-top: 1px
+    }
+}
+@media screen and (max-width:620px){
+
     .page {
         max-width: 100%;
         width: auto;

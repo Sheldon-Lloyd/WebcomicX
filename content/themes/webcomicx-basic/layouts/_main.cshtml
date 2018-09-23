@@ -41,15 +41,12 @@
 
 <body class="body" @RenderSection("bodyjs", false)>
     <div class="header cf">
-        <header>
-            <div class="branding">
-                <a class="logo" href="@Href("~/")">@load.comicLogo()</a>
-                <span class="subheading">@load.PrimaryAuthor(link: true)</span>
-            </div>
+        <header class="branding float-left">
+            <a class="logo" href="@Href("~/")">@load.comicLogo()</a>
+            <span class="subheading">@load.PrimaryAuthor(link: true)</span>
         </header>
 
-        <nav role="navigation">
-            <ul class="nav">
+            <ul class="nav float-right" role="navigation">
                 @if (settings.Descendants("AboutPage").ElementAt(0).Value.AsBool()) {
                     <li>
                         <a href="@Href("~/comic/about")">About</a>
@@ -60,23 +57,22 @@
                         <a href="@Href("~/comic/characters")">Characters</a>
                     </li>
                 }
-                <li>
-                    @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
+                @if (settings.Descendants("Settings").Descendants("Blog").ElementAt(0).Value == "true") {
+                    <li>
                         <a href="@blogUrl">Blog</a>
-                    }
-                </li>
+                    </li>
+                }
                 @if (webpages.Count() > 0) {
                     <li class="menu" tabindex="0">
                         <a>More &darr;</a>
-                        <dl>
+                        <ul>
                             @foreach (var webpage in webpages) {
-                                <dd><a href="@load.WebpageUrl(webpage.Element("Id").Value)" tabindex="0">@webpage.Element("Title").Value</a></dd>
+                                <li><a href="@load.WebpageUrl(webpage.Element("Id").Value)" tabindex="0">@webpage.Element("Title").Value</a></li>
                             }
-                        </dl>
+                        </ul>
                     </li>
                 }
             </ul>
-        </nav>
     </div>
     <div class="page @Page.Style">
         <main role="main">
