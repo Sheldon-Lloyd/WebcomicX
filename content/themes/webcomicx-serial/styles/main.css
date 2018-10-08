@@ -211,6 +211,7 @@ visibility: hidden;
 }
 
 .subheading{
+    opacity:.8;
 	font-size:.5em;
 	font-weight:100;
 	vertical-align:middle;
