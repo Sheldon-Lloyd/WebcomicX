@@ -18,6 +18,7 @@ using System.Web.Helpers;
 using WebMatrix;
 using WebMatrix.WebData;
 using System.Text;
+using System.Globalization;
 /// <summary>
 /// Loads the xml for the sites comic and settings
 /// </summary>
@@ -236,16 +237,15 @@ public class Comic{
     public HtmlString Widgets(string position){//create widgets
         //intialize variable
         var widgetItems = "";
-
+        //capitalize the first letter of the position
+        position = new CultureInfo("en").TextInfo.ToTitleCase(position.ToLower());
         //load widgets xml
         var load = new Comic();
         var widgetXml = load.LoadComic("/App_Data/widgets.xml");
-        var widgets = (from xml in widgetXml.Descendants("Container")
-            where xml.Element("Position").Value == position
-            orderby (string) xml.Element("Index") ascending
-            select xml);
+        var widgets = (from xml in widgetXml.Descendants(position).Descendants("Container")
+                       select xml);
 
-        foreach(var widget in widgets){
+        foreach (var widget in widgets){
             //for each widget create the elements to be rendered
             widgetItems = widgetItems + "<div class='widget'>"+widget.Element("Code").Value+"</div>"  ;
         }
@@ -478,7 +478,7 @@ public class Comic{
     public IHtmlString webcomicxVersion(){
         //version nuber for webcomicx
         //make sure this is always at the bottom of model.cs
-        var verion = new HtmlString("<a href='http://webcomicx.com'rel='nofollow' target='_blank'>WebcomicX 0.4.1</a>");
+        var verion = new HtmlString("<a href='http://webcomicx.com'rel='nofollow' target='_blank'>WebcomicX 0.4.0</a>");
         return verion;
     }
 }

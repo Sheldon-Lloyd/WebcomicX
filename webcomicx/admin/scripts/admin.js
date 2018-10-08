@@ -382,17 +382,31 @@ $("#newCollection").submit(function (event) {
     /*---------Manage widget layout--------------------------*/
     $(document).ready(function () {
 
-        $(".widget").sortable({
+        $(".widget").sortable({//sort characters
+            start: function (event, ui) {
+                //get current element index being sorted
+                oldIndex = $(ui.item).index();
+            },
             connectWith: ".widget",
+            cancel: ".ui-state-disabled",
             items: "li:not(.non-widget)",
-            cancel: ".ui-state-disabled"
+
+            update: function (event, ui) {
+                //get new element index being sorted
+                index = $(ui.item).index();
+                id = $(ui.item).attr("id");
+                position=$(this).attr("data-position")
+
+                //Send the data using post
+                var posting = $.post("/webcomicx/admin/controlers/sort-widgets", { "id": id, "position": position, "index": index, "current": oldIndex });
+            }
         }).disableSelection();
     });
     function addWidget(e) {
         var container = $(e).closest(".widget");
         var widgetPosition = container.attr("data-position");
         newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div id ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
-        $(e).closest(".widget-placeholder").after(newWidget);
+        $(e).closest(".widget-placeholder").before(newWidget);
     }
 
         function saveLayout() {
@@ -430,7 +444,7 @@ $("#newCollection").submit(function (event) {
         posting.done(function (data) {
             $("#temp-container").html(data.replace(/\s/g, ""));
             var text = $("#temp-container #text").html();
-            $(e).closest(".item").find("#editWidget").html("Edit " + name + " widget");
+            $(e).closest(".item").find("#editWidget").html("Edit " + name);
             form.find('button[name="id"]').val(data.replace(/\s/g, ""));
             $("#delete",widget).val(data.replace(/\s/g, ""));
 

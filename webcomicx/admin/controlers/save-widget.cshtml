@@ -2,52 +2,53 @@
 @using System.Xml
 @{
     if(IsPost){
-    var name = Request["name"];
-    var code = Request.Unvalidated("code");
-    var position = Request["position"];
-    var id = Request["id"];
-    //load xml file
-    var widgetsXml = "/App_Data/widgets.xml";
-    var load = new Comic();
-    var widgets = load.LoadComic(widgetsXml);
+        var name = Request["name"];
+        var code = Request.Unvalidated("code");
+        var position = Request["position"];
+        var id = Request["id"];
+        //load xml file
+        var widgetsXml = "/App_Data/widgets.xml";
+        var load = new Comic();
+        var widgets = load.LoadComic(widgetsXml);
 
-    //get widget
-    var widget = (from xml in widgets.Descendants("Container")
-        where xml.Element("Id").Value == id
-        select xml).FirstOrDefault();
-
-    if(widget!=null){
-        widget.Element("Name").Value=name;
-        widget.Element("Code").Value=code;
-        <text>@id</text>
-    }
-    else{
-        int widgetId = 1;
-        widget = (from xml in widgets.Descendants("Container")
-            select xml).FirstOrDefault();
+        //get widget
+        var widget = (from xml in widgets.Descendants("Container")
+                      where xml.Element("Id").Value == id
+                      select xml).FirstOrDefault();
 
         if(widget!=null){
-          int max = widgets.Descendants("SecondaryContent").Elements("Container").Max(e => (int)e.Element("Id"));    
-            widgetId = max+1;
+            widget.Element("Name").Value=name;
+            widget.Element("Code").Value=code;
+        }
+    else{
+            int widgetId = 1;
+            widget = (from xml in widgets.Descendants(position).Descendants("Container")
+                      select xml).FirstOrDefault();
+            var widget2 = (from xml in widgets.Descendants(position).Descendants("Container")
+                           select xml);
+            ;
+
+
+            if (widget!=null){
+                int max = widgets.Descendants("Container").Max(e => (int)e.Element("Id"));
+                widgetId = max+1;
+            }
+
+            var newElement =  new XElement(
+    new XElement("Container",
+        new XElement("Name", name),
+        new XElement("Code", code),
+        new XElement("Position", position),
+        new XElement("Id", widgetId)
+    )
+);
+            widgets.Descendants(position).ElementAt(0).Add(newElement);
+
         }
 
-        var newElement =  new XElement(
-            new XElement("Container",
-                new XElement("Name", name),
-                new XElement("Code", code),
-                new XElement("Index", ""),
-                new XElement("Position", position),
-                new XElement("Id", widgetId)
-            )
-        );
-        widgets.Descendants("SecondaryContent").ElementAt(0).Add(newElement);
-        <text>@widgetId</text>
-
-    }
-    
-    widgets.Save(Server.MapPath(widgetsXml));
-    if(!IsAjax){
-    //Response.Redirect("~/webcomicx/admin/customize");
-    }
+        widgets.Save(Server.MapPath(widgetsXml));
+        if(!IsAjax){
+            Response.Redirect("~/webcomicx/admin/customize");
+        }
     }
 }

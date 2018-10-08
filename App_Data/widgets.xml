@@ -4,5 +4,11 @@
     <CommentPluginName></CommentPluginName>
   </CommentPlugins>
   <SecondaryContent>
+    <Top>
+    </Top>
+    <Side>
+    </Side>
+    <Bottom>
+    </Bottom>
   </SecondaryContent>
 </Widgets>
