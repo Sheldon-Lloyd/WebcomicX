@@ -1,7 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @using WebMatrix.WebData
-
 @{
     // set the name of the file
     string filename = "~/content/xml/content/webpages.xml";
@@ -51,7 +50,16 @@
             <meta name="description" content="@webpage.Element("Description").Value">
         }
         @section heading{
-            <h1>@webpage.Element("Title").Value @if (WebSecurity.IsAuthenticated) {<a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>}</h1>
+            <h1>
+                @webpage.Element("Title").Value
+                        @if (WebSecurity.IsAuthenticated) {
+                            <a class="edit" href="/webcomicx/admin/edit-webpage/@pageId">Edit</a>
+                            if (!include) {
+                                <span class="subheading">This blog post has not been published yet so only you can see it</span>
+                            }
+
+                        }
+                    </h1>
         }
         @section article{
             @Html.Raw(webpage.Element("Content").Value)
@@ -60,6 +68,9 @@
 } else {
     Page.PreppendTitle = "404";
     Response.Status = "404 Not Found";
+    @section heading{
+        <h1 itemprop="headline">404!</h1>
+    }
     @section article{
         <h2>Sorry, the page you were looking for does not exist.</h2>
     }

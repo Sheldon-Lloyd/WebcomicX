@@ -1,7 +1,6 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @using WebMatrix.WebData
-
 @{
     Page.PreppendTitle = "Blog - ";
     string filePath = "";
@@ -12,6 +11,25 @@
     var settings = load.LoadComic("~/App_Data/WebcomicX.xml");
     include = settings.Descendants("Blog").ElementAt(0).Value.AsBool();
     @load.ManageSite();
+
+    try {
+        var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
+        if (WebSecurity.IsAuthenticated) {
+            if (HttpContext.Current.Session["previewTheme"] != null) {
+                theme = HttpContext.Current.Session["previewTheme"].ToString();
+            }
+        }
+        filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
+
+    } catch {
+    }
+    if (HttpContext.Current.Session["previewTheme"] != null) {
+
+        HttpContext.Current.Session.Remove("previewTheme");
+    }
+
+    Layout = filePath;
+
     if (include) {
 
         var type = blogSettings.Descendants("Type").ElementAt(0).Value;
@@ -26,23 +44,7 @@
             Response.Status = "301 Moved Permanently";
             Response.AddHeader("Location", redirectUrl);
         }
-        try {
-            var theme = settings.Descendants("Settings").Descendants("Theme").ElementAt(0).Value;
-            if (WebSecurity.IsAuthenticated) {
-                if (HttpContext.Current.Session["previewTheme"] != null) {
-                    theme = HttpContext.Current.Session["previewTheme"].ToString();
-                }
-            }
-            filePath = "~/content/themes/" + theme + "/layouts/_main.cshtml";
 
-        } catch {
-        }
-        if (HttpContext.Current.Session["previewTheme"] != null) {
-
-            HttpContext.Current.Session.Remove("previewTheme");
-        }
-
-        Layout = filePath;
         @section heading{
             <h1>Blog</h1>
         }
@@ -62,6 +64,9 @@
     } else {
         Page.PreppendTitle = "404 - ";
         Response.Status = "404 Not Found";
+        @section heading{
+            <h1 itemprop="headline">404!</h1>
+        }
         @section article{
             <h2>Sorry, the page you were looking for does not exist.</h2>
         }

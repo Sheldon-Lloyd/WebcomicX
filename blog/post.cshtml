@@ -51,7 +51,7 @@
     Layout = filePath;
 
 }
-@if (status == "publish" && include) {//check rather the blog is included an set to publish
+@if (status == "publish" && include || WebSecurity.IsAuthenticated && include) {//check rather the blog is included an set to publish
     redirectUrl = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped) + "/blog/post/" + postId + "/" + post.Element("PermaLink").Value;
     if (UrlData[1] != post.Element("PermaLink").Value) {
         Response.Status = "301 Moved Permanently";
@@ -65,6 +65,9 @@
         <h1 itemprop="headline">
             @post.Element("Title").Value @if (WebSecurity.IsAuthenticated) {
                 <a class="edit" href="/webcomicx/admin/blog/edit-post/@postId">Edit</a>
+                if (status != "publish") {
+                    <span class="subheading">This blog post has not been published yet so only you can see it</span>
+                }
             }
         </h1>
     }
