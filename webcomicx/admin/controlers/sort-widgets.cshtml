@@ -1,11 +1,11 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @using System.IO;
-
 @{
+    Layout = null;
     if (IsPost) {
-        var index = Request["index"].AsInt();
-        var currentIndex = Request["current"].AsInt();
+        var newIndex = Request["newIndex"].AsInt();
+        var oldIndex = Request["oldIndex"].AsInt();
         var position = Request["position"];
         var id = Request["id"];
 
@@ -21,19 +21,36 @@
 
         //get the position of the parent of the widget to get its position
         var oldPosition = widget.Parent.Name;
+        if (oldPosition == position) {
+            if (oldIndex >= newIndex) {//if the old index is greater than or equal to the new element index
+                                       //the widget will be removed before being added before the indicated widget index
+                widget.Remove();
+                widgets.Descendants(position).Descendants("Container").ElementAt(newIndex).AddBeforeSelf(widget);
+            } else {//the widget will be removed after adding the wudget after the indicated widget index
+                widgets.Descendants(position).Descendants("Container").ElementAt(newIndex).AddAfterSelf(widget);
+                widget.Remove();
 
+            }
 
-        if (currentIndex>=index) {//if the old index is greater than or equal to the new element index 
-                                  //the widget will be removed before being added before the indicated widget index
-            widget.Remove();
-            widgets.Descendants(position).Descendants("Container").ElementAt(index).AddBeforeSelf(widget);
-        }else {//the widget will be removed after adding the wudget after the indicated widget index
-            widgets.Descendants(position).Descendants("Container").ElementAt(index).AddAfterSelf(widget);
-            widget.Remove();
+        } else {
+            if (widgets.Descendants(position).ElementAt(0).Value == "") {
+                widgets.Descendants(position).ElementAt(0).AddFirst(widget);
+                widget.Remove();
+            } else {
+                int maxIndex = widgets.Descendants(position).Descendants("Container").Count() - 1;
+                if (maxIndex >= newIndex) {
+                    widget.Remove();
 
+                    widgets.Descendants(position).Descendants("Container").ElementAt(newIndex).AddBeforeSelf(widget);
+                } else {
+                    widget.Remove();
+
+                    widgets.Descendants(position).Descendants("Container").ElementAt(maxIndex).AddAfterSelf(widget);
+
+                }
+            }
         }
 
         widgets.Save(Server.MapPath(widgetsXml));
-
     }
 }

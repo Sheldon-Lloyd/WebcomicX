@@ -382,23 +382,25 @@ $("#newCollection").submit(function (event) {
     /*---------Manage widget layout--------------------------*/
     $(document).ready(function () {
 
-        $(".widget").sortable({//sort characters
+        $(".widget").sortable({//sort widgets
             start: function (event, ui) {
                 //get current element index being sorted
-                oldIndex = $(ui.item).index();
+                oldIndex = $(ui.item).index() - 1;
             },
             connectWith: ".widget",
             cancel: ".ui-state-disabled",
-            items: "li:not(.non-widget)",
-
+            items: "li:not(.ui-state-disabled)",
+            placeholder: "ui-state-highlight",
             update: function (event, ui) {
                 //get new element index being sorted
-                index = $(ui.item).index();
+                index = $(ui.item).index() - 1;
                 id = $(ui.item).attr("id");
-                position=$(this).attr("data-position")
-
+                position = $(this).attr("data-position")
+                console.log("new " + index + "old " + oldIndex)
                 //Send the data using post
-                var posting = $.post("/webcomicx/admin/controlers/sort-widgets", { "id": id, "position": position, "index": index, "current": oldIndex });
+                var posting = $.post("/webcomicx/admin/controlers/sort-widgets", { "id": id, "position": position, "newIndex": index, "oldIndex": oldIndex }, function (msg) {
+                    console.log(msg);   //Your resulting action
+                });
             }
         }).disableSelection();
     });
@@ -406,7 +408,7 @@ $("#newCollection").submit(function (event) {
         var container = $(e).closest(".widget");
         var widgetPosition = container.attr("data-position");
         newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div id ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
-        $(e).closest(".widget-placeholder").before(newWidget);
+        $(e).closest(".widget-placeholder").after(newWidget);
     }
 
         function saveLayout() {
@@ -424,7 +426,7 @@ $("#newCollection").submit(function (event) {
         });
         $('.prompt').html("Layout Saved! <a onclick='closePrompt()'>&times;</a>");
 
-        //promt will clode if user doesnt close it after "Over 9000!" milliseconds
+        //prompt will clode if user doesnt close it after "Over 9000!" milliseconds
         setTimeout(function () { closePrompt() }, 9001);
     }
     function saveWidget(e) {

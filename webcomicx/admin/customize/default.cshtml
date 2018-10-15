@@ -25,7 +25,7 @@
 }
 <h4 class="prompt is-hidden"></h4>
 <div>
-    <h2 class="content-wrapper">Webcomic Widgets and Layout <button class="button float-right" onclick="saveLayout()">Save Layout Arrangement</button></h2>
+    <h2 class="content-wrapper">Webcomic Widgets and Layout @*<button class="button float-right" onclick="saveLayout()">Save Layout Arrangement</button>*@</h2>
 
     <div class="clear-fix"></div>
     <h4>Go to <a href="/webcomicx/admin/customize/design">Template Designer</a></h4>
@@ -48,6 +48,7 @@
     <section>
         <div class="non-widget">Webcomic</div>
         <ul class="widget" data-position="Top">
+            <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
             @foreach (var widget in topWigets) {
                 <li class="item ui-state-default" id="@widget.Element("Id").Value">
                     <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
@@ -77,7 +78,6 @@
                     </div>
                 </li>
             }
-            <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
         </ul>
     </section>
     <section style="float: left;width: 60%">
@@ -106,6 +106,7 @@
     <section style="float: right;width: 40%">
         <div class="ui-state-default  ui-state-disabled non-widget">Blog</div>
         <ul class="widget" data-position="Side">
+            <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
             @foreach (var widget in sideWigets) {
                 <li class="item ui-state-default" id="@widget.Element("Id").Value">
                     <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
@@ -135,11 +136,11 @@
                     </div>
                 </li>
             }
-            <li class="widget-placeholder ui-state-default  ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
         </ul>
     </section>
     <section style="clear: both">
         <ul class="widget" data-position="Bottom">
+            <li class="widget-placeholder ui-state-default ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
             @foreach (var widget in bottomWigets) {
                 <li class="item ui-state-default" id="@widget.Element("Id").Value">
                     <form class="sort" action="/webcomicx/admin/controlers/sort-widgets" method="post">
@@ -169,7 +170,6 @@
                     </div>
                 </li>
             }
-            <li class="widget-placeholder ui-state-default ui-state-disabled"><a onclick="addWidget(this)">Add widget</a></li>
         </ul>
 
         <div class="non-widget">Footer</div>

@@ -936,13 +936,17 @@ display: none;
 }
 
 /*---------------------Widgets----------------------*/
-.widget  .ui-state-default{
-        background: #fff;
-        margin: 10px;
-        text-align: center;
-        padding: 21px 0;
-        position: relative
-    }
+.widget .ui-state-default, .widget .ui-state-highlight {
+    background: #fff;
+    margin: 10px;
+    text-align: center;
+    padding: 21px 0;
+    min-height:50px;
+    position: relative
+}
+.widget .ui-sortable-helper {
+    max-width: 300px
+}
 ul.widget {
     list-style: none;
     padding: 0;
@@ -978,7 +982,7 @@ list-style: none;
     }
     .widget .sort,.widget .sort div{
         border-color: #888;
-        padding: 0
+        padding: 10px
     }
 .widget #delete{
 color: rgba(51,51,51,0.70);

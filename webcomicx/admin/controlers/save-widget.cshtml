@@ -42,13 +42,13 @@
         new XElement("Id", widgetId)
     )
 );
-            widgets.Descendants(position).ElementAt(0).Add(newElement);
+            widgets.Descendants(position).ElementAt(0).AddFirst(newElement);
 
         }
 
         widgets.Save(Server.MapPath(widgetsXml));
         if(!IsAjax){
-            Response.Redirect("~/webcomicx/admin/customize");
+            //Response.Redirect("~/webcomicx/admin/customize");
         }
     }
 }
