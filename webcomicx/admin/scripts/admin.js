@@ -396,18 +396,15 @@ $("#newCollection").submit(function (event) {
                 index = $(ui.item).index() - 1;
                 id = $(ui.item).attr("id");
                 position = $(this).attr("data-position")
-                console.log("new " + index + "old " + oldIndex)
                 //Send the data using post
-                var posting = $.post("/webcomicx/admin/controlers/sort-widgets", { "id": id, "position": position, "newIndex": index, "oldIndex": oldIndex }, function (msg) {
-                    console.log(msg);   //Your resulting action
-                });
+                var posting = $.post("/webcomicx/admin/controlers/sort-widgets", { "id": id, "position": position, "newIndex": index, "oldIndex": oldIndex });
             }
         }).disableSelection();
     });
     function addWidget(e) {
         var container = $(e).closest(".widget");
         var widgetPosition = container.attr("data-position");
-        newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div id ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
+        newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div id ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer" class="cancel">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
         $(e).closest(".widget-placeholder").after(newWidget);
     }
 
@@ -438,21 +435,24 @@ $("#newCollection").submit(function (event) {
           widget = $(e).closest(".item"),
           postion = container.attr("data-position"),
           widgetId = form.find('button[name="id"]').val();
-        var posting = $.ajax({ type: "POST", async: false, url: "/webcomicx/admin/controlers/save-widget", data: { "position": postion, "id": widgetId, "name": name, "code": code }, success: function (result) {
+        var posting = $.ajax({
+            type: "POST", async: false,
+            url: "/webcomicx/admin/controlers/save-widget",
+            dataType: 'json',
+            data: { "position": postion, "id": widgetId, "name": name, "code": code },
+            success: function (result) {
+                popup($(".pop-up", widget));
+                widgetId = result.id
+                $(widget).attr("id", widgetId);
+                $("#editWidget", widget).text("Edit " + name);
+                $("#delete", widget).val(widgetId);
+                $('#close', widget).attr("onclick", "popup(this)");
+                $('.cancel', widget).attr("onclick", "popup(this)");
+                $('button[type="submit"]', widget).attr("value", widgetId);
         }
         });
         $("input").blur();
         $("textarea").blur();
-        posting.done(function (data) {
-            $("#temp-container").html(data.replace(/\s/g, ""));
-            var text = $("#temp-container #text").html();
-            $(e).closest(".item").find("#editWidget").html("Edit " + name);
-            form.find('button[name="id"]').val(data.replace(/\s/g, ""));
-            $("#delete",widget).val(data.replace(/\s/g, ""));
-
-            widget.attr("id",data.replace(/\s/g, ""));
-            popup(e);
-        });
     }
     function deleteWidget(e){
         event.preventDefault();

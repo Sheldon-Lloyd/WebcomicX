@@ -1,27 +1,32 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
 @{
-    if(IsPost){
+    if (IsPost) {
         var name = Request["name"];
         var code = Request.Unvalidated("code");
         var position = Request["position"];
         var id = Request["id"];
+        int widgetId = 1;
         //load xml file
         var widgetsXml = "/App_Data/widgets.xml";
         var load = new Comic();
         var widgets = load.LoadComic(widgetsXml);
+
+        Layout = null;
+
+        if (id != null || id != "") {
+            widgetId = id.AsInt();
+        }
 
         //get widget
         var widget = (from xml in widgets.Descendants("Container")
                       where xml.Element("Id").Value == id
                       select xml).FirstOrDefault();
 
-        if(widget!=null){
-            widget.Element("Name").Value=name;
-            widget.Element("Code").Value=code;
-        }
-    else{
-            int widgetId = 1;
+        if (widget != null) {
+            widget.Element("Name").Value = name;
+            widget.Element("Code").Value = code;
+        } else {
             widget = (from xml in widgets.Descendants(position).Descendants("Container")
                       select xml).FirstOrDefault();
             var widget2 = (from xml in widgets.Descendants(position).Descendants("Container")
@@ -29,26 +34,28 @@
             ;
 
 
-            if (widget!=null){
+            if (widget != null) {
                 int max = widgets.Descendants("Container").Max(e => (int)e.Element("Id"));
-                widgetId = max+1;
+                widgetId = max + 1;
             }
 
-            var newElement =  new XElement(
-    new XElement("Container",
-        new XElement("Name", name),
-        new XElement("Code", code),
-        new XElement("Position", position),
-        new XElement("Id", widgetId)
-    )
-);
+            var newElement = new XElement(
+            new XElement("Container",
+                new XElement("Name", name),
+                new XElement("Code", code),
+                new XElement("Position", position),
+                new XElement("Id", widgetId)
+            ));
             widgets.Descendants(position).ElementAt(0).AddFirst(newElement);
 
         }
 
         widgets.Save(Server.MapPath(widgetsXml));
-        if(!IsAjax){
+        <text>{"id":@widgetId}</text>
+        if (!IsAjax) {
             //Response.Redirect("~/webcomicx/admin/customize");
+        } else {
+            //Response.ContentType = "application/json";
         }
     }
 }
