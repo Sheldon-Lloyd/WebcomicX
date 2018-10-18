@@ -27,7 +27,7 @@
         include = Request["include"].AsBool();
 
 
-        string pattern = "[^a-zA-Z0-9]+"; //regex pattern 
+        string pattern = "[^a-zA-Z0-9]+"; //regex pattern for url
         var url = System.Text.RegularExpressions.Regex.Replace(title.ToLower(),pattern, "-");
 
         webpage.Element("PermaLink").Value = url;

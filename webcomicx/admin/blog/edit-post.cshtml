@@ -52,8 +52,7 @@
 
 <h2>Edit Post 
     <span class="float-right" style="margin: 4px 6px">
-    <input @if(status=="draft"){ <text>checked="checked"</text>} type="radio" id="draft" name="include" class="checkbox" value="draft" style="display: none">
-    <label  onclick="checkButton()"  id="status" for="draft" class="button check @if(status=="draft"){<text>is-checked</text>}else{<text>is-unchecked</text>}" style="display: initial">Draft</label><input type="radio" @if(status=="publish"){<text>checked="checked"</text>} id="publish" name="include" value="publish" style="display: none"><label  onclick="checkButton()"  id="status" for="publish"  class="check button @if(status=="publish"){<text>is-checked</text>}else{<text>is-unchecked</text>}" style="display: initial">Publish</label>
+    <input @(status=="draft"?"checked='checked'":"") type="radio" id="draft" name="include" class="checkbox" value="draft" style="display: none"><label  onclick="checkButton()"  id="status" for="draft" class="button check @(status=="draft"?"is-checked":"is-unchecked")" style="display: initial">Draft</label><input type="radio" @(status=="publish"?"checked='checked'":"") id="publish" name="include" value="publish" style="display: none"><label  onclick="checkButton()"  id="status" for="publish"  class="check button @(status=="publish"?"is-checked":"is-unchecked")" style="display: initial">Publish</label>
     </span>
 
     <a class="button float-right" href="/blog/post/@postId/@post.Element("PermaLink").Value" target="_blank">View Post</a><a class="button float-right" href="/webcomicx/admin/blog/@tutorial"> &laquo; Back to Blog Manager</a>
