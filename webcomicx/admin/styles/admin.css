@@ -869,7 +869,6 @@ padding: 0
 }
 #collections input[type="text"] {
     display: initial;
-    position: absolute;
     right: 0;
     left: 0;
     bottom: 3px;
@@ -1074,10 +1073,10 @@ border:  1px solid rgba(166, 219, 237, 0.99);
     text-align: left;
     font-size: initial
 }
-.pop-up #title a,.pop-up #box a{
+.pop-up #title a,.pop-up .box a{
     color: #333;
 }
-.pop-up #box{
+.pop-up .box{
     max-width: 700px;
     color: #333;
     margin: auto;
@@ -1117,13 +1116,13 @@ border-left: 1px #333 solid;
 cursor: pointer
 }
 
-.pop-up #box form,.pop-up #box form input,.pop-up #box form button{
+.pop-up .box form,.pop-up .box form input,.pop-up .box form button{
     position: static
 }
-.pop-up #box form input,.pop-up #box form textarea{
+.pop-up .box form input,.pop-up .box form textarea{
     width: 100%
 }
-.pop-up #box form button{
+.pop-up .box form button{
 background: #F4F4F4;
 background-image: -webkit-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);
 background-image: -ms-linear-gradient(#FAFAFA,#F4F4F4 40%,#E5E5E5);

@@ -111,32 +111,32 @@
 
     /* attach a submit handler to the form */
     function newCollection (){
-$("#newCollection").submit(function (event) {
+        $("#newCollection").submit(function (event) {
 
-    /* stop form from submitting normally */
-    event.preventDefault();
+            /* stop form from submitting normally */
+            event.preventDefault();
 
-    /* get some values from elements on the page: */
-    var $form = $(this),
-                          collectName = $form.find('input[name="createCollect"]').val(),
-                          url = $form.attr('action');
+            /* get some values from elements on the page: */
+            var $form = $(this),
+                collectName = $form.find('input[name="createCollect"]').val(),
+                url = $form.attr('action');
 
-    /* Send the data using post */
-    var posting = $.post(url, { s: collectName },
-                            function (result) {
+            /* Send the data using post */
+            var posting = $.post(url, { s: collectName },
+                function (result) {
 
-                                //create new collection
-                                var newItem = '<li class="item collection-item" style="background-image:url(/content/uploads/covers/thumbnail);background-size: contain;background-position:center;background-repeat: no-repeat" id="' + ($("#collections li").length + 1) + '" ondrop="dropComic(this, event)" ondragenter="return false" ondragover="return false"><a onclick="popup(this)" title="Edit Collection" class="action" style="position: initial;margin-left: 3px;">Edit</a><form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="' + ($("#collections li").length + 1) + '" type="submit" name="collectionNo" onclick="deleteCollection(this)">&times;</button></form>' + result + '</li>';
-                                
-                                //append it to the collection list
-                                $("#collections").append(newItem);
+                    //create new collection
+                    var newItem = '<li class="item collection-item" style="background-image:url(/content/uploads/covers/thumbnail);background-size: contain;background-position:center;background-repeat: no-repeat" id="' + ($("#collections li").length + 1) + '" ondrop="dropComic(this, event)" ondragenter="return false" ondragover="return false"><a onclick="popup(this)" title="Edit Collection" class="action" style="position: initial;margin-left: 3px;">Edit</a><form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="' + ($("#collections li").length + 1) + '" type="submit" name="collectionNo" onclick="deleteCollection(this)">&times;</button></form>' + result + '</li>';
 
-                                //set the focus to the newlly created collection textbox
-                                $("#collection").focus();
+                    //append it to the collection list
+                    $("#collections").append(newItem);
 
-                            });
+                    //set the focus to the newlly created collection textbox
+                    $("#collection").focus(function () { $(this).select(); });
 
-});
+                });
+
+        });
 }
     function deleteCollection(e) {
         var p = $(e).parent();
@@ -147,15 +147,15 @@ $("#newCollection").submit(function (event) {
 
             /* get some values from elements on the page: */
             var $form = $(this),
-                          collectId = $(p).parent().index() + 1,
-                          url = $form.attr('action');
+                collectId = $(p).parent().index() + 1,
+                url = $form.attr('action');
             var confirmation = confirm("Are you sure you want to delete this collection");
             if (confirmation == true) {
                 //Send the data using post 
                 var posting = $.post(url, { "collectionNo": collectId },
-                            function (result) {
-                                $(p).parent().remove();
-                            });
+                    function (result) {
+                        $(p).parent().remove();
+                    });
 
             }
             else { }
@@ -173,14 +173,14 @@ $("#newCollection").submit(function (event) {
 
         /* Send the data using post */
         var posting = $.post(url, { "collectionName": name, "collectionNo": number },
-                            function (result) {
-                                var collection = $("#collection").parent().parent();
-                                var collectionName = '<a onclick="popup(this)" title="Edit Collection" class="action" style="position: initial;margin-left: 3px;">Edit</a><span><a onclick="window.location=$(this).closest(' + "'.collection-item'" + ').index()+1">' + $("#collection").val() + '</a></span><form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="' + ($("#collections li").length + 1) + '" type="submit" name="collectionNo" onclick="deleteCollection(this)">&times;</button></form>' + '<div class="feedback"></div> <div class="pop-up"> <div id="title"> <h2>Edit Collection</h2> <a onclick="popup(this)" id="close">&times;</a> <div class="clear-fix"></div> </div> <div id ="box"> <form class="imageUpload" method="post" enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-collection-cover/"> <input type="file" name="image" id="images" onchange="uploadImage(this)" />  <div class="response"></div> <div class="image-list"></div> </form> <form enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-collection" method="post" class="collectionInfo"> <input type="hidden" name="cover"> <label>Cover Attribution</label> <input type="text" name="attribution" value=""> <label>Collection Name</label> <input type="text" value="' + $("#collection").val() + '" name="title"> <label>Collection Description  <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label> <textarea name="description"></textarea> <a onclick="popup(this)" style="cursor: pointer">Cancel</a> <button onclick="updateCollection(this)" type="submit" name="collection" value="">Save</button> </form> </div> </div>';
+            function (result) {
+                var collection = $("#collection").parent().parent();
+                var collectionName = '<a onclick="popup(this)" title="Edit Collection" class="action" style="position: initial;margin-left: 3px;">Edit</a><span><a onclick="window.location=$(this).closest(' + "'.collection-item'" + ').index()+1">' + $("#collection").val() + '</a></span><form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="' + ($("#collections li").length + 1) + '" type="submit" name="collectionNo" onclick="deleteCollection(this)">&times;</button></form>' + '<div class="feedback"></div> <div class="pop-up"> <div id="title"> <h2>Edit Collection</h2> <a onclick="popup(this)" id="close">&times;</a> <div class="clear-fix"></div> </div> <div class ="box"> <form class="imageUpload" method="post" enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-collection-cover/"> <input type="file" name="image" id="images" onchange="uploadImage(this)" />  <div class="response"></div> <div class="image-list"></div> </form> <form enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-collection" method="post" class="collectionInfo"> <input type="hidden" name="cover"> <label>Cover Attribution</label> <input type="text" name="attribution" value=""> <label>Collection Name</label> <input type="text" value="' + $("#collection").val() + '" name="title"> <label>Collection Description  <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label> <textarea name="description"></textarea> <a onclick="popup(this)" style="cursor: pointer">Cancel</a> <button onclick="updateCollection(this)" type="submit" name="collection" value="">Save</button> </form> </div> </div>';
 
-                                collection.empty();
-                                collection.html(collectionName);
+                collection.empty();
+                collection.html(collectionName);
 
-                            });
+            });
     }
     function popup(e) {//open lightbox for editing the collection
         e = $(e).closest(".item");
@@ -404,7 +404,7 @@ $("#newCollection").submit(function (event) {
     function addWidget(e) {
         var container = $(e).closest(".widget");
         var widgetPosition = container.attr("data-position");
-        newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div id ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer" class="cancel">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
+        newWidget = '<li class="item ui-state-default" id="null"><form class="sort"><input type="hidden" name="position" value=""><input type="hidden" name="index" value=""><input type="hidden" name="id" value=""></form><form method="post" action="/webcomicx/admin/controlers/delete-widget"><button onclick="deleteWidget(this)" id="delete" value="" name="id">&times;</button></form><a id="editWidget" onclick="popup(this)">Edit widget</a><div class="pop-up"><div id="title"><h2>Edit Widget</h2><a onclick="$(this).closest('+"'.item'"+').remove()" id="close">&times;</a><div class="clear-fix"></div></div><div class ="box"><form action="/webcomicx/admin/controlers/save-widget" method="post" class="ui-state-disabled"><label>Widget Name</label><input type="hidden" name="position" value="'+widgetPosition+'"><input type="text" name="name" value=""><label>Html/JavaScript</label><textarea name="code"></textarea><br><a onclick="$(this).closest('+"'.item'"+').remove()" style="cursor: pointer" class="cancel">Cancel</a><button onclick="saveWidget(this)" type="submit" name="id" value="">Save</button></form></div></div></li>'
         $(e).closest(".widget-placeholder").after(newWidget);
     }
 
