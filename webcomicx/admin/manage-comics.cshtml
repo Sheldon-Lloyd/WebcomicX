@@ -1,8 +1,7 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
-
 @{
-    Page.Title="Manage Comics";
+    Page.Title = "Manage Comics";
 
     //get the collection # from url
     var collectionNo = UrlData[0];
@@ -12,8 +11,8 @@
     int comicCount = 0;
     var guide = Request["tutorial"].AsBool();
     var tutorial = "";
-    if(guide){
-        tutorial ="?tutorial=true";
+    if (guide) {
+        tutorial = "?tutorial=true";
     }
 
     //load xml file for comics and collection
@@ -22,114 +21,117 @@
     var comics = load.LoadComic("/content/xml/comics/comic-list.xml");
 
     //get all comics
-        var comicList = (from xml in comics.Descendants("Comic")
-            select xml);
+    var comicList = (from xml in comics.Descendants("Comic")
+                     select xml);
 
-    if(collectionNo!=""){//get comics in collection
+    if (collectionNo != "") {//get comics in collection
         comicList = (from xml in comics.Descendants("Comic")
-        where xml.Element("Collection").Value == collectionNo.ToString()
-        select xml);
+                     where xml.Element("Collection").Value == collectionNo.ToString()
+                     select xml);
 
-        Page.Title = Page.Title +" in Collection " + collectionNo;
+        Page.Title = Page.Title + " in Collection " + collectionNo;
     }
 
 }
+@if (Session["updated"] == "true") {
+    HttpContext.Current.Session.Remove("updated");
+    <div class="prompt">Your changes have been saved <a onclick="closePrompt()">&times;</a></div>
+} else {
 <h4 class="prompt is-hidden"></h4>
+}
 @section sidePanel{
     <div class="collections">
-    <h3><a href="/webcomicx/admin/manage-comics/@tutorial">All Collections</a></h3>
+        <h3><a href="/webcomicx/admin/manage-comics/@tutorial">All Collections</a></h3>
         <div class="inner-collection">
             <form id="newCollection" action="/webcomicx/admin/controlers/new-collection" method="post">
-                <button class="submit-button" onclick="newCollection()" type="submit" name="createCollect">New Collection</button>
+                <button class="submit-button" onclick="createCollection()" type="submit" name="createCollect">New Collection</button>
             </form>
+            <ul id="collections">
+                @foreach (var collection in collections.Descendants("Collection")) {//display collections
+                                                                                   //count collections
+                    collectionCount++;
+                    <li class="item collection-item" id="@collectionCount" style="background-image:url('@Href("~/content/uploads/covers/thumbnail",collection.Element("Cover").Value)');background-size: contain;background-position:center;background-repeat: no-repeat" ondrop="dropComic(this, event)" ondragenter="return false" ondragover="return false">
+                        <span class="collection-name"><a onclick="window.location='/webcomicx/admin/manage-comics/'+($(this).closest('.collection-item').index()+1)">@collection.Element("Title").Value</a></span>
+                        <a onclick="popup(this)" title="Edit Collection" class="action" style="right: initial;margin-left: 3px;">Edit</a>
+                        <form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="@collectionCount" type="submit" name="collectionNo" title="Delete Collection" onclick="deleteCollection(this)">&times;</button></form>
+                        <div class='feedback'><span></span></div>
+                        <div class="pop-up is-hidden">
+                            <div id="title">
+                                <h2>Edit Collection</h2>
+                                <a onclick="popup(this)" id="close">&times;</a>
+                                <div class="clear-fix"></div>
+                            </div>
+                            <div class="box">
 
-    <ul id="collections">
-    @foreach(var collection in collections.Descendants("Collection")){//display collections
-        //count collections
-        collectionCount++;
-        <li class="item collection-item" id="@collectionCount" style="background-image:url('@Href("~/content/uploads/covers/thumbnail",collection.Element("Cover").Value)');background-size: contain;background-position:center;background-repeat: no-repeat" ondrop="dropComic(this, event)" ondragenter="return false" ondragover="return false">
+                                <form enctype="multipart/form-data" action="/webcomicx/admin/controlers/edit-collection" method="post" class="collectionInfo">
+                                    <div class="imageUpload">
+                                        <input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
+                                        <div class="image-list">
+                                            @if (collection.Element("Cover").Value != "") {
+                                                <img src="@Href("~/content/uploads/covers/",collection.Element("Cover").Value)" alt="@collection.Element("Cover").Value" width="100%" height="auto">
+                                            }
 
-            <span class="collection-name"><a onclick="window.location='/webcomicx/admin/manage-comics/'+($(this).closest('.collection-item').index()+1)">@collection.Element("Title").Value</a></span>
-            <a onclick="popup(this)" title="Edit Collection" class="action" style="right: initial;margin-left: 3px;">Edit</a>
-            <form id="deleteCollection" action="/webcomicx/admin/controlers/delete-collection" method="post"><button class="action" value="@collectionCount" type="submit" name="collectionNo" title="Delete Collection" onclick="deleteCollection(this)">&times;</button></form>
-            <div class='feedback'><span></span></div>
-            <div class="pop-up is-hidden">
-                <div id="title">
-                    <h2>Edit Collection</h2>
-                    <a onclick="popup(this)" id="close">&times;</a>
-                    <div class="clear-fix"></div>
-                </div>
-                <div class ="box">
-                    
-                    <form enctype="multipart/form-data"  action="/webcomicx/admin/controlers/edit-collection" method="post" class="collectionInfo">
-		            <div class="imageUpload">
-    		            <input type="file" name="image" id="images" onchange="showUploadedItem(this)" />
-		                <div class="image-list">
-                            @if(collection.Element("Cover").Value!=""){
-                                <img src="@Href("~/content/uploads/covers/",collection.Element("Cover").Value)" alt="@collection.Element("Cover").Value" width="100%" height="auto">
-                            }
-                        
+                                        </div>
+                                    </div>
+                                    <label>Cover Attribution</label>
+                                    <input type="text" name="attribution" value="@collection.Element("CoverAttribution").Value">
+                                    <label>Collection Name</label>
+                                    <input type="text" value="@collection.Element("Title").Value" name="title">
+                                    <label>Collection Description  <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
+                                    <textarea name="description">@collection.Element("Description").Value</textarea>
+                                    <br>
+                                    <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
+                                    <button onclick="//updateCollection(this)" type="submit" name="collection" value="@(collectionCount-1)">Save</button>
+                                </form>
+                            </div>
                         </div>
-    	            </div>
-                        <label>Cover Attribution</label>
-                        <input type="text" name="attribution" value="@collection.Element("CoverAttribution").Value">
-                        <label>Collection Name</label>
-                        <input type="text" value="@collection.Element("Title").Value" name="title">
-                        <label>Collection Description  <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
-                        <textarea name="description">@collection.Element("Description").Value</textarea>
-                        <br>
-                        <a onclick="popup(this)" style="cursor: pointer">Cancel</a>
-                        <button onclick="//updateCollection(this)" type="submit" name="collection" value="@(collectionCount-1)">Save</button>
-                    </form>
-                </div>
-            </div>
-        </li>
-    }
-    </ul>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
 }
 <h2 class="content-wrapper">@Page.Title <a class="button float-right" href="/webcomicx/admin/new-comic/@tutorial">Add New Comic</a></h2>
 <div class="clear-fix"></div>
-@if(guide){
+@if (guide) {
 
-<aside>
-    <section class="message-guide">
-        <h3>Welcome to the comic manager</h3>
-        <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
-        <p>Here you can:</p>
-        <ol>
-            <li>Create a comic</li>
-            <li>Edit or delete current comics</li>
-            <li>Create a new collection to organize your comic, making it easier for your audience to search though your comic's archives</li>
-            <li>Drag and drop comics in to each collection</li>
-            <li>Edit your colletions name and descrition</li>
-            <li>Delete collections (don't worry it won't delete any comics in that are in that collection ;-)</li>
-        </ol>
-        <p>If you haven't you can <a href="/webcomicx/admin/blog?tutorial=true">setup your blog</a></p>
-
-    </section>
-</aside>
+    <aside>
+        <section class="message-guide">
+            <h3>Welcome to the comic manager</h3>
+            <a class="message-guide-dismiss" onclick="$('.message-guide').remove()">&times; Dismiss</a>
+            <p>Here you can:</p>
+            <ol>
+                <li>Create a comic</li>
+                <li>Edit or delete current comics</li>
+                <li>Create a new collection to organize your comic, making it easier for your audience to search though your comic's archives</li>
+                <li>Drag and drop comics in to each collection</li>
+                <li>Edit your colletions name and descrition</li>
+                <li>Delete collections (don't worry it won't delete any comics in that are in that collection ;-)</li>
+            </ol>
+            <p>If you haven't you can <a href="/webcomicx/admin/blog?tutorial=true">setup your blog</a></p>
+        </section>
+    </aside>
 }
 <div class="content-wrapper">
-                  <ul class="grid item-list" id="comic-list">
-              @foreach(var comic in comicList){//diplay comics
-              //count comics
-                  comicCount++;
-                      <li draggable="true" id="@comic.Element("ComicValue").Value" ondragstart="dragComic(this, event)" ondragend="$('.collection-item').removeClass('border-highlight')">
-                        <h4 title="@comic.Element("Title").Value"><a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial">@comic.Element("Title").Value</a></h4>
-                          <div class="options">
-                          <a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial" style="float: left">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a class="float-right" href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())" target="_blank">View</a>
-                          </div>
-                          <form class="delete" style="display: none" method="post" action="/webcomicx/admin/controlers/delete-comic/@tutorial">
-                              <div>
-                                  <h5>Delete this comic?</h5>
-                                  <a onclick="deletePrompt(this)">Cancel</a>
-                                  <button name="node" value="@comic.Element("ComicValue").Value">Delete</button>
-                                  <input name="title" type="hidden" value="@comic.Element("Title").Value">
-                              </div>
-                          </form>
-                      </li>
-              }
-                  </ul>                  
+    <ul class="grid item-list" id="comic-list">
+        @foreach (var comic in comicList) {//diplay comics
+                                          //count comics
+            comicCount++;
+            <li draggable="true" id="@comic.Element("ComicValue").Value" ondragstart="dragComic(this, event)" ondragend="$('.collection-item').removeClass('border-highlight')">
+                <h4 title="@comic.Element("Title").Value"><a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial">@comic.Element("Title").Value</a></h4>
+                <div class="options">
+                    <a href="/webcomicx/admin/edit-comic/@comic.Element("ComicValue").Value/@tutorial" style="float: left">Edit</a> | <a onclick="deletePrompt(this)">Delete</a> | <a class="float-right" href="@load.viewComic(comic.Element("ComicValue").Value.AsInt())" target="_blank">View</a>
+                </div>
+                <form class="delete" style="display: none" method="post" action="/webcomicx/admin/controlers/delete-comic/@tutorial">
+                    <div>
+                        <h5>Delete this comic?</h5>
+                        <a onclick="deletePrompt(this)">Cancel</a>
+                        <button name="node" value="@comic.Element("ComicValue").Value">Delete</button>
+                        <input name="title" type="hidden" value="@comic.Element("Title").Value">
+                    </div>
+                </form>
+            </li>
+        }
+    </ul>
 </div>
+<div class="collection-form-box collection-item"></div>

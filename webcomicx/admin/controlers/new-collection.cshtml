@@ -25,11 +25,9 @@
 
             collections.Save(Server.MapPath(filename));
             collections = load.LoadComic(filename);
-            <form onsubmit="nameCollection()" id="nameCollection" method="post" action="/webcomicx/admin/controlers/change-collection-name">
-                <input id="collection" onblur="nameCollection()" type="text" value="@collections.Descendants("Collection").Descendants("Title").ElementAt(collectionCount).Value" name="collectionName">
-                <input value="@(collectionCount+1)" name="collectionNo" type="hidden">
-            </form>
-            }
+            Response.Redirect("~/webcomicx/admin/manage-comics");
+
+        }
 
     }
 

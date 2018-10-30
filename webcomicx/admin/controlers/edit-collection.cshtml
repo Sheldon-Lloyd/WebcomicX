@@ -9,7 +9,7 @@
         var title = Request["title"];
         var description = Request["description"];
         var attribute = Request["attribution"];
-        int collectionNode = Request["collection"].AsInt();
+        var collection = Request["collection"];
         var imagePath = "";
         var newFileName = "";
         var imageThumbPath = "";
@@ -23,11 +23,11 @@
             var imagefilename = newFileName;
             while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/covers/"+newFileName+extension))){
                 i++;
-            
+
                 newFileName = imagefilename+"-"+i;
 
             }
-            
+
             var imgageHeight = image.Height;
             imagePath = @"covers/"+newFileName+extension;
 
@@ -36,16 +36,34 @@
             imageThumbPath = @"covers/thumbnail/"+newFileName+extension;
             image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
             image.Save(@"~/content/uploads/" + imageThumbPath);
-            collections.Descendants("Collection").Descendants("Cover").ElementAt(collectionNode).Value=newFileName+extension;
+            newFileName = newFileName + extension;
+        }
+        if (collection!="") {
+            int collectionNode = collection.AsInt();
+            if (newFileName != "") {
+                collections.Descendants("Collection").Descendants("Cover").ElementAt(collectionNode).Value = newFileName;
+            }
+            collections.Descendants("Collection").Descendants("Title").ElementAt(collectionNode).Value = title;
+            collections.Descendants("Collection").Descendants("CoverAttribution").ElementAt(collectionNode).Value = attribute;
+            collections.Descendants("Collection").Descendants("Description").ElementAt(collectionNode).Value = description;
+        } else {
+            var newElement = new XElement(
+                new XElement("Collection",
+                new XElement("Title", title),
+                new XElement("CoverAttribution", attribute),
+                new XElement("Cover", newFileName),
+                new XElement("Description", description),
+                new XElement("Date", DateTime.UtcNow)
+            ));
+
+            collections.Element("Collections").Add(newElement);
 
         }
-        collections.Descendants("Collection").Descendants("Title").ElementAt(collectionNode).Value=title;   
-        collections.Descendants("Collection").Descendants("CoverAttribution").ElementAt(collectionNode).Value=attribute;
-        collections.Descendants("Collection").Descendants("Description").ElementAt(collectionNode).Value=description;
         collections.Save(Server.MapPath(filename));
-        <span>@collections.Descendants("Collection").Descendants("Title").ElementAt(collectionNode).Value</span>
+        Session["updated"] = "true";
+
         Response.Redirect("~/webcomicx/admin/manage-comics");
     }
 
-}
+    }
 
