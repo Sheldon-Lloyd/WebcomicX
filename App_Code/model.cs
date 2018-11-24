@@ -335,7 +335,7 @@ public class Comic{
         pageCount = pagesDoc.Descendants("Page").Count();        
         if(HttpContext.Current.User.Identity.IsAuthenticated){
             //if user is authenticated display edit page link
-            edit = " <a href='/webcomicx/admin/edit-comic/"+comicNo+"' class='edit'>Edit</a>";
+            edit = " <a class='edit'" + (comicNo != 0 ? "href = '/webcomicx/admin/edit-comic/" + comicNo.ToString() + "' > Edit": "href = '/webcomicx/admin/new-comic/ '> Post Comic") +"</a>";
         }
                 
         //set publishHeading variable with date and author
