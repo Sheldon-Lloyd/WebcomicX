@@ -52,10 +52,10 @@
                 //get height of the image
                 var imageHeight = image.Height;
 
-                image.Resize(width: 800, height: imageHeight, preserveAspectRatio: true, preventEnlarge: true);
+                image.Resize(width: 800, height: imageHeight, preserveAspectRatio: true, preventEnlarge: true).Crop(1, 1);
                 image.Save(@"~/content/uploads/" + imagePath);
                 imageThumbPath = @"pages/thumbnail/" + newFileName;
-                image.Resize(width: 200, height: 200, preserveAspectRatio: true, preventEnlarge: true);
+                image.Resize(width: 200, height: 200, preserveAspectRatio: true, preventEnlarge: true).Crop(1, 1);
                 image.Save(@"~/content/uploads/" + imageThumbPath);
 
 

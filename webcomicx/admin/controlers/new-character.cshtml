@@ -25,7 +25,6 @@
             returnUrl = returnUrl+"?tutorial=true";
         }
 
-        //description = description.Replace("\n", "<br>");
         var imagePath = "";
         var newFileName = "";
         var imageThumbPath = "";
@@ -46,7 +45,7 @@
             newFileName = newFileName+extension;
             imagePath = @"characters/"+newFileName;
             
-            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true).Crop(1,1);
             image.Save(@"~/content/uploads/" + imagePath);
 
             }

@@ -56,10 +56,10 @@
             //get height of the image
             var imgageHeight = image.Height;
 
-            image.Resize(width: 800, height: imgageHeight, preserveAspectRatio: true, preventEnlarge: true);
+            image.Resize(width: 800, height: imgageHeight, preserveAspectRatio: true, preventEnlarge: true).Crop(1, 1);
             image.Save(@"~/content/uploads/" + imagePath);
             imageThumbPath = @"pages/thumbnail/" + newFileName;
-            image.Resize(width: 200, height: 200, preserveAspectRatio: true, preventEnlarge: true);
+            image.Resize(width: 200, height: 200, preserveAspectRatio: true, preventEnlarge: true).Crop(1, 1);
             image.Save(@"~/content/uploads/" + imageThumbPath);
             page.Descendants("Page").Descendants("Image").ElementAt(pageNode).Value = newFileName;
 
@@ -101,7 +101,7 @@
             </div>
             <label>Script</label>
             <textarea name="content">@page.Descendants("Page").Descendants("Content").ElementAt(pageNode).Value</textarea>
-            <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters )</span></label>
+            <label>Short Description <span class="sub-text">(Recommended Maximum of 155 Characters)</span></label>
             <textarea name="description">@page.Descendants("Page").Descendants("Description").ElementAt(pageNode).Value</textarea>
             <div>
                 <a href="/webcomicx/admin/edit-comic/@comicNo">Cancel</a>

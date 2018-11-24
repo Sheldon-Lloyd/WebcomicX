@@ -3,23 +3,23 @@
 
 @{
     string filename = "/content/xml/content/characters.xml";
-var loadXml= new Comic();
-var characterXml = loadXml.LoadComic(filename);
+    var loadXml= new Comic();
+    var characterXml = loadXml.LoadComic(filename);
 
-if(IsPost){
-    var name = Request["name"];
-    var bio = Request.Unvalidated("bio");
-    var characterNumber = Request["number"];
-    var character = (from xml in characterXml.Descendants("Profile")
-        where xml.Element("Number").Value == characterNumber.ToString()
-        select xml).FirstOrDefault();
+    if(IsPost){
+        var name = Request["name"];
+        var bio = Request.Unvalidated("bio");
+        var characterNumber = Request["number"];
+        var character = (from xml in characterXml.Descendants("Profile")
+                         where xml.Element("Number").Value == characterNumber.ToString()
+                         select xml).FirstOrDefault();
 
-    var imagePath = "";
-    var newFileName = "";
-    var imageThumbPath = "";
-    WebImage image = null;
-    int i =0;
-    image = WebImage.GetImageFromRequest();
+        var imagePath = "";
+        var newFileName = "";
+        var imageThumbPath = "";
+        WebImage image = null;
+        int i =0;
+        image = WebImage.GetImageFromRequest();
 
         if (image != null){
             newFileName = Path.GetFileNameWithoutExtension(image.FileName);
@@ -27,23 +27,23 @@ if(IsPost){
             var imagefilename = newFileName;
             while(File.Exists(HttpContext.Current.Server.MapPath("/content/uploads/characters/"+newFileName+extension))){
                 i++;
-            
+
                 newFileName = imagefilename+"-"+i;
 
             }
-            
+
             imagePath = @"characters/"+newFileName+extension;
-            
-            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true).Crop(1, 1);
             image.Save(@"~/content/uploads/" + imagePath);
             character.Element("Image").Value=newFileName+extension;
 
         }
-    character.Element("Name").Value=name;   
-    character.Element("Bio").Value=bio;
-    characterXml.Save(Server.MapPath(filename));
-    Session["updated"] = "true";
-    Response.Redirect("/webcomicx/admin/characters/edit/"+characterNumber);
-}
+        character.Element("Name").Value=name;
+        character.Element("Bio").Value=bio;
+        characterXml.Save(Server.MapPath(filename));
+        Session["updated"] = "true";
+        Response.Redirect("/webcomicx/admin/characters");
+    }
 
 }

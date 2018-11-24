@@ -31,10 +31,10 @@
             var imgageHeight = image.Height;
             imagePath = @"covers/"+newFileName+extension;
 
-            image.Resize(width: 800, height:imgageHeight, preserveAspectRatio: true,preventEnlarge:true);
+            image.Resize(width: 800, height:imgageHeight, preserveAspectRatio: true,preventEnlarge:true).Crop(1, 1);
             image.Save(@"~/content/uploads/" + imagePath);
             imageThumbPath = @"covers/thumbnail/"+newFileName+extension;
-            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true);
+            image.Resize(width: 200, height:200, preserveAspectRatio: true,preventEnlarge:true).Crop(1, 1);
             image.Save(@"~/content/uploads/" + imageThumbPath);
             newFileName = newFileName + extension;
         }
