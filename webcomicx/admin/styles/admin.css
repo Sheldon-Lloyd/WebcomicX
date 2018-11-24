@@ -854,6 +854,10 @@ top: 80px;
 padding: 0 8px;
 
 }
+.collection-form-box{
+    border:0!important;
+    box-shadow:0!important;
+}
 #collections {
 list-style: none;
 padding: 0
