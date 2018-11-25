@@ -212,11 +212,11 @@
                     loadComic.pagination()
                     $(".webcomic img").click(function () {
                         $container = $(this).closest(".webcomic");
-                        $("figcaption", $container).toggleClass("is-collapsed")
+                        $("figcaption", $container).toggleClass("is-collapsed is-expanded")
                     });
                     $(".webcomic .collapse-button").click(function () {
                         $container = $(this).closest(".webcomic");
-                        $("figcaption", $container).toggleClass("is-collapsed")
+                        $("figcaption", $container).toggleClass("is-collapsed is-expanded")
                     });
 
                     //change any hashes to hashbang

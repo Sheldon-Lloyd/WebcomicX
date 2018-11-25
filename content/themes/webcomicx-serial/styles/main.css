@@ -356,7 +356,7 @@ li.menu{
     width: 100%;
     text-align: left;
     line-height: 1.5;
-    bottom: 0%;
+    bottom: -100%;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
@@ -887,6 +887,14 @@ h4.accordion {
 bottom: -100%!important;
 transition: all 1.5s ease-in!important;
 
+}
+.is-expanded {
+    bottom: 0% !important;
+    transition-delay: 0s!important;
+}
+.webcomic:hover figcaption {
+    bottom: 0%;
+    transition-delay:1s;
 }
 /*Resposive Web Design Styles*/
 @media screen and (max-width:768px){
