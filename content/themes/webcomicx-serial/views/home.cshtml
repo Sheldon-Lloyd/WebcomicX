@@ -1,6 +1,5 @@
 ﻿@using System.Xml.Linq
 @using System.Xml
-
 @{
     int pageNo = 0;
     int comicIndex = 0;
@@ -8,97 +7,88 @@
     var load = new Comic();
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
     var comicList = load.LoadComic("/content/xml/comics/comic-list.xml");
-    var comicNo=comicList.Descendants("Comic").Count();
-    var updated = load.comicDate(comicNo:comicNo,dateFormat:"M-d-yy-hm",dateType:"edit");
+    var comicNo = comicList.Descendants("Comic").Count();
+    var updated = load.comicDate(comicNo: comicNo, dateFormat: "M-d-yy-hm", dateType: "edit");
 
 
-    var pagesDoc = load.LoadComic("/content/xml/comics/comic-"+comicNo+".xml");
+    var pagesDoc = load.LoadComic("/content/xml/comics/comic-" + comicNo + ".xml");
     int pageCount = pagesDoc.Descendants("Page").Count();
 
     Layout = "../layouts/_main.cshtml";
 }
-
 @section head{
-<meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
-<link rel="canonical" href="/">
+    <meta name="description" content="@settings.Descendants("Settings").Descendants("Description").ElementAt(0).Value">
+    <link rel="canonical" href="/">
 }
 @section comic{
-<div class="archive-nav cf">
-    <div id="archive-comic" class="chapters container archive-nav-inner">
-        <label><a href="/comic/archives">Comic</a></label>
-        <form>
-            <select id="chapter-nav">
-            @foreach(var comic in comicList.Descendants("Comic")){
-                //list comics
-                comicIndex++;
-                if(comicIndex==comicNo){
-                    //if the current comicNo is equal to the comic being indexed
-                    //set that selected option to selected
-                    <option value="@comicIndex" selected='selected'>@comic.Element("Title").Value</option>
-                }
-                else{
-                    <option value="@comicIndex">@comic.Element("Title").Value</option>
-                }
-            }
-
-            </select>
-        </form>
+    <div class="archive-nav cf">
+        <div id="archive-comic" class="chapters container archive-nav-inner">
+            <label><a href="/comic/archives">Comic</a></label>
+            <form>
+                <select id="chapter-nav">
+                    @foreach (var comic in comicList.Descendants("Comic")) {
+                        //list comics
+                        comicIndex++;
+                        if (comicIndex == comicNo) {
+                            //if the current comicNo is equal to the comic being indexed
+                            //set that selected option to selected
+                            <option value="@comicIndex" selected='selected'>@comic.Element("Title").Value</option>
+                        } else {
+                            <option value="@comicIndex">@comic.Element("Title").Value</option>
+                        }
+                    }
+                </select>
+            </form>
+        </div>
+        <div id="archive-page" class="pages container archive-nav-inner">
+            <label>Page</label>
+            <form>
+                <select id='page'>
+                    @foreach (var page in pagesDoc.Descendants("Page")) {//list pages
+                        pageNo++;
+                        if (pageCount == pageNo) {
+                            //if page begining display is equaly to the total numberof comics make this comic selected
+                            <option value='@pageNo' selected='selected'>@pageNo</option>
+                        } else {
+                            <option value='@pageNo'>@pageNo</option>
+                        }
+                    }
+                    @if (pageNo == 0) {
+                        <option value='1'>1</option>
+                    }
+                </select>
+            </form>
+        </div>
     </div>
-    <div id="archive-page" class="pages container archive-nav-inner">
-        <label>Page</label>
-        <form>
-        <select id='page'>
-            @foreach(var page in pagesDoc.Descendants("Page")){//list pages
-                pageNo++;
-                if(pageCount==pageNo){
-                    //if page begining display is equaly to the total numberof comics make this comic selected
-                    <option value='@pageNo' selected='selected'>@pageNo</option>
-                }
-                else{
-                    <option value='@pageNo'>@pageNo</option>
-                }
-            }
-            @if(pageNo==0){
-                <option value='1'>1</option>
-            }
-
-        </select>
-        </form>
-    </div>
-</div>
-<div class="webcomic">
-    <div class="comic-pagination cf top-border">
-        <nav>
-            @if(comicNo>1){
-                <div class="previous">
-                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First </span></a>
-                    <a href="@load.previous(comicNo,true)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
+    <div class="webcomic">
+        <div class="comic-pagination cf top-border">
+            <nav>
+                <div class="previous @(comicNo < 2 ? "is-hidden" : "")">
+                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First</span></a>
+                    <a href="@load.previous(comicNo)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
                 </div>
-                }	
                 <span class="comic-pagination-archive">
-			        <a href="/comic/archives">Archives</a>
-			    </span>
-        </nav>
-    </div>
-    <div id="pageContent">
-        <noscript>
-        @load.WebComic(comicNo)
-        </noscript>
-    </div>
-    <div class="comic-pagination cf bottom-border">
-        <nav>
-            @if(comicNo>1){
-                <div class="previous">
-                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First </span></a>
-                    <a href="@load.previous(comicNo,true)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
+                    <a href="/comic/archives">Archives</a>
+                </span>
+            </nav>
+        </div>
+        <div id="pageContent">
+            <noscript>
+                @load.WebComic(comicNo)
+            </noscript>
+        </div>
+        <div class="comic-pagination cf bottom-border">
+            <nav>
+                <div class="previous @(comicNo < 2 ? "is-hidden" : "")">
+                    <a href="/comic/read/1/" rel="first" title="First Comic" aria-label="First Comic"><span>First</span></a>
+                    <a href="@load.previous(comicNo)" class="previous" rel="prev" title="Previous Comic" aria-label="Previous Comic"><span>Previous</span></a>
                 </div>
-                }	
                 <span class="comic-pagination-archive">
-			        <a href="/comic/archives">Archives</a>
-			    </span>
-        </nav>
+                    <a href="/comic/archives">Archives</a>
+                </span>
+            </nav>
+        </div>
     </div>
-</div>
 }
 @section heading{
     <section id="comicHeading">
@@ -112,14 +102,14 @@
 }
 @section comments{}
 @section scripts{
-<script>
+    <script>
     window.onload = (function () {
         $(".webcomicXreader").webcomicXreader({
             comicNo:@comicNo,
             pageNo:@pageNo,
-            updateVersion:"@updated"
+            updateVersion: "@updated",
+            comicCount:@comicNo
             });
     })
-</script>
-
+    </script>
 }

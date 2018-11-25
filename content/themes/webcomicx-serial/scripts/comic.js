@@ -3,12 +3,11 @@
         var defaults = {
             comicNo: 1,
             pageNo: "undefined",
-            updateVersion: ""
+            updateVersion: "",
+            comicCount:1
         },
             settings = $.extend({}, defaults, options);
-        var comicList = "/content/xml/comics/comic-list.xml",
             currentComic = "/content/xml/comics/comic-" + settings.comicNo + ".xml?updated=" + settings.updateVersion,
-            nextComic = "/content/xml/comics/comic-" + (settings.comicNo + 1) + ".xml?updated=" + settings.updateVersion,
             preComic = "/content/xml/comics/comic-" + (settings.comicNo - 1) + ".xml?updated=" + settings.updateVersion;
         $.ajax({
             async:true, dataType: "xml", url: currentComic, success: function (xml) {
@@ -98,21 +97,15 @@
                             $next.attr("href", "#!/page/" + (pageNo + 1));
                         }
                         else {
-                            $.ajax({
-                                async: true, dataType: "xml", url: comicList, success: function (xml) {
-                                    var comicListXml = xml,
-                                        comicListX = comicListXml.getElementsByTagName("Comic");
-                                    if (settings.comicNo <= comicListX.length) {
-                                        $next.show();
+                            if (settings.comicNo < settings.comicCount) {
+                                $next.show();
 
-                                        $next.attr("href", "/comic/read/" + (settings.comicNo + 1) + "/#!/page/1");
-                                    }
-                                    else {
-                                        $next.removeAttr("href");
-                                        $next.hide()
-                                    }
-                                }
-                            });
+                                $next.attr("href", "/comic/read/" + (settings.comicNo + 1) + "/#!/page/1");
+                            }
+                            else {
+                                $next.removeAttr("href");
+                                $next.hide()
+                            }
                         }
 
                         //previous comic
