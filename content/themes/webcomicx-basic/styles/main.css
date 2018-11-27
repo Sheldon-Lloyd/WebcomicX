@@ -350,16 +350,15 @@ li.menu{
 .webcomic-img:target figcaption {
     top: 0%;
 }
-.webcomic-img:target .page-script-show{
-    display: none;
-}
+
 .webcomic-img article ~.page-script{
+    /*hides the script toggle when an article rather than image is diplayed*/
     display: none!important;
 }
-.webcomic-img:target .page-script-hide {
-    display: inline-block;
+input.page-script-toggle {
+    opacity:0!important;
 }
-.page-script-show,.page-script-hide{
+.page-script-toggle{
     position: absolute;
     top: 5px;
     left: 5px;
@@ -370,9 +369,13 @@ li.menu{
     -o-transition: .3s;
     -moz-transition: .3s
 }
-.webcomic-img:hover .page-script, .page-script:focus{
-    opacity: .9;
+.webcomic-img:hover .page-script-toggle, .page-script-toggle:focus{
+    opacity: .8;
 }
+input.page-script-toggle:checked~figure>figcaption{
+    top:0%
+}
+
 .comic-placeholder{
     background: #333;
     color: #efefef;
@@ -746,6 +749,7 @@ h4.comic-collection span {
     visibility: hidden;
     -o-transition-delay: .2s;
     -webkit-animation: .2s;
+    animation: .2s;
     -moz-transition-delay: .2s;
     -ms-transition-delay: .2s;
     transition-delay: .2s;

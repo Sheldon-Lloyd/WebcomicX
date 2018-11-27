@@ -66,33 +66,13 @@
 
         }
     }
-    //accessible menu
+    //make menu accessible
 $(document).ready(function () {
         $(".menu ul a").focus(function () {
             $(this).closest(".menu ul").css("display", "block");
         })
         $(".menu dl a").focusout(function () {
             $(this).closest(".menu ul").css("display", "");
-        });
-        //hide all captions
-        $('.webcomic-img figcaption').css('top', '-100%');
-        $('.page-script-hide').hide();
-        $('.page-script-show').css('display', 'inline-block');
-
-        //show caption
-        $('.page-script-show').on('click', function () {
-            event.preventDefault();
-            $(this).closest('.webcomic-img').find('figcaption').css('top', '0%');
-            $(this).hide();
-            $(this).parent().find('.page-script-hide').css('display', 'inline-block');
-        });
-        //hide caption
-        $('.page-script-hide').on('click', function () {
-            event.preventDefault();
-            $(this).closest('.webcomic-img').find('figcaption').css('top', '-100%');
-            $(this).hide();
-            $(this).parent().find('.page-script-show').css('display', 'inline-block');
-
         });
 
     });

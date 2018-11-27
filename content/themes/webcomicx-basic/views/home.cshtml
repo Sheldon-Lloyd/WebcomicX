@@ -69,8 +69,8 @@
     @load.WebComic(
         currentComic:comicNo,
         attr: "class='webcomic-img'",
-        htmlAfter:@<div class="page-script"><a href="#null" class="page-script-hide page-script button is-hidden" tabindex="0">Hide Script</a><a href="#page-@(i++)" class="page-script-show button page-script" tabindex="0">Show Script</a></div>
-
+        htmlBefore:@<input class="page-script-toggle" type="checkbox" id="script-page-@(i)">,
+        htmlAfter:@<div class="page-script"><label role="button" for="script-page-@(i++)" class="page-script-toggle button page-script" tabindex="0">Toggle Script</label></div>
     )
     </div>
 <div class="comic-pagination cf">
