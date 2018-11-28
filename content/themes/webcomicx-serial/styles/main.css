@@ -16,6 +16,9 @@ img{
 a:hover{
 	text-decoration:underline;
 }
+:focus {
+    outline: 5px auto #5B9DD9;
+}
 input[type=submit]{
 	border:1px #ccc solid;
 	padding:3px;
