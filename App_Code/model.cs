@@ -174,6 +174,8 @@ public class Comic{
         return new HtmlString(comicDescription);
 
     }
+    /// <param name="htmlBefore">Add extra html before the webcomic is renderd.</param>
+    /// <param name="htmlAfter">Add extra html after the webcomic is renderd.</param>
     public HtmlString WebComic(int currentComic,string attr="",Func<dynamic,object> htmlBefore =null,Func<dynamic,object> htmlAfter =null,bool lazyLoad = false){//render webcomic
         //initialize variable
         var webComic = "";
