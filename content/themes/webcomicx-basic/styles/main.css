@@ -16,6 +16,9 @@ img{
 a:hover{
 	text-decoration:underline;
 }
+:focus {
+    outline: 5px auto #5B9DD9;
+}
 input[type=submit]{
 	border:1px #ccc solid;
 	padding:3px;
@@ -369,13 +372,15 @@ input.page-script-toggle {
     -o-transition: .3s;
     -moz-transition: .3s
 }
-.webcomic-img:hover .page-script-toggle, .page-script-toggle:focus{
+.webcomic-img:hover .page-script-toggle, input.page-script-toggle:focus~.page-script-toggle {
     opacity: .8;
 }
 input.page-script-toggle:checked~figure>figcaption{
     top:0%
 }
-
+input.page-script-toggle:focus ~ .page-script-toggle {
+    outline: 5px auto #5B9DD9;
+}
 .comic-placeholder{
     background: #333;
     color: #efefef;
