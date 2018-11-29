@@ -14,7 +14,7 @@
 
     var comicCount = comicList.Descendants("Comic").Count();
     int pageCount = pagesDoc.Descendants("Page").Count();
-    var updated = load.comicDate(comicNo,"M-d-yy-hm");
+    var updated = load.comicDate(comicNo: comicNo, dateFormat: "Mdyyhm", dateType: "edit");
 
     Page.Title =" - "+ comicList.Descendants("Comic").Descendants("Title").ElementAt(comicNode).Value;
     var host = Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);

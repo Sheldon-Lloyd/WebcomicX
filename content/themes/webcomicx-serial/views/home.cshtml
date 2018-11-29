@@ -8,7 +8,7 @@
     var settings = load.LoadComic("/App_Data/WebcomicX.xml");
     var comicList = load.LoadComic("/content/xml/comics/comic-list.xml");
     var comicNo = comicList.Descendants("Comic").Count();
-    var updated = load.comicDate(comicNo: comicNo, dateFormat: "M-d-yy-hm", dateType: "edit");
+    var updated = load.comicDate(comicNo: comicNo, dateFormat: "Mdyyhm", dateType: "edit");
 
 
     var pagesDoc = load.LoadComic("/content/xml/comics/comic-" + comicNo + ".xml");
