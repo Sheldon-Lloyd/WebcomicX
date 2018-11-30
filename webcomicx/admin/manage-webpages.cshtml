@@ -19,7 +19,7 @@
                             <label>Website Title</label>
                             <input type="text" name="title">
                             <label>Website URL</label>
-                            <input type="url" value="" name="url">
+                            <input type="url" value="" name="url" title="The Url must start with http:// or https://" placeholder="http://" oninvalid="this.setCustomValidity('The Url must start with http:// or https://')" oninput="this.setCustomValidity('')">
                             <a onclick="$('#link-submit').hide();$(this).closest('form').trigger('reset')">Cancel</a> <button type="submit">Add Link</button>
                         </fieldset>
                     </form>
@@ -38,7 +38,7 @@
                     <h5><a href="/webcomicx/admin/characters">Character Profiles</a></h5>
                     Let readers know more about major characters in the comic
                     <div class="options">
-                    <a href="/webcomicx/admin/characters" class="float-left">Edit</a>  <a href="/characters" class="float-right">View</a>
+                    <a href="/webcomicx/admin/characters" class="float-left">Edit</a>  <a href="/comic/characters" class="float-right">View</a>
                     </div>
                 </li>
             @foreach(var page in webpagesXml.Descendants("Page")){//display webpages        
