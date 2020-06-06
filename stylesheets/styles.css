@@ -1,10 +1,13 @@
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
 
 
-body {
+body,html {
     font:18px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #555;
     background: #fbfbfb;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 img{
     max-width: 100%;
@@ -22,7 +25,7 @@ footer{
 h1 {
     font-family: serif;
     font-size: 2.2em;
-    margin-bottom:0;
+    margin:0;
 }
 dt{
     margin-left:40px;
@@ -45,21 +48,18 @@ a:hover {
     zoom: 1;
 }
 .wrapper {
-    max-width: 1000px;
     margin: auto;
+    max-width: 1000px;
 }
 .nav {
-    padding: 10px 40px;
-    background: #efefef;
+    padding: 0;
+    background: #333;
     text-align: center;
-    border: 1px #ccc solid;
-    border-radius: 2px;
-    margin:20px 0;
 }
 .nav ul {
     padding: 0;
-    margin:0;
-    float:left;
+    margin: 0 40px;
+    float: left;
 }
 .nav li {
     display: inline-block;
@@ -68,7 +68,12 @@ a:hover {
     margin-right:20px;
 }
 .nav .button{
-    font-size:.85em;
+    font-size: .85em;
+    border-radius: 0;
+    border: 0;
+    color: #333;
+    width: 300px;
+    padding: 30px!important;
 }
 .container {
     background: #555;
@@ -78,11 +83,10 @@ a:hover {
 .container-inner {
     padding: 50px 40px;
 }
-.container h2 {
-    font-weight: 600;
+.hero-description h2 {
+    font-weight: 500;
     font-weight: normal;
-    margin-bottom: 40px;
-    line-height: 1.5;
+    margin: 0;
 }
 .container-anchor {
     color: #D1D1D1;
@@ -118,10 +122,11 @@ a:hover {
 }
 
 .nav a {
-    padding: 15px 0;
-    color: #555;
+    padding: 30px 0;
+    color: #fff;
     display: inline-block;
     box-sizing: border-box;
+    text-decoration: none;
 }
 .button{
     padding: 15px 20px!important;
@@ -146,7 +151,12 @@ a:hover {
 .float-right {
     float: right;
 }
-
+.float-left{
+    float: left;
+}
+.flexbox{
+    display: flex;
+}
 .content {
     padding: 0 40px;
     border-radius: 2px;
@@ -158,6 +168,26 @@ a:hover {
     border-bottom: 3px solid #ccc;
     text-align: center;
     padding: 10px;
+}
+.hero{
+    background: #333;
+    color: #fff;
+}
+.hero-description{
+    flex: 1;
+    padding: 30px 40px;
+    font-size: .8em;
+}
+.hero a:not(.container-anchor):not(.button){
+    color: inherit;
+    text-decoration: none;
+}
+.hero-col-2{
+    text-decoration: none;
+    width: 300px;
+    text-align: center;
+    align-self: center;
+    display: block;
 }
 /*Resposive Web Design Styles*/
 @media screen and (max-width:768px){
