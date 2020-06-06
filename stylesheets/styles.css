@@ -184,8 +184,8 @@ a:hover {
 }
 .hero-col-2{
     text-decoration: none;
-    width: 300px;
     text-align: center;
+    width: 300px;
     align-self: center;
     display: block;
 }
@@ -216,6 +216,13 @@ a:hover {
     aside .item-list {
         padding: 0 40px;
     }
+    .hero .flexbox{
+        display: block;
+    }
+    .hero-col-2{
+        padding: 0 40px;
+        text-align: left;
+    }
 }
 @media screen and (max-width:480px){
     .container .button{
@@ -230,4 +237,5 @@ a:hover {
     .aside-heading {
         padding: 10px 20px;
     }
+
 }
