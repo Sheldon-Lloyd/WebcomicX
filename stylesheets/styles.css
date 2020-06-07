@@ -55,8 +55,6 @@ a:hover {
     padding: 0;
     background: #333;
     text-align: center;
-    position: sticky;
-    top: 0;
 }
 .nav ul {
     padding: 0;
